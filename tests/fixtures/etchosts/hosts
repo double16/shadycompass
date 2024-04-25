@@ -1,0 +1,4 @@
+127.0.0.1   localhost
+::1         localhost
+10.10.1.1   target1.local
+10.10.1.2   target2.local subdomain.target2.local
