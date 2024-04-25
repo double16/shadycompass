@@ -156,7 +156,10 @@ class ConfigRules:
     )
     def choose_tool(self, category):
         tool_names = list(map(lambda t: t.get('name'), self._get_tools(category)))
-        self.declare(ToolChoiceNeeded(category=category, names=tool_names))
+        if len(tool_names) == 1:
+            self.declare(PreferredTool(category=category, name=tool_names[0]))
+        else:
+            self.declare(ToolChoiceNeeded(category=category, names=tool_names))
 
     @Rule(
         PreferredTool(category=MATCH.category),
