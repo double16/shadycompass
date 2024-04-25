@@ -27,7 +27,7 @@ $ python3 shadycompass.py /path/to/output
 ### Docker
 
 ```shell
-$ docker run -it --rm -v /path/to/output:/data --user ${UID} shadycompass:latest
+$ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
 ```
 
 ## Commands
@@ -36,7 +36,7 @@ Shady Compass outputs recommendations and then provides a prompt. It will detect
 after each command, or pressing enter without a command.
 
 ```shell
-$ docker run -it --rm -v /path/to/output:/data --user ${UID} shadycompass:latest
+$ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
 
 shadycompass - https://github.com/double16/shadycompass
 
