@@ -4,7 +4,7 @@ import unittest
 
 from shadycompass import ShadyCompassEngine
 from shadycompass.config import ConfigFactReader, ConfigFact, SECTION_TOOLS, ToolCategory, set_global_config_path, \
-    ToolChoiceNeeded, PreferredTool
+    ToolChoiceNeeded, PreferredTool, ToolAvailable
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -60,6 +60,12 @@ class ConfigRulesTest(unittest.TestCase):
         assertFactIn(
             ToolChoiceNeeded(category=ToolCategory.http_buster, names=['dirb', 'feroxbuster', 'gobuster', 'wfuzz']),
             self.engine)
+
+    def test_implied_preferred_tool(self):
+        self.engine.declare(ToolAvailable(category='test', name='only_me'))
+        self.engine.run()
+        assertFactIn(PreferredTool(category='test', name='only_me'), self.engine)
+        assertFactNotIn(ToolChoiceNeeded(category='test', names=['only_me']), self.engine)
 
     def test_preferred_port_scanner_local(self):
         self.engine.declare(
