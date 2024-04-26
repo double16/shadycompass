@@ -156,3 +156,10 @@ class HttpBustingNeeded(Fact):
 
     def get_url(self) -> str:
         return f"{self.get_protocol()}://{self.get_vhost()}:{self.get_port()}"
+
+
+class WinRMService(TcpIpService):
+    secure = Field(bool, mandatory=True, default=False)
+
+    def is_secure(self) -> bool:
+        return bool(self.get('secure'))

@@ -16,15 +16,18 @@ class GobusterTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='gobuster',
-            command_line=['http://hospital.htb:5985'],
+            command_line=[
+                'dir', '--random-agent', '--discover-backup', '-k',
+                '-o', "gobuster-8080-hospital.htb.txt",
+                '-u', 'http://hospital.htb:8080'
+            ],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='gobuster',
-            command_line=['http://hospital.htb:8080'],
-        ), self.engine)
-        assertFactIn(ToolRecommended(
-            category=ToolCategory.http_buster,
-            name='gobuster',
-            command_line=['https://hospital.htb:443'],
+            command_line=[
+                'dir', '--random-agent', '--discover-backup', '-k',
+                '-o', "gobuster-443-hospital.htb.txt",
+                '-u', 'https://hospital.htb:443'
+            ],
         ), self.engine)

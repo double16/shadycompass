@@ -16,15 +16,10 @@ class DirbTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='dirb',
-            command_line=['http://hospital.htb:5985'],
+            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='dirb',
-            command_line=['http://hospital.htb:8080'],
-        ), self.engine)
-        assertFactIn(ToolRecommended(
-            category=ToolCategory.http_buster,
-            name='dirb',
-            command_line=['https://hospital.htb:443'],
+            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt'],
         ), self.engine)

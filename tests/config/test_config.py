@@ -4,7 +4,8 @@ import unittest
 
 from shadycompass import ShadyCompassEngine
 from shadycompass.config import ConfigFactReader, ConfigFact, SECTION_TOOLS, ToolCategory, set_global_config_path, \
-    ToolChoiceNeeded, PreferredTool, ToolAvailable
+    ToolChoiceNeeded, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended
+from shadycompass.facts import HttpBustingNeeded
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -109,19 +110,49 @@ class ConfigRulesTest(unittest.TestCase):
         assertFactNotIn(PreferredTool(category=ToolCategory.http_buster, name='dirb'), self.engine)
         assertFactIn(PreferredTool(category=ToolCategory.http_buster, name='feroxbuster'), self.engine)
 
-    # def test_preferred_vuln_scanner_local(self):
-    #     self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner.name, value='dirb', global0=False))
-    #     self.engine.run()
-    #     assertFactIn(PreferredTool(category=ToolCategory.vuln_scanner, name='dirb'), self.engine)
-    #
-    # def test_preferred_vuln_scanner_global(self):
-    #     self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner.name, value='dirb', global0=True))
-    #     self.engine.run()
-    #     assertFactIn(PreferredTool(category=ToolCategory.vuln_scanner, name='dirb'), self.engine)
-    #
-    # def test_preferred_vuln_scanner_local_over_global(self):
-    #     self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner.name, value='feroxbuster', global0=False))
-    #     self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner.name, value='dirb', global0=True))
-    #     self.engine.run()
-    #     assertFactNotIn(PreferredTool(category=ToolCategory.vuln_scanner, name='dirb'), self.engine)
-    #     assertFactIn(PreferredTool(category=ToolCategory.vuln_scanner, name='feroxbuster'), self.engine)
+    def test_preferred_vuln_scanner_local(self):
+        self.engine.declare(
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner, value='nuclei', global0=False))
+        self.engine.run()
+        assertFactIn(PreferredTool(category=ToolCategory.vuln_scanner, name='nuclei'), self.engine)
+
+    def test_preferred_vuln_scanner_global(self):
+        self.engine.declare(
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner, value='nuclei', global0=True))
+        self.engine.run()
+        assertFactIn(PreferredTool(category=ToolCategory.vuln_scanner, name='nuclei'), self.engine)
+
+    def test_preferred_vuln_scanner_local_over_global(self):
+        self.engine.declare(
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner, value='nuclei', global0=False))
+        self.engine.declare(
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.vuln_scanner, value='nikto', global0=True))
+        self.engine.run()
+        assertFactNotIn(PreferredTool(category=ToolCategory.vuln_scanner, name='nikto'), self.engine)
+        assertFactIn(PreferredTool(category=ToolCategory.vuln_scanner, name='nuclei'), self.engine)
+
+    def test_preferred_tool_retracts_other_tool_recommendations(self):
+        t1 = ToolRecommended(category=ToolCategory.http_buster, name='dirb')
+        t2 = ToolRecommended(category=ToolCategory.http_buster, name='wfuzz')
+        t3 = ToolRecommended(category=ToolCategory.http_buster, name='gobuster')
+        t4 = ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster')
+        cAll = ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value=OPTION_VALUE_ALL, global0=False)
+        cFerox = ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value='feroxbuster', global0=False)
+
+        self.engine.declare(cAll)
+        self.engine.declare(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'))
+        self.engine.run()
+        assertFactIn(t1, self.engine)
+        assertFactIn(t2, self.engine)
+        assertFactIn(t3, self.engine)
+        assertFactIn(t4, self.engine)
+
+        self.engine.retract(cAll)
+        self.engine.declare(cFerox)
+        self.engine.run()
+        assertFactIn(PreferredTool(category=ToolCategory.http_buster, name='feroxbuster'), self.engine)
+        assertFactNotIn(PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL), self.engine)
+        assertFactNotIn(t1, self.engine)
+        assertFactNotIn(t2, self.engine)
+        assertFactNotIn(t3, self.engine)
+        assertFactIn(t4, self.engine)

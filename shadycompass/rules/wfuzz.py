@@ -2,6 +2,7 @@ from experta import Rule, DefFacts, OR, AS
 
 from shadycompass.config import ToolCategory, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended
 from shadycompass.facts import HttpBustingNeeded
+from shadycompass.rules.library import METHOD_HTTP_BRUTE_FORCE
 
 
 class WfuzzRules:
@@ -11,7 +12,11 @@ class WfuzzRules:
     def wfuzz_available(self):
         yield ToolAvailable(
             category=ToolCategory.http_buster,
-            name=self.wfuzz_tool_name
+            name=self.wfuzz_tool_name,
+            tool_links=[
+                'http://www.edge-security.com/wfuzz.php',
+            ],
+            methodology_links=METHOD_HTTP_BRUTE_FORCE,
         )
 
     @Rule(
@@ -23,5 +28,10 @@ class WfuzzRules:
         self.declare(ToolRecommended(
             category=ToolCategory.http_buster,
             name=self.wfuzz_tool_name,
-            command_line=[f1.get_url()],
+            command_line=[
+                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '--hc', '404',
+                '-f', f'wfuzz-{f1.get_port()}-{f1.get_vhost()}.json,json',
+                f'{f1.get_url()}/FUZZ',
+            ],
         ))

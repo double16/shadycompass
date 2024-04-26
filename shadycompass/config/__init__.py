@@ -19,8 +19,17 @@ class ToolCategory(object):
 class ToolAvailable(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
-    tool_link = Field(str, mandatory=False)
-    doc_links = Field(list[str], mandatory=False)
+    tool_links = Field(list[str], mandatory=False, default=[])
+    methodology_links = Field(list[str], mandatory=False, default=[])
+
+    def get_name(self) -> str:
+        return self.get('name')
+
+    def get_tool_links(self) -> list[str]:
+        return self.get('tool_links')
+
+    def get_methodology_links(self) -> list[str]:
+        return self.get('methodology_links')
 
 
 class ConfigFact(Fact):
@@ -136,19 +145,28 @@ class ConfigRules:
                 tools.append(fact)
         return tools
 
+    def _declare_preferred_tool(self, category: str, tool_name: str):
+        retract_queue = []
+        for fact in filter(lambda f: isinstance(f, PreferredTool) and f.get('category') == category,
+                           self.facts.values()):
+            retract_queue.append(fact)
+        for fact in retract_queue:
+            self.retract(fact)
+        self.declare(PreferredTool(category=category, name=tool_name))
+
     @Rule(
         ConfigFact(section=SECTION_TOOLS, option=MATCH.category, value=MATCH.tool_name, global0=False),
         salience=100
     )
     def preferred_tool_local(self, category, tool_name):
-        self.declare(PreferredTool(category=category, name=tool_name))
+        self._declare_preferred_tool(category, tool_name)
 
     @Rule(
         ConfigFact(section=SECTION_TOOLS, option=MATCH.category, value=MATCH.tool_name, global0=True),
         NOT(PreferredTool(category=MATCH.category)),
     )
     def preferred_tool_global(self, category, tool_name):
-        self.declare(PreferredTool(category=category, name=tool_name))
+        self._declare_preferred_tool(category, tool_name)
 
     @Rule(
         ToolAvailable(category=MATCH.category),
@@ -157,7 +175,7 @@ class ConfigRules:
     def choose_tool(self, category):
         tool_names = list(map(lambda t: t.get('name'), self._get_tools(category)))
         if len(tool_names) == 1:
-            self.declare(PreferredTool(category=category, name=tool_names[0]))
+            self._declare_preferred_tool(category, tool_names[0])
         else:
             self.declare(ToolChoiceNeeded(category=category, names=tool_names))
 
@@ -166,4 +184,12 @@ class ConfigRules:
         AS.f1 << ToolChoiceNeeded(category=MATCH.category)
     )
     def tool_chosen(self, f1):
+        self.retract(f1)
+
+    @Rule(
+        AS.f1 << ToolRecommended(category=MATCH.category, name=MATCH.name),
+        PreferredTool(category=MATCH.category, name=~MATCH.name),
+        NOT(PreferredTool(category=MATCH.category, name=OPTION_VALUE_ALL)),
+    )
+    def retract_tool(self, f1):
         self.retract(f1)
