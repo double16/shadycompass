@@ -19,22 +19,16 @@ class HttpBustingTest(RulesBase):
         assertFactIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'), self.engine)
         assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb'),
                      self.engine)
-        assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=5985, vhost='hospital.htb'),
-                     self.engine)
 
     def test_httpbusting_not_needed(self):
         self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb',
                                     url=urllib.parse.urlparse("https://hospital.htb/")))
         self.engine.declare(HttpUrl(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb',
                                     url=urllib.parse.urlparse("https://hospital.htb/")))
-        self.engine.declare(HttpUrl(secure=False, addr='10.129.229.189', port=5985, vhost='hospital.htb',
-                                    url=urllib.parse.urlparse("https://hospital.htb/")))
         self.engine.run()
         assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'),
                         self.engine)
         assertFactNotIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb'),
-                        self.engine)
-        assertFactNotIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=5985, vhost='hospital.htb'),
                         self.engine)
 
     def test_httpbusting_retract(self):
@@ -45,6 +39,4 @@ class HttpBustingTest(RulesBase):
         assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'),
                         self.engine)
         assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb'),
-                     self.engine)
-        assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=5985, vhost='hospital.htb'),
                      self.engine)

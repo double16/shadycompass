@@ -3,7 +3,8 @@ import sys
 import shlex
 
 
-from shadycompass import ShadyCompassOps
+from shadycompass import ShadyCompassOps, get_local_config_path, get_global_config_path
+
 
 def shadycompass_cli(args: list[str]) -> int:
     ops = ShadyCompassOps(args)
@@ -14,6 +15,8 @@ def shadycompass_cli(args: list[str]) -> int:
 
             if ops.handle_tool_choices():
                 continue
+
+            print('')
 
             ops.handle_tool_recommended()
 
@@ -49,18 +52,36 @@ def shadycompass_cli(args: list[str]) -> int:
             elif user_command[0] == 'reset':
                 ops.reset_config_values()
 
+            elif user_command[0] == 'info':
+                ops.tool_info(user_command)
+
             else:
-                print('''
+                print(f'''
 help
-facts
-save
-use [global] <tool> [--reset-options]
-option [global] <tool> args ...
-set
-set [global] [section.]option value  (section defaults to 'general')
-unset [global] [section.]option  (section defaults to 'general')
-reset
+    show this text
 exit, quit, x, q
+    quit, eh?
+info n [ ... ]
+    show information on a recommendation, multiple numbers (separated by whitespace) accepted
+save
+    save configuration changes to {get_local_config_path()} (local) and {get_global_config_path()} (global) 
+use [global] <tool> [--reset-options]
+    prefer a tool over others in the same category
+option [global] <tool> args ...
+    add options to a tool
+set
+    show configuration
+set [global] [section.]option value
+    set a configuration, section defaults to 'general'
+    * don't forget to run 'save' to persist
+unset [global] [section.]option
+    section defaults to 'general'
+    * don't forget to run 'save' to persist
+reset
+    reset/unset all configurations, including global
+    * don't forget to run 'save' to persist
+facts
+    show current facts (useful for debugging)
 ''')
 
     except (EOFError, KeyboardInterrupt):

@@ -8,7 +8,52 @@ What it is not:
 2. Vulnerability scanner
 3. Fool-proof
 
-TODO: example animated gif
+```shell
+$ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
+
+shadycompass - https://github.com/double16/shadycompass
+Press enter/return at the prompt to refresh data.
+
+[*] Reading hosts from tests/fixtures/etchosts/hosts
+[*] Reading nmap facts from tests/fixtures/nmap/open-ports.xml
+[*] Reading hosts from /etc/hosts
+
+[$]  1. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  2. gobuster dir --random-agent --discover-backup -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
+[$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-hospital.htb.json,json http://hospital.htb:8080/FUZZ
+[$]  4. dirb http://hospital.htb:8080 -o dirb-8080-hospital.htb.txt
+[$]  5. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  6. gobuster dir --random-agent --discover-backup -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
+[$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-hospital.htb.json,json https://hospital.htb:443/FUZZ
+[$]  8. dirb https://hospital.htb:443 -o dirb-443-hospital.htb.txt
+
+tests/fixtures shadycompass > use feroxbuster
+[*] using feroxbuster for http_buster
+[!] configuration is only saved when you run the "save" command
+
+[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+
+tests/fixtures shadycompass > info 2
+
+# feroxbuster
+
+## tool links
+https://github.com/epi052/feroxbuster
+
+## methodology
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
+
+## example command
+feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+
+[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+
+tests/fixtures shadycompass > exit
+
+$
+```
 
 ## Run it!
 
@@ -35,40 +80,34 @@ $ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/sh
 Shady Compass outputs recommendations and then provides a prompt. It will detect changes and update recommendations
 after each command, or pressing enter without a command.
 
-```shell
-$ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
-
-shadycompass - https://github.com/double16/shadycompass
-
-Press enter/return at the prompt to refresh data.
-
-[*] Reading hosts from /data/etchosts/hosts
-[*] Reading nmap facts from /data/nmap/open-ports.xml
-[*] Reading hosts from /etc/hosts
-
-[$] dirb http://localhost:8080
-[$] gobuster http://localhost:8080
-[$] feroxbuster http://localhost:8080
-[$] wfuzz http://localhost:8080
-
-/data shadycompass > help
-
-/data shadycompass > help
+```
+tests/fixtures shadycompass > help
 
 help
-facts
-save
-use [global] <tool> [--reset]
-option [global] <tool> args ...
-set
-set [global] name value
-unset [global] name
-reset [global]
+    show this text
 exit, quit, x, q
-
-/data shadycompass > exit
-
-$
+    quit, eh?
+info n [ ... ]
+    show information on a recommendation, multiple numbers (separated by whitespace) accepted
+save
+    save configuration changes to {get_local_config_path()} (local) and {get_global_config_path()} (global) 
+use [global] <tool> [--reset-options]
+    prefer a tool over others in the same category
+option [global] <tool> args ...
+    add options to a tool
+set
+    show configuration
+set [global] [section.]option value
+    set a configuration, section defaults to 'general'
+    * don't forget to run 'save' to persist
+unset [global] [section.]option
+    section defaults to 'general'
+    * don't forget to run 'save' to persist
+reset
+    reset/unset all configurations, including global
+    * don't forget to run 'save' to persist
+facts
+    show current facts (useful for debugging)
 ```
 
 TODO: Explain the commands.

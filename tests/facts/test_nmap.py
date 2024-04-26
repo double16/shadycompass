@@ -1,7 +1,7 @@
 import unittest
 
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, TcpIpService, \
-    DomainTcpIpService, HttpService
+    DomainTcpIpService, HttpService, WinRMService
 from shadycompass.facts.nmap import NmapXmlFactReader
 
 
@@ -36,7 +36,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(TcpIpService(addr='10.129.229.189', port=3268), facts)
         self.assertIn(TcpIpService(addr='10.129.229.189', port=3269), facts)
         self.assertIn(TcpIpService(addr='10.129.229.189', port=3389), facts)
-        self.assertIn(HttpService(addr='10.129.229.189', port=5985, secure=False), facts)
+        self.assertIn(WinRMService(addr='10.129.229.189', port=5985, secure=False), facts)
         self.assertIn(TcpIpService(addr='10.129.229.189', port=6404), facts)
         self.assertIn(TcpIpService(addr='10.129.229.189', port=6406), facts)
         self.assertIn(TcpIpService(addr='10.129.229.189', port=6407), facts)

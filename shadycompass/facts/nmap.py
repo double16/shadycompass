@@ -1,9 +1,13 @@
 import xml.etree.ElementTree as ET
 from typing import Iterable
+
 from experta import Fact
+
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetHostname, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, HttpService, DomainTcpIpService, DomainUdpIpService, TcpIpService, \
-    UdpIpService, fact_reader_registry
+    UdpIpService, fact_reader_registry, WinRMService
+
+OSTYPE_WINDOWS = 'Windows'
 
 
 def _is_nmap_xml(file_path: str) -> bool:
@@ -61,21 +65,28 @@ class NmapXmlFactReader(FactReader):
         for port_el in ports_el:
             if port_el.tag != 'port':
                 continue
-            protocol = port_el.attrib['protocol']
-            port = int(port_el.attrib['portid'])
+            protocol = port_el.attrib.get('protocol', None)
+            port = int(port_el.attrib.get('portid', 0))
             state = 'open'
             service_name = ''
+            ostype = None
             secure = False
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
-                    state = port_detail_el.attrib['state']
+                    state = port_detail_el.attrib.get('state', 'unknown')
                 elif port_detail_el.tag == 'service':
-                    service_name = port_detail_el.attrib['name']
+                    service_name = port_detail_el.attrib.get('name', None)
+                    ostype = port_detail_el.attrib.get('ostype', None)
                     if port_detail_el.attrib.get('tunnel', None) in ['ssl', 'tls']:
                         secure = True
             if state == 'open':
                 if service_name == 'http':
-                    result.extend(self._spread_addrs(HttpService, addrs, port=port, secure=secure))
+                    if ostype == OSTYPE_WINDOWS and port == 5985:
+                        result.extend(self._spread_addrs(WinRMService, addrs, port=port, secure=secure))
+                    elif ostype == OSTYPE_WINDOWS and port == 5986:
+                        result.extend(self._spread_addrs(WinRMService, addrs, port=port, secure=True))
+                    else:
+                        result.extend(self._spread_addrs(HttpService, addrs, port=port, secure=secure))
                 elif service_name == 'https':
                     result.extend(self._spread_addrs(HttpService, addrs, port=port, secure=True))
                 elif service_name == 'domain':

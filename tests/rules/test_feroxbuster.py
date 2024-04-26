@@ -16,15 +16,14 @@ class FeroxBusterTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='feroxbuster',
-            command_line=['http://hospital.htb:5985'],
+            command_line=['-u', 'http://hospital.htb:8080', '--random-agent', '--extract-links',
+                          '-o', "feroxbuster-8080-hospital.htb.txt", '--thorough',
+                          '--scan-limit', '6', '--insecure'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='feroxbuster',
-            command_line=['http://hospital.htb:8080'],
-        ), self.engine)
-        assertFactIn(ToolRecommended(
-            category=ToolCategory.http_buster,
-            name='feroxbuster',
-            command_line=['https://hospital.htb:443'],
+            command_line=['-u', 'https://hospital.htb:443', '--random-agent', '--extract-links',
+                          '-o', "feroxbuster-443-hospital.htb.txt", '--thorough',
+                          '--scan-limit', '6', '--insecure'],
         ), self.engine)

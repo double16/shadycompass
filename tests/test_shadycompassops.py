@@ -4,7 +4,8 @@ import tempfile
 import unittest
 
 from shadycompass import ShadyCompassOps
-from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory
+from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory, \
+    ToolRecommended
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -158,3 +159,33 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.unset_config_value(['unset', 'global', 'ratelimit'])
         assertFactNotIn(fact, self.ops.engine)
         self.assertTrue(len(self.fd_out.output) > 0)
+
+    def test_tool_info1(self):
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
+        self.ops.tool_info(['info', '1'])
+        self.assertTrue('dirb' in self.fd_out.output)
+
+    def test_tool_info2(self):
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
+        self.ops.tool_info(['info', '2'])
+        self.assertTrue('feroxbuster' in self.fd_out.output)
+
+    def test_tool_info3(self):
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
+        self.ops.tool_info(['info', '1', '2'])
+        self.assertTrue('dirb' in self.fd_out.output)
+        self.assertTrue('feroxbuster' in self.fd_out.output)
+
+    def test_tool_info_NAN(self):
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
+        self.ops.tool_info(['info', 'a'])
+        self.assertTrue('[-]' in self.fd_out.output)
+
+    def test_tool_info_index_out_of_bounds(self):
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
+        self.ops.tool_info(['info', '10'])
+        self.assertTrue('[-]' in self.fd_out.output)

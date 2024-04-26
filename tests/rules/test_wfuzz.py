@@ -16,15 +16,20 @@ class WfuzzTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='wfuzz',
-            command_line=['http://hospital.htb:5985'],
+            command_line=[
+                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '--hc', '404',
+                '-f', 'wfuzz-8080-hospital.htb.json,json',
+                'http://hospital.htb:8080/FUZZ',
+            ],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name='wfuzz',
-            command_line=['http://hospital.htb:8080'],
-        ), self.engine)
-        assertFactIn(ToolRecommended(
-            category=ToolCategory.http_buster,
-            name='wfuzz',
-            command_line=['https://hospital.htb:443'],
+            command_line=[
+                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '--hc', '404',
+                '-f', 'wfuzz-443-hospital.htb.json,json',
+                'https://hospital.htb:443/FUZZ',
+            ],
         ), self.engine)

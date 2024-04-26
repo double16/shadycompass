@@ -1,16 +1,17 @@
 import io
 import os.path
+import shlex
 import sys
 from configparser import ConfigParser
 
 from experta import KnowledgeEngine
 
+import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
     set_local_config_path
 from shadycompass.facts import fact_reader_registry
 from shadycompass.facts.filemetadata import FileMetadataCache
-import shadycompass.facts.all  # noqa: F401
 from shadycompass.rules.all import AllRules
 
 
@@ -79,7 +80,8 @@ class ShadyCompassOps(object):
         changed = False
         for tool_choice in list(filter(lambda f: isinstance(f, ToolChoiceNeeded), self.engine.facts.values())):
             category: str = tool_choice.get('category')
-            names: list[str] = tool_choice.get('names')
+            names: list[str] = list(tool_choice.get('names'))
+            names.sort()
             if len(names) == 1:
                 self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=category, value=names[0], global0=False))
                 self.engine.retract(tool_choice)
@@ -90,14 +92,14 @@ class ShadyCompassOps(object):
                 print(f"\nChoose your preferred tool for {category}:", file=self.fd_out)
                 for idx, name in enumerate(names):
                     print(f"{idx+1}. {name}")
-                print(f"{len(names)+1}. no preference, consider all", file=self.fd_out)
+                print("0. no preference, consider all", file=self.fd_out)
                 try:
                     choice = int(input("? ").strip()) - 1
-                    if 0 <= choice <= len(names):
+                    if -1 <= choice < len(names):
                         self.engine.declare(ConfigFact(
                             section=SECTION_TOOLS,
                             option=category,
-                            value=OPTION_VALUE_ALL if choice == len(names) else names[choice-1],
+                            value=OPTION_VALUE_ALL if choice < 0 else names[choice],
                             global0=False))
                         self.engine.retract(tool_choice)
                         changed = True
@@ -110,13 +112,45 @@ class ShadyCompassOps(object):
             self.print_save_config_warning()
         return changed
 
+    def _command_line(self, args: list[str]) -> str:
+        return shlex.join(args)
+
     def handle_tool_recommended(self):
-        for tool in list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values())):
-            print(f"[$] {tool.get_name()} {' '.join(tool.get_command_line())}", file=self.fd_out)
+        for idx, tool in enumerate(list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))):
+            print(f"[$] {str(idx + 1).rjust(2, ' ')}. {tool.get_name()} {self._command_line(tool.get_command_line())}",
+                  file=self.fd_out)
+
+    def tool_info(self, command: list[str]):
+        recommends = list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))
+        tools = {}
+        for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
+            tools[fact.get('name')] = fact
+        for arg in command[1:]:
+            try:
+                i = int(arg) - 1
+                if 0 <= i < len(recommends):
+                    tr: ToolRecommended = recommends[i]
+                    ta: ToolAvailable = tools[tr.get_name()]
+                    print(f'\n# {ta.get_name()}', file=self.fd_out)
+                    if ta.get_tool_links():
+                        print('\n## tool links')
+                        print('\n'.join(ta.get_tool_links()), file=self.fd_out)
+                    if ta.get_methodology_links():
+                        print('\n## methodology')
+                        print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
+                    print('\n## example command\n```shell')
+                    print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
+                    print('```')
+                else:
+                    print(f'[-] invalid number, expecting 1-{len(recommends)}', file=self.fd_out)
+            except ValueError:
+                print(f'[-] number expected: {arg}', file=self.fd_out)
 
     def print_banner(self):
-        print("\nshadycompass - https://github.com/double16/shadycompass", file=self.fd_out)
-        print("\nPress enter/return at the prompt to refresh data.\n", file=self.fd_out)
+        print("""
+shadycompass - https://github.com/double16/shadycompass
+Press enter/return at the prompt to refresh data.
+""", file=self.fd_out)
 
     def refresh(self):
         self.engine.update_facts()
