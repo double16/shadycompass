@@ -1,24 +1,16 @@
 from shadycompass.config import ConfigRules
-from shadycompass.rules.dirb import DirbRules
-from shadycompass.rules.feroxbuster import FeroxBusterRules
-from shadycompass.rules.gobuster import GoBusterRules
+import shadycompass.rules.http_buster.all as http_buster
+import shadycompass.rules.port_scanner.all as port_scanner
+import shadycompass.rules.vuln_scanner.all as vuln_scanner
 from shadycompass.rules.httpbusting import HttpBusting
-from shadycompass.rules.nikto import NiktoRules
-from shadycompass.rules.nmap import NmapRules
-from shadycompass.rules.nuclei import NucleiRules
-from shadycompass.rules.wfuzz import WfuzzRules
 
 
 class AllRules(
-    NmapRules,
-    DirbRules,
-    FeroxBusterRules,
-    GoBusterRules,
-    WfuzzRules,
+    http_buster.AllRules,
+    port_scanner.AllRules,
+    vuln_scanner.AllRules,
     HttpBusting,
     ConfigRules,
-    NucleiRules,
-    NiktoRules,
 ):
     """
     Convenience class to collect all rules.

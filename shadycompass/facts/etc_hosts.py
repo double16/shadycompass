@@ -1,3 +1,4 @@
+import os.path
 import re
 
 from experta import Fact
@@ -21,8 +22,10 @@ class EtcHosts(FactReader):
 
     def read_facts(self, file_path: str) -> list[Fact]:
         results = []
-        if not _is_hosts_file(file_path):
+        if os.path.basename(file_path) != 'hosts':
             return results
+        # if not _is_hosts_file(file_path):
+        #     return results
         print(f"[*] Reading hosts from {file_path}")
         with open(file_path, 'rt') as file:
             for line in file.readlines():

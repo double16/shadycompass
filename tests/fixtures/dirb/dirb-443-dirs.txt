@@ -1,0 +1,128 @@
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: dirb-443-dirs.txt
+START_TIME: Thu Apr 25 05:27:35 2024
+URL_BASE: https://hospital.htb:443/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+
+-----------------
+
+GENERATED WORDS: 4612
+
+---- Scanning URL: https://hospital.htb:443/ ----
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+
+-----------------
+END_TIME: Thu Apr 25 05:27:58 2024
+DOWNLOADED: 196 - FOUND: 0
+
+-----------------
+DIRB v2.22    
+By The Dark Raver
+-----------------
+
+OUTPUT_FILE: dirb-443-dirs.txt
+START_TIME: Thu Apr 25 05:31:20 2024
+URL_BASE: https://hospital.htb:443/
+WORDLIST_FILES: /usr/share/dirb/wordlists/common.txt
+OPTION: Not Stopping on warning messages
+
+-----------------
+
+GENERATED WORDS: 4612
+
+---- Scanning URL: https://hospital.htb:443/ ----
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
++ https://hospital.htb:443/examples (CODE:503|SIZE:403)
++ https://hospital.htb:443/favicon.ico (CODE:200|SIZE:16958)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
++ https://hospital.htb:443/index.php (CODE:200|SIZE:5322)
+==> DIRECTORY: https://hospital.htb:443/installer/
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+(!) WARNING: All responses for this directory seem to be CODE = 403.
+    (Use mode '-w' if you want to scan it anyway)
+
+---- Entering directory: https://hospital.htb:443/installer/ ----
++ https://hospital.htb:443/installer/aux (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/com1 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/com2 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/com3 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/con (CODE:403|SIZE:303)
+==> DIRECTORY: https://hospital.htb:443/installer/images/
+==> DIRECTORY: https://hospital.htb:443/installer/Images/
++ https://hospital.htb:443/installer/index.php (CODE:302|SIZE:0)
++ https://hospital.htb:443/installer/lpt1 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/lpt2 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/nul (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/prn (CODE:403|SIZE:303)
+
+---- Entering directory: https://hospital.htb:443/installer/images/ ----
++ https://hospital.htb:443/installer/images/aux (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/com1 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/com2 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/com3 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/con (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/lpt1 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/lpt2 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/nul (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/images/prn (CODE:403|SIZE:303)
+
+---- Entering directory: https://hospital.htb:443/installer/Images/ ----
++ https://hospital.htb:443/installer/Images/aux (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/com1 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/com2 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/com3 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/con (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/lpt1 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/lpt2 (CODE:403|SIZE:303)
++ https://hospital.htb:443/installer/Images/nul (CODE:403|SIZE:303)

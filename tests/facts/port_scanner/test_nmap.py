@@ -2,7 +2,7 @@ import unittest
 
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, TcpIpService, \
     DomainTcpIpService, HttpService, WinRMService
-from shadycompass.facts.nmap import NmapXmlFactReader
+from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 
 
 class NmapXmlFactReaderTest(unittest.TestCase):
