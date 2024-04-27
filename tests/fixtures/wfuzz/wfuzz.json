@@ -1,0 +1,50 @@
+[
+  {
+    "chars": 5322,
+    "code": 200,
+    "payload": "index.php",
+    "lines": 96,
+    "location": "",
+    "method": "GET",
+    "post_data": [],
+    "server": "Apache/2.4.56 (Win64) OpenSSL/1.1.1t PHP/8.0.28",
+    "url": "https://hospital.htb:443/index.php",
+    "words": 333
+  },
+  {
+    "chars": 16934,
+    "code": 200,
+    "payload": "favicon.ico",
+    "lines": 1,
+    "location": "",
+    "method": "GET",
+    "post_data": [],
+    "server": "Apache/2.4.56 (Win64) OpenSSL/1.1.1t PHP/8.0.28",
+    "url": "https://hospital.htb:443/favicon.ico",
+    "words": 17
+  },
+  {
+    "chars": 5322,
+    "code": 200,
+    "payload": ".",
+    "lines": 96,
+    "location": "",
+    "method": "GET",
+    "post_data": [],
+    "server": "Apache/2.4.56 (Win64) OpenSSL/1.1.1t PHP/8.0.28",
+    "url": "https://hospital.htb:443/.",
+    "words": 333
+  },
+  {
+    "chars": 5322,
+    "code": 200,
+    "payload": "Index.php",
+    "lines": 96,
+    "location": "",
+    "method": "GET",
+    "post_data": [],
+    "server": "Apache/2.4.56 (Win64) OpenSSL/1.1.1t PHP/8.0.28",
+    "url": "https://hospital.htb:443/Index.php",
+    "words": 333
+  }
+]

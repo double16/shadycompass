@@ -1,5 +1,3 @@
-import urllib.parse
-
 from base import RulesBase
 from shadycompass import ConfigFact
 from shadycompass.config import SECTION_TOOLS, ToolCategory
@@ -22,9 +20,9 @@ class HttpBustingTest(RulesBase):
 
     def test_httpbusting_not_needed(self):
         self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb',
-                                    url=urllib.parse.urlparse("https://hospital.htb/")))
+                                    url="https://hospital.htb/"))
         self.engine.declare(HttpUrl(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb',
-                                    url=urllib.parse.urlparse("https://hospital.htb/")))
+                                    url="https://hospital.htb/"))
         self.engine.run()
         assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'),
                         self.engine)
@@ -34,7 +32,7 @@ class HttpBustingTest(RulesBase):
     def test_httpbusting_retract(self):
         self.engine.run()
         self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb',
-                                    url=urllib.parse.urlparse("https://hospital.htb/")))
+                                    url="https://hospital.htb/"))
         self.engine.run()
         assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'),
                         self.engine)

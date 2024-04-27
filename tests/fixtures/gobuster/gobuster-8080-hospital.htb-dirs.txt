@@ -1,0 +1,8 @@
+/images/             [33m (Status: 403)[0m [Size: 279]
+/js/                 [33m (Status: 403)[0m [Size: 279]
+/css/                [33m (Status: 403)[0m [Size: 279]
+/uploads/            [33m (Status: 403)[0m [Size: 279]
+/fonts/              [33m (Status: 403)[0m [Size: 279]
+/icons/              [33m (Status: 403)[0m [Size: 279]
+/vendor/             [33m (Status: 403)[0m [Size: 279]
+/server-status/      [33m (Status: 403)[0m [Size: 279]

@@ -1,7 +1,7 @@
-from base import RulesBase
 from shadycompass import ConfigFact
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended
 from tests.tests import assertFactIn
+from tests.rules.base import RulesBase
 
 
 class WfuzzTest(RulesBase):

@@ -1,8 +1,10 @@
 import abc
 import re
-from urllib.parse import ParseResult
+from urllib.parse import urlparse
 
 from experta import Fact, Field
+
+HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 
 
 class FactReader(abc.ABC):
@@ -128,10 +130,21 @@ class DomainUdpIpService(UdpIpService):
 
 
 class HttpUrl(Fact):
-    addr = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
     port = Field(int, mandatory=True)
     vhost = Field(str, mandatory=True)
-    url = Field(ParseResult, mandatory=True)
+    url = Field(str, mandatory=True)
+
+
+def http_url(url: str, **kwargs) -> HttpUrl:
+    parsed = urlparse(url)
+    port = parsed.port
+    if port is None:
+        if url.startswith('http:'):
+            port = 80
+        elif url.startswith('https:'):
+            port = 443
+    return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
 class HttpBustingNeeded(Fact):
