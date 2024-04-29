@@ -3,10 +3,7 @@
 Shady Compass is a tool to help ethical hackers cover enumeration steps. It looks for files in the current directory
 (and subdirectories) as tool output. Based on the findings it will recommend other tools or enumeration steps.
 
-What it is not:
-1. Automated scanner
-2. Vulnerability scanner
-3. Fool-proof
+This is not an automated scanner. You are expected to review and adjust the recommended commands to fit your situation.
 
 ```shell
 $ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
@@ -72,7 +69,8 @@ $ python3 shadycompass.py /path/to/output
 ### Docker
 
 ```shell
-$ docker run -it --rm -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
+$ mkdir -p ${HOME}/.config/shadycompass
+$ docker run -it --rm -v ${HOME}/.config/shadycompass:/config -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
 ```
 
 ## Commands

@@ -4,6 +4,7 @@ RUN apk add gcc git musl-dev
 COPY . /opt/shadycompass
 WORKDIR /opt/shadycompass
 RUN python3 -m pip install -r requirements.txt
+VOLUME /config
 VOLUME /data
 WORKDIR /data
 USER 1000

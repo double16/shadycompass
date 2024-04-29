@@ -1,6 +1,7 @@
-from experta import DefFacts
+from experta import DefFacts, Rule, AS, OR, NOT
 
-from shadycompass.config import ToolAvailable, ToolCategory
+from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
+from shadycompass.facts import PortScanNeeded
 
 
 class NmapRules:
@@ -17,3 +18,43 @@ class NmapRules:
             category=ToolCategory.port_scanner,
             name=self.rustscan_tool_name
         )
+
+    @Rule(
+        AS.f1 << PortScanNeeded(),
+        OR(
+            PreferredTool(category=ToolCategory.port_scanner, name=nmap_tool_name),
+            PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
+            NOT(PreferredTool(category=ToolCategory.port_scanner)),
+        )
+    )
+    def run_nmap(self, f1: PortScanNeeded):
+        addr = f1.get_addr()
+        if not addr:
+            addr = '$IP'
+        self.declare(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=self.nmap_tool_name,
+            command_line=[
+                '-p-', '-sV', '-sC', '-oN', 'tcp-all.txt', '-oX', 'tcp-all.xml', addr
+            ],
+        ))
+
+    @Rule(
+        AS.f1 << PortScanNeeded(),
+        OR(
+            PreferredTool(category=ToolCategory.port_scanner, name=rustscan_tool_name),
+            PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
+            NOT(PreferredTool(category=ToolCategory.port_scanner)),
+        )
+    )
+    def run_rustscan(self, f1: PortScanNeeded):
+        addr = f1.get_addr()
+        if not addr:
+            addr = '$IP'
+        self.declare(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=self.rustscan_tool_name,
+            command_line=[
+                '-a', addr, '--', '-sV', '-sC', '-oN', 'tcp-all.txt', '-oX', 'tcp-all.xml'
+            ],
+        ))
