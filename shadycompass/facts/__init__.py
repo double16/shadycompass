@@ -147,6 +147,30 @@ def http_url(url: str, **kwargs) -> HttpUrl:
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
+class VulnScanNeeded(Fact):
+    ANY = ''
+    addr = Field(str, mandatory=False)
+
+    def get_addr(self):
+        return self.get('addr')
+
+
+class VulnScanPresent(Fact):
+    """
+    Indicates a vuln scan was detected. This is necessary because it may not produce findings.
+    """
+    name = Field(str, mandatory=True)
+    addr = Field(str, mandatory=True)
+
+
+class PortScanNeeded(Fact):
+    ANY = ''
+    addr = Field(str, mandatory=False)
+
+    def get_addr(self):
+        return self.get('addr')
+
+
 class HttpBustingNeeded(Fact):
     secure = Field(bool, mandatory=True)
     addr = Field(str, mandatory=True)

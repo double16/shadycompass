@@ -100,7 +100,7 @@ class ShadyCompassOps(object):
                             section=SECTION_TOOLS,
                             option=category,
                             value=OPTION_VALUE_ALL if choice < 0 else names[choice],
-                            global0=False))
+                            global0=True))
                         self.engine.retract(tool_choice)
                         changed = True
                         break

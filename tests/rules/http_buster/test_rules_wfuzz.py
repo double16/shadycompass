@@ -1,5 +1,6 @@
 from shadycompass import ConfigFact
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended
+from shadycompass.rules.http_buster.wfuzz import WfuzzRules
 from tests.tests import assertFactIn
 from tests.rules.base import RulesBase
 
@@ -11,11 +12,11 @@ class WfuzzTest(RulesBase):
 
     def test_wfuzz(self):
         self.engine.declare(
-            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value='wfuzz', global0=True))
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value=WfuzzRules.wfuzz_tool_name, global0=True))
         self.engine.run()
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
-            name='wfuzz',
+            name=WfuzzRules.wfuzz_tool_name,
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
@@ -25,7 +26,7 @@ class WfuzzTest(RulesBase):
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
-            name='wfuzz',
+            name=WfuzzRules.wfuzz_tool_name,
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',

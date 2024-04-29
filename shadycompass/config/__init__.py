@@ -71,12 +71,17 @@ def get_global_config_path():
     if global_config_path:
         return global_config_path
 
-    config_dir = os.path.join(os.path.expanduser("~"), '.config')
-    if not os.path.exists(config_dir):
-        os.mkdir(config_dir)
-    config_dir = os.path.join(config_dir, 'shadycompass')
-    if not os.path.exists(config_dir):
-        os.mkdir(config_dir)
+    if os.path.isdir('/config'):
+        # docker volume
+        config_dir = '/config'
+    else:
+        # user home dir
+        config_dir = os.path.join(os.path.expanduser("~"), '.config')
+        if not os.path.exists(config_dir):
+            os.mkdir(config_dir)
+        config_dir = os.path.join(config_dir, 'shadycompass')
+        if not os.path.exists(config_dir):
+            os.mkdir(config_dir)
     return os.path.join(config_dir, 'shadycompass.ini')
 
 
@@ -124,6 +129,7 @@ class ToolRecommended(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
     command_line = Field(list[str], mandatory=False)
+    addr = Field(str, mandatory=False)
 
     def get_category(self) -> str:
         return self.get('category')
@@ -135,6 +141,9 @@ class ToolRecommended(Fact):
         if 'command_line' in self:
             return self.get('command_line')
         return []
+
+    def get_addr(self) -> str:
+        return self.get('addr')
 
 
 class ConfigRules:

@@ -1,5 +1,6 @@
 from shadycompass import ConfigFact
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended
+from shadycompass.rules.http_buster.gobuster import GoBusterRules
 from tests.tests import assertFactIn
 from tests.rules.base import RulesBase
 
@@ -11,11 +12,11 @@ class GobusterTest(RulesBase):
 
     def test_gobuster(self):
         self.engine.declare(
-            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value='gobuster', global0=True))
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value=GoBusterRules.gobuster_tool_name, global0=True))
         self.engine.run()
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
-            name='gobuster',
+            name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '--random-agent', '--discover-backup', '-k',
                 '-o', "gobuster-8080-hospital.htb.txt",
@@ -24,7 +25,7 @@ class GobusterTest(RulesBase):
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
-            name='gobuster',
+            name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '--random-agent', '--discover-backup', '-k',
                 '-o', "gobuster-443-hospital.htb.txt",

@@ -2,6 +2,7 @@ from base import RulesBase
 from shadycompass import ConfigFact
 from shadycompass.config import SECTION_TOOLS, ToolCategory
 from shadycompass.facts import HttpBustingNeeded, HttpUrl
+from shadycompass.rules.http_buster.dirb import DirbRules
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -10,7 +11,7 @@ class HttpBustingTest(RulesBase):
     def __init__(self, methodName: str = ...):
         super().__init__(None, methodName)
         self.engine.declare(
-            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value='dirb', global0=True))
+            ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value=DirbRules.dirb_tool_name, global0=True))
         self.engine.run()
 
     def test_httpbusting_needed(self):
