@@ -90,6 +90,16 @@ unset [global] [section.]option
 reset
     reset/unset all configurations, including global
     * don't forget to run 'save' to persist
+tools
+    displays the available tools
+targets
+    displays the targets that have been found
+services
+    displays the services that have been found
+products
+    displays the products that have been found
+urls
+    displays the urls that have been found
 facts
     show current facts (useful for debugging)
 ''')

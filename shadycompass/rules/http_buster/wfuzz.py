@@ -25,13 +25,17 @@ class WfuzzRules:
            PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL))
     )
     def run_wfuzz(self, f1: HttpBustingNeeded):
-        self.declare(ToolRecommended(
-            category=ToolCategory.http_buster,
-            name=self.wfuzz_tool_name,
-            command_line=[
+        command_line = self.resolve_command_line(
+            self.wfuzz_tool_name,
+            [
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
                 '-f', f'wfuzz-{f1.get_port()}-{f1.get_vhost()}.json,json',
                 f'{f1.get_url()}/FUZZ',
-            ],
+            ]
+        )
+        self.declare(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=self.wfuzz_tool_name,
+            command_line=command_line,
         ))

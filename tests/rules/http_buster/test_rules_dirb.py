@@ -1,8 +1,8 @@
 from shadycompass import ConfigFact
-from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended
+from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS
 from shadycompass.rules.http_buster.dirb import DirbRules
-from tests.tests import assertFactIn
 from tests.rules.base import RulesBase
+from tests.tests import assertFactIn
 
 
 class DirbTest(RulesBase):
@@ -23,4 +23,34 @@ class DirbTest(RulesBase):
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
             command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt'],
+        ), self.engine)
+
+    def test_dirb_options_local(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, DirbRules.dirb_tool_name, False)
+        self.engine.config_set(SECTION_OPTIONS, DirbRules.dirb_tool_name, '-r', False)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt', '-r'],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt', '-r'],
+        ), self.engine)
+
+    def test_dirb_options_global(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, DirbRules.dirb_tool_name, True)
+        self.engine.config_set(SECTION_OPTIONS, DirbRules.dirb_tool_name, '-r', True)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt', '-r'],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt', '-r'],
         ), self.engine)

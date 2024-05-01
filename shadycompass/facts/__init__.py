@@ -294,12 +294,13 @@ class NetbiosSessionService(TcpIpService):
 
 class SmbService(TcpIpService):
     methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smb'
     ]
 
 
 class ImapService(TcpIpService):
     methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smb'
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap'
     ]
 
 

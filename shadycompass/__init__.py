@@ -11,7 +11,7 @@ from experta import KnowledgeEngine
 import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
-    set_local_config_path
+    set_local_config_path, SECTION_OPTIONS, combine_command_options
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
     HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl
 from shadycompass.facts.filemetadata import FileMetadataCache
@@ -67,6 +67,36 @@ class ShadyCompassEngine(
                 local_configs.append(fact)
         self._save_config(local_configs, get_local_config_path())
         self._save_config(global_configs, get_global_config_path())
+
+    def config_set(self, section: str, option: str, value: str, global0: bool):
+        self.config_unset(section, option, global0)
+        self.declare(ConfigFact(section=section, option=option, value=value, global0=global0))
+
+    def config_unset(self, section: str, option: str, global0: bool):
+        existing = None
+        for fact in self.facts.values():
+            if isinstance(fact, ConfigFact) and fact.get('section') == section and fact.get(
+                    'option') == option and fact.get('global0') == global0:
+                existing = fact
+                break
+        if existing:
+            self.retract(existing)
+
+    def config_get(self, section: str, option: str, global0: bool):
+        for fact in self.facts.values():
+            if isinstance(fact, ConfigFact) and fact.get('section') == section and fact.get(
+                    'option') == option and fact.get('global0') == global0:
+                return fact.get('value')
+        return None
+
+    def resolve_command_line(self, tool_name: str, options: list[str]) -> list[str]:
+        additional_str = self.config_get(SECTION_OPTIONS, tool_name, False)
+        if not additional_str:
+            additional_str = self.config_get(SECTION_OPTIONS, tool_name, True)
+        if not additional_str:
+            return options
+        additional = shlex.split(additional_str)
+        return combine_command_options(options, additional)
 
 
 class ShadyCompassOps(object):
@@ -167,7 +197,6 @@ Press enter/return at the prompt to refresh data.
         print('[!] configuration is only saved when you run the "save" command', file=self.fd_out)
 
     def save_config(self):
-        # TODO: save on config fact declaration
         self.engine.save_config()
         print('[*] config saved', file=self.fd_out)
 
@@ -199,14 +228,33 @@ Press enter/return at the prompt to refresh data.
         if len(category) == 0:
             raise ValueError(f"{tool_name} not found")
         for cat in category:
-            self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=cat, value=tool_name, global0=global0))
+            self.engine.config_set(SECTION_TOOLS, cat, tool_name, global0)
+            if reset_options:
+                self.engine.config_unset(SECTION_OPTIONS, tool_name, global0)
             print(f'[*] using {tool_name} for {cat}', file=self.fd_out)
         self.print_save_config_warning()
 
     def tool_option(self, command: list[str]):
-        # TODO: adds option(s) to a tool, i.e.: option feroxbuster --scan-limit 4
-        # TODO: [global]
-        print('[!] Submit a PR :)', file=self.fd_err)
+        global0 = False
+        tool_name = None
+        options = []
+        for arg in command[1:]:
+            if arg == 'global' and tool_name is None:
+                global0 = True
+            elif tool_name is None:
+                if arg.startswith('-'):
+                    raise ValueError(arg)
+                tool_name = arg
+            else:
+                options.append(arg)
+        existing_str = self.engine.config_get(SECTION_OPTIONS, tool_name, global0)
+        if existing_str:
+            existing = shlex.split(existing_str)
+        else:
+            existing = []
+        new_options = combine_command_options(existing, options)
+        existing.extend(options)
+        self.engine.config_set(SECTION_OPTIONS, tool_name, shlex.join(new_options), global0)
 
     def show_config(self):
         config = ConfigParser()
@@ -355,10 +403,15 @@ Press enter/return at the prompt to refresh data.
             return result
 
         for fact in self.engine.facts.values():
+            link_text = ''
+            if 'methodology_links' in fact.__class__.__dict__:
+                links = fact.__class__.__dict__['methodology_links']
+                if links:
+                    link_text = ', ' + ', '.join(links)
             if isinstance(fact, TcpIpService):
-                print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}', file=self.fd_out)
+                print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
             if isinstance(fact, UdpIpService):
-                print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}', file=self.fd_out)
+                print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
 
     def show_products(self, command: list[str]):
         products_by_service: dict[str, set[str]] = dict()

@@ -15,12 +15,12 @@ Press enter/return at the prompt to refresh data.
 [*] Reading nmap facts from tests/fixtures/nmap/open-ports.xml
 [*] Reading hosts from /etc/hosts
 
-[$]  1. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. gobuster dir --random-agent --discover-backup -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
+[$]  1. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. gobuster dir -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
 [$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-hospital.htb.json,json http://hospital.htb:8080/FUZZ
 [$]  4. dirb http://hospital.htb:8080 -o dirb-8080-hospital.htb.txt
-[$]  5. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  6. gobuster dir --random-agent --discover-backup -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
+[$]  5. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  6. gobuster dir -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
 [$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-hospital.htb.json,json https://hospital.htb:443/FUZZ
 [$]  8. dirb https://hospital.htb:443 -o dirb-443-hospital.htb.txt
 
@@ -28,8 +28,8 @@ tests/fixtures shadycompass > use feroxbuster
 [*] using feroxbuster for http_buster
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > info 2
 
@@ -42,10 +42,10 @@ https://github.com/epi052/feroxbuster
 https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
 
 ## example command
-feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > exit
 
@@ -104,7 +104,16 @@ unset [global] [section.]option
 reset
     reset/unset all configurations, including global
     * don't forget to run 'save' to persist
-facts
+tools
+    displays the available tools
+targets
+    displays the targets that have been found
+services
+    displays the services that have been found
+products
+    displays the products that have been found
+urls
+    displays the urls that have been foundfacts
     show current facts (useful for debugging)
 ```
 
@@ -116,8 +125,8 @@ Displays detailed information about a recommended tool. Arguments are one or mor
 recommendation. The numbers change as recommendations change!
 
 ```
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > info 2
 
@@ -130,7 +139,7 @@ https://github.com/epi052/feroxbuster
 https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
 
 ## example command
-feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 ```
 
 ### save
@@ -155,12 +164,12 @@ is configured at the local level.
 The `--reset-options` will remove any custom options set for the tool, considering the `global` keyword if specified.
 
 ```
-[$]  1. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. gobuster dir --random-agent --discover-backup -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
+[$]  1. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. gobuster dir -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
 [$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-hospital.htb.json,json http://hospital.htb:8080/FUZZ
 [$]  4. dirb http://hospital.htb:8080 -o dirb-8080-hospital.htb.txt
-[$]  5. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  6. gobuster dir --random-agent --discover-backup -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
+[$]  5. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  6. gobuster dir -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
 [$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-hospital.htb.json,json https://hospital.htb:443/FUZZ
 [$]  8. dirb https://hospital.htb:443 -o dirb-443-hospital.htb.txt
 
@@ -168,15 +177,15 @@ tests/fixtures shadycompass > use feroxbuster
 [*] using feroxbuster for http_buster
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > use global feroxbuster
 [*] using feroxbuster for http_buster
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 ```
 
 ### option
@@ -189,14 +198,14 @@ replace similar values. The `global` keyword will set for all targets. Any local
 be ignored. Run `use [global] <tool> --reset-options` to reset the options.
 
 ```
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 6 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 6 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > option feroxbuster --scan-limit 5
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 --random-agent --extract-links -o feroxbuster-443-hospital.htb.txt --thorough --scan-limit 5 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 --random-agent --extract-links -o feroxbuster-8080-hospital.htb.txt --thorough --scan-limit 5 --insecure
+[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 5 --insecure
+[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 5 --insecure
 ```
 
 ### set
@@ -277,6 +286,8 @@ Displays the things shady compass knows about to make recommendations. This is u
 
 ### ratelimit
 
+TODO: not yet implemented
+
 The rate limit is expressed in requests per second. Command that use other units will convert to be equivalent to
 requests per second.
 
@@ -291,6 +302,8 @@ shadycompass> unset global ratelimit 8
 ```
 
 ### production
+
+TODO: not yet implemented
 
 Mark the targets as production. Production targets are considered more sensitive. Tools will select safer options. The
 user is still expected to know your tools and your targets! Don't copy and paste without reviewing the commands.

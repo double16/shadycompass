@@ -25,8 +25,11 @@ class DirbRules:
            PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL))
     )
     def run_dirb(self, f1: HttpBustingNeeded):
+        command_line = self.resolve_command_line(
+            self.dirb_tool_name,
+            [f1.get_url(), '-o', f"dirb-{f1.get_port()}-{f1.get_vhost()}.txt"])
         self.declare(ToolRecommended(
             category=ToolCategory.http_buster,
             name=self.dirb_tool_name,
-            command_line=[f1.get_url(), '-o', f"dirb-{f1.get_port()}-{f1.get_vhost()}.txt"],
+            command_line=command_line,
         ))

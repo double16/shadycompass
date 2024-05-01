@@ -1,11 +1,12 @@
 import os
+import shlex
 import shutil
 import tempfile
 import unittest
 
 from shadycompass import ShadyCompassOps, TargetIPv4Address, TargetIPv6Address, TargetHostname, HostnameIPv4Resolution
 from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory, \
-    ToolRecommended
+    ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
     NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl
 from tests.tests import assertFactIn, assertFactNotIn
@@ -254,3 +255,37 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- https://hospital.htb:443/examples' in self.fd_out.output)
         self.assertTrue('- https://hospital.htb:443/favicon.ico' in self.fd_out.output)
         self.assertTrue('- https://hospital.htb:443/index.php' in self.fd_out.output)
+
+    def test_tool_option_local(self):
+        self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-files.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt']), value)
+        self.ops.tool_option(['option', 'dirb', '-r'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt', '-r']), value)
+        self.assertIsNone(self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True))
+
+        self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-small.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertEqual(shlex.join(['-w', 'raft-large-small.txt', '-r']), value)
+
+        self.ops.use_tool(['use', 'dirb', '--reset-options'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertIsNone(value)
+
+    def test_tool_option_global(self):
+        self.ops.tool_option(['option', 'global', 'dirb', '-w', 'raft-large-files.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt']), value)
+        self.ops.tool_option(['option', 'global', 'dirb', '-r'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt', '-r']), value)
+        self.assertIsNone(self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False))
+
+        self.ops.tool_option(['option', 'global', 'dirb', '-w', 'raft-large-small.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertEqual(shlex.join(['-w', 'raft-large-small.txt', '-r']), value)
+
+        self.ops.use_tool(['use', 'global', 'dirb', '--reset-options'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertIsNone(value)
