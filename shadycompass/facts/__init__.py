@@ -1,10 +1,12 @@
 import abc
 import re
+from typing import Union
 from urllib.parse import urlparse
 
 from experta import Fact, Field
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
 
 
 class FactReader(abc.ABC):
@@ -133,6 +135,10 @@ class DomainUdpIpService(UdpIpService):
     pass
 
 
+class SshService(TcpIpService):
+    pass
+
+
 class WinRMService(TcpIpService, HasTLS):
     pass
 
@@ -202,6 +208,14 @@ class NtpService(UdpIpService):
 
 
 class MicrosoftRpcService(TcpIpService):
+    pass
+
+
+class MicrosoftRpcHttpService(TcpIpService):
+    pass
+
+
+class DotNetMessageFramingService(TcpIpService):
     pass
 
 
@@ -509,3 +523,74 @@ class HttpBustingNeeded(Fact):
 
     def get_url(self) -> str:
         return f"{self.get_protocol()}://{self.get_vhost()}:{self.get_port()}"
+
+
+class OperatingSystem(Fact):
+    addr = Field(str, mandatory=True)
+    port = Field(int, mandatory=True)
+    hostname = Field(str, mandatory=False)
+    os_type = Field(str, mandatory=True)
+
+
+OSTYPE_WINDOWS = 'windows'
+OSTYPE_LINUX = 'linux'
+OSTYPE_MAC = 'mac'
+
+
+def normalize_os_type(*args) -> Union[str, None]:
+    """
+    Normalize the operating system name. The input value can be in various forms based on the tool. The result will be
+    generic: windows, linux, mac, etc.
+    :param value:
+    :return: lower case value, attempts to use one of OSTYPE_ constants
+    """
+    for value in args:
+        if value is None:
+            continue
+        value = str(value).lower()
+        if OSTYPE_WINDOWS in value:
+            return OSTYPE_WINDOWS
+        if OSTYPE_LINUX in value:
+            return OSTYPE_LINUX
+        if OSTYPE_MAC in value:
+            return OSTYPE_MAC
+        if 'win64' in value or 'win32' in value:
+            return OSTYPE_WINDOWS
+    return None
+
+
+class Product(Fact):
+    addr = Field(str, mandatory=True)
+    port = Field(int, mandatory=True)
+    hostname = Field(str, mandatory=False)
+    product = Field(str, mandatory=True)
+    """
+    Product name without version. Must be lowercase to simplify matching.
+    """
+    version = Field(str, mandatory=False)
+    os_type = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        kwargs_copy = kwargs.copy()
+        if 'product' in kwargs_copy:
+            kwargs_copy['product'] = kwargs_copy['product'].lower()
+        if 'version' in kwargs_copy:
+            kwargs_copy['version'] = kwargs_copy['version'].lower()
+        if 'os_type' in kwargs_copy:
+            kwargs_copy['os_type'] = kwargs_copy['os_type'].lower()
+        super().__init__(*args, **kwargs_copy)
+
+    def get_product(self):
+        return self.get('product')
+
+    def get_version(self):
+        return self.get('version')
+
+
+def parse_products(value: str, **kwargs) -> list[Product]:
+    if not value:
+        return []
+    result = set()
+    for match in re.findall(PRODUCT_PATTERN, value):
+        result.add(Product(product=match[0].lower(), version=match[1].lower(), **kwargs))
+    return list(result)
