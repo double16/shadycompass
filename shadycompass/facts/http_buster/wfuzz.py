@@ -39,6 +39,8 @@ class WfuzzReader(FactReader):
         print(f"[*] Reading wfuzz facts from {file_path}")
         with open(file_path, 'rt') as f:
             data = json.load(f)
+        if not isinstance(data, list):
+            return result
         for record in data:
             url = record.get('url', None)
             if url:

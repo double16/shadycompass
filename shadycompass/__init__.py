@@ -97,7 +97,7 @@ class ShadyCompassOps(object):
                     choice = int(input("? ").strip()) - 1
                 except KeyboardInterrupt as e:
                     raise e
-                except EOFError as e:
+                except EOFError:
                     print("0")
                     choice = -1
                 try:

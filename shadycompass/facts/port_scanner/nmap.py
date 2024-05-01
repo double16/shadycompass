@@ -18,9 +18,8 @@ from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Addre
     OpenPlatformCommunicationsUnifiedAccessTcpService, OpenPlatformCommunicationsUnifiedAccessUdpService, MdnsService, \
     ZeroconfService, PostgresqlService, AmqpService, VncHttpService, VncService, CouchdbService, X11Service, \
     RedisService, ApacheJServService, BitcoinService, PDLDataStreamingService, NetworkDataManagementProtocol, \
-    MemcacheService, MemcacheDbService, MongoDbService, EtherNetIPService, BacnetService, MsmqService
-
-OSTYPE_WINDOWS = 'Windows'
+    MemcacheService, MemcacheDbService, MongoDbService, EtherNetIPService, BacnetService, MsmqService, \
+    normalize_os_type, OSTYPE_WINDOWS, Product, parse_products, DotNetMessageFramingService, MicrosoftRpcHttpService
 
 
 def _is_nmap_xml(file_path: str) -> bool:
@@ -82,22 +81,52 @@ class NmapXmlFactReader(FactReader):
             port = int(port_el.attrib.get('portid', 0))
             state = 'open'
             service_name = ''
-            ostype = None
+            os_type = None
             secure = False
+            for port_detail_el in port_el:
+                if not os_type:
+                    if port_detail_el.tag == 'service':
+                        os_type = os_type or normalize_os_type(
+                            port_detail_el.attrib.get('ostype', None),
+                            port_detail_el.attrib.get('extrainfo', None))
+                    if port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) == 'http-server-header':
+                        os_type = os_type or normalize_os_type(port_detail_el.attrib.get('output', None))
+
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
                     state = port_detail_el.attrib.get('state', 'unknown')
                 elif port_detail_el.tag == 'service':
                     service_name = port_detail_el.attrib.get('name', None)
-                    ostype = port_detail_el.attrib.get('ostype', None)
+                    hostname = port_detail_el.attrib.get('hostname', None)
+                    extra_info = port_detail_el.attrib.get('extrainfo', None)
                     if port_detail_el.attrib.get('tunnel', None) in ['ssl', 'tls']:
                         secure = True
+
+                    product = port_detail_el.attrib.get('product', None)
+                    product_version = port_detail_el.attrib.get('version', None)
+                    product_kwargs = {}
+                    if hostname:
+                        product_kwargs['hostname'] = hostname
+                    if os_type:
+                        product_kwargs['os_type'] = os_type
+                    product_kwargs['port'] = port
+                    if product:
+                        my_kwargs = product_kwargs.copy()
+                        if product_version:
+                            my_kwargs['version'] = product_version
+                        result.extend(self._spread_addrs(Product, addrs, product=product, **my_kwargs))
+                    if extra_info:
+                        for parsed in parse_products(extra_info):
+                            my_kwargs = product_kwargs.copy()
+                            if parsed.get_version():
+                                my_kwargs['version'] = parsed.get_version()
+                            result.extend(self._spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
             if state == 'open':
                 if service_name == 'http':
                     # TODO: extract extra host names
-                    if ostype == OSTYPE_WINDOWS and port == 5985:
+                    if os_type == OSTYPE_WINDOWS and port == 5985:
                         result.extend(self._spread_addrs(WinRMService, addrs, port=port, secure=secure))
-                    elif ostype == OSTYPE_WINDOWS and port == 5986:
+                    elif os_type == OSTYPE_WINDOWS and port == 5986:
                         result.extend(self._spread_addrs(WinRMService, addrs, port=port, secure=True))
                     else:
                         result.extend(self._spread_addrs(HttpService, addrs, port=port, secure=secure))
@@ -128,7 +157,7 @@ class NmapXmlFactReader(FactReader):
                         result.extend(self._spread_addrs(TftpTcpService, addrs, port=port, secure=secure or service_name.endswith('s')))
                     elif protocol == 'udp':
                         result.extend(self._spread_addrs(TftpUdpService, addrs, port=port, secure=secure or service_name.endswith('s')))
-                elif service_name == 'kerberos-sec':
+                elif service_name in ['kerberos-sec', 'kpasswd5']:
                     if protocol == 'tcp':
                         result.extend(self._spread_addrs(Kerberos5SecTcpService, addrs, port=port))
                     elif protocol == 'udp':
@@ -153,6 +182,8 @@ class NmapXmlFactReader(FactReader):
                     result.extend(self._spread_addrs(NtpService, addrs, port=port))
                 elif service_name == 'msrpc':
                     result.extend(self._spread_addrs(MicrosoftRpcService, addrs, port=port))
+                elif service_name == 'ncacn_http':
+                    result.extend(self._spread_addrs(MicrosoftRpcHttpService, addrs, port=port))
                 elif service_name == 'netbios-ns':
                     result.extend(self._spread_addrs(NetbiosNameService, addrs, port=port))
                 elif service_name == 'netbios-dgm':
@@ -281,6 +312,8 @@ class NmapXmlFactReader(FactReader):
                     result.extend(self._spread_addrs(BacnetService, addrs, port=port))
                 elif service_name == 'msmq':
                     result.extend(self._spread_addrs(MsmqService, addrs, port=port))
+                elif service_name == 'mc-nmf':
+                    result.extend(self._spread_addrs(DotNetMessageFramingService, addrs, port=port))
                 elif protocol == 'tcp':
                     result.extend(self._spread_addrs(TcpIpService, addrs, port=port))
                 elif protocol == 'udp':
