@@ -35,11 +35,11 @@ class NucleiJsonFactReader(FactReader):
                 if '.' in addr:
                     result.add(TargetIPv4Address(addr=addr))
                     if hostname:
-                        result.add(HostnameIPv4Resolution(hostname=hostname, addr=addr))
+                        result.add(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
                 else:
                     result.add(TargetIPv6Address(addr=addr))
                     if hostname:
-                        result.add(HostnameIPv6Resolution(hostname=hostname, addr=addr))
+                        result.add(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
             else:
                 continue
 

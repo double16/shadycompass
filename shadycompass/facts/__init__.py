@@ -1,4 +1,5 @@
 import abc
+import ipaddress
 import re
 from typing import Union
 from urllib.parse import urlparse
@@ -64,6 +65,13 @@ class TargetIPv4Address(Fact):
     def get_addr(self) -> str:
         return self.get('addr')
 
+    def is_private_ip(self):
+        try:
+            ip_obj = ipaddress.ip_address(self.get_addr())
+            return ip_obj.is_private
+        except ValueError:
+            return False  # Invalid IP address
+
 
 class TargetIPv6Address(Fact):
     addr = Field(str, mandatory=True)
@@ -71,27 +79,42 @@ class TargetIPv6Address(Fact):
     def get_addr(self) -> str:
         return self.get('addr')
 
+    def is_private_ip(self):
+        try:
+            ip_obj = ipaddress.ip_address(self.get_addr())
+            return ip_obj.is_private
+        except ValueError:
+            return False  # Invalid IP address
+
 
 class HostnameIPv4Resolution(Fact):
     hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=True)
+    implied = Field(bool, mandatory=False, default=True)
 
     def get_hostname(self) -> str:
         return self.get('hostname')
 
     def get_addr(self) -> str:
         return self.get('addr')
+
+    def is_implied(self) -> bool:
+        return self.get('implied')
 
 
 class HostnameIPv6Resolution(Fact):
     hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=True)
+    implied = Field(bool, mandatory=False, default=True)
 
     def get_hostname(self) -> str:
         return self.get('hostname')
 
     def get_addr(self) -> str:
         return self.get('addr')
+
+    def is_implied(self) -> bool:
+        return self.get('implied')
 
 
 class TcpIpService(Fact):
@@ -499,6 +522,14 @@ class PortScanNeeded(Fact):
 
     def get_addr(self):
         return self.get('addr')
+
+
+class PortScanPresent(Fact):
+    """
+    Indicates a port scan was detected. A port scan may not produce findings.
+    """
+    name = Field(str, mandatory=True)
+    addr = Field(str, mandatory=True)
 
 
 class HttpBustingNeeded(Fact):
