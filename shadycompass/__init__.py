@@ -95,6 +95,12 @@ class ShadyCompassOps(object):
                 print("0. no preference, consider all", file=self.fd_out)
                 try:
                     choice = int(input("? ").strip()) - 1
+                except KeyboardInterrupt as e:
+                    raise e
+                except EOFError as e:
+                    print("0")
+                    choice = -1
+                try:
                     if -1 <= choice < len(names):
                         self.engine.declare(ConfigFact(
                             section=SECTION_TOOLS,
@@ -104,8 +110,6 @@ class ShadyCompassOps(object):
                         self.engine.retract(tool_choice)
                         changed = True
                         break
-                except (EOFError, KeyboardInterrupt) as e:
-                    raise e
                 except Exception as e:
                     print(e)
         if changed:

@@ -2,6 +2,7 @@ from experta import DefFacts, Rule, AS, OR, NOT, MATCH
 
 from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
 from shadycompass.facts import VulnScanNeeded, VulnScanPresent
+from shadycompass.rules.library import METHOD_HTTP_AUTOMATIC_SCANNERS
 
 
 class NucleiRules:
@@ -11,7 +12,11 @@ class NucleiRules:
     def nuclei_available(self):
         yield ToolAvailable(
             category=ToolCategory.vuln_scanner,
-            name=self.nuclei_tool_name
+            name=self.nuclei_tool_name,
+            tool_links=[
+                'https://github.com/projectdiscovery/nuclei'
+            ],
+            methodology_links=METHOD_HTTP_AUTOMATIC_SCANNERS,
         )
 
     @Rule(

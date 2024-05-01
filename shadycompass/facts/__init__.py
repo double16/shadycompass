@@ -114,11 +114,15 @@ class UdpIpService(Fact):
         return self.get('port')
 
 
-class HttpService(TcpIpService):
-    secure = Field(bool, mandatory=True)
+class HasTLS(Fact):
+    secure = Field(bool, mandatory=True, default=False)
 
     def is_secure(self) -> bool:
         return bool(self.get('secure'))
+
+
+class HttpService(TcpIpService, HasTLS):
+    pass
 
 
 class DomainTcpIpService(TcpIpService):
@@ -126,6 +130,318 @@ class DomainTcpIpService(TcpIpService):
 
 
 class DomainUdpIpService(UdpIpService):
+    pass
+
+
+class WinRMService(TcpIpService, HasTLS):
+    pass
+
+
+class FtpService(TcpIpService, HasTLS):
+    pass
+
+
+class TelnetService(TcpIpService, HasTLS):
+    pass
+
+
+class SmtpService(TcpIpService, HasTLS):
+    pass
+
+
+class WhoisService(TcpIpService):
+    pass
+
+
+class TftpUdpService(UdpIpService, HasTLS):
+    pass
+
+
+class TftpTcpService(TcpIpService, HasTLS):
+    pass
+
+
+class Kerberos5SecTcpService(TcpIpService):
+    pass
+
+
+class Kerberos5SecUdpService(UdpIpService):
+    pass
+
+
+class Kerberos5AdminTcpService(TcpIpService):
+    pass
+
+
+class Kerberos5AdminUdpService(UdpIpService):
+    pass
+
+
+class Kerberos4TcpService(TcpIpService):
+    pass
+
+
+class Kerberos4UdpService(UdpIpService):
+    pass
+
+
+class PopService(TcpIpService, HasTLS):
+    version = Field(int, mandatory=False, default=3)
+
+
+class PortmapperService(TcpIpService):
+    pass
+
+
+class IdentService(TcpIpService):
+    pass
+
+
+class NtpService(UdpIpService):
+    pass
+
+
+class MicrosoftRpcService(TcpIpService):
+    pass
+
+
+class NetbiosNameService(UdpIpService):
+    pass
+
+
+class NetbiosDatagramService(UdpIpService):
+    pass
+
+
+class NetbiosSessionService(TcpIpService):
+    pass
+
+
+class SmbService(TcpIpService):
+    pass
+
+
+class ImapService(TcpIpService):
+    pass
+
+
+class SnmpService(UdpIpService):
+    pass
+
+
+class IrcService(TcpIpService, HasTLS):
+    pass
+
+
+class LdapService (TcpIpService, HasTLS):
+    pass
+
+
+class LdapAdminService(TcpIpService, HasTLS):
+    pass
+
+
+class IpsecService(UdpIpService):
+    pass
+
+
+class ModbusService(TcpIpService):
+    pass
+
+
+class RexecService(TcpIpService):
+    pass
+
+
+class RloginService(TcpIpService):
+    pass
+
+
+class RshService(TcpIpService):
+    pass
+
+
+class LpdService(TcpIpService):
+    pass
+
+
+class AppleFileProtocol(TcpIpService):
+    pass
+
+
+class RealTimeStreamingProtocol(TcpIpService):
+    pass
+
+
+class InternetPrintingProtocol(TcpIpService):
+    pass
+
+
+class ExtensibleProvisioningProtocol(TcpIpService):
+    pass
+
+
+class RsyncService(TcpIpService):
+    pass
+
+
+class SocksService(TcpIpService):
+    pass
+
+
+class IbmMqSeriesService(TcpIpService):
+    pass
+
+
+class MssqlService(TcpIpService):
+    pass
+
+
+class PptpService(TcpIpService):
+    pass
+
+
+class MqttService(TcpIpService, HasTLS):
+    pass
+
+
+class NfsService(TcpIpService):
+    pass
+
+
+class DockerService(TcpIpService):
+    pass
+
+
+class SquidHttpService(TcpIpService):
+    pass
+
+
+class SquidIpcService(TcpIpService):
+    pass
+
+
+class SquidSnmpService(TcpIpService):
+    pass
+
+
+class SquidHtcpService(TcpIpService):
+    pass
+
+
+class IscsiService(TcpIpService):
+    pass
+
+
+class SaprouterService(TcpIpService):
+    pass
+
+
+class MysqlService(TcpIpService):
+    pass
+
+
+class RdpService(TcpIpService):
+    pass
+
+
+class DistccService(TcpIpService):
+    pass
+
+
+class SvnService(TcpIpService):
+    pass
+
+
+class WSDiscoveryService(UdpIpService):
+    pass
+
+
+class ErlangPortMapperService(TcpIpService):
+    pass
+
+
+class OpenPlatformCommunicationsUnifiedAccessTcpService(TcpIpService):
+    pass
+
+
+class OpenPlatformCommunicationsUnifiedAccessUdpService(UdpIpService):
+    pass
+
+
+class MdnsService(UdpIpService):
+    pass
+
+
+class ZeroconfService(UdpIpService):
+    pass
+
+
+class PostgresqlService(TcpIpService):
+    pass
+
+
+class AmqpService(TcpIpService, HasTLS):
+    pass
+
+
+class VncService(TcpIpService):
+    pass
+
+
+class VncHttpService(TcpIpService):
+    pass
+
+
+class CouchdbService(TcpIpService):
+    pass
+
+
+class X11Service(TcpIpService):
+    pass
+
+
+class RedisService(TcpIpService):
+    pass
+
+
+class ApacheJServService(TcpIpService):
+    pass
+
+
+class BitcoinService(TcpIpService):
+    pass
+
+
+class PDLDataStreamingService(TcpIpService):
+    pass
+
+
+class NetworkDataManagementProtocol(TcpIpService, HasTLS):
+    pass
+
+
+class MemcacheService(TcpIpService):
+    pass
+
+
+class MemcacheDbService(TcpIpService):
+    pass
+
+
+class MongoDbService(TcpIpService):
+    pass
+
+
+class EtherNetIPService(TcpIpService):
+    pass
+
+
+class BacnetService(UdpIpService):
+    pass
+
+
+class MsmqService(TcpIpService):
     pass
 
 
@@ -193,10 +509,3 @@ class HttpBustingNeeded(Fact):
 
     def get_url(self) -> str:
         return f"{self.get_protocol()}://{self.get_vhost()}:{self.get_port()}"
-
-
-class WinRMService(TcpIpService):
-    secure = Field(bool, mandatory=True, default=False)
-
-    def is_secure(self) -> bool:
-        return bool(self.get('secure'))

@@ -38,6 +38,13 @@ class NmapRules:
                 '-p-', '-sV', '-sC', '-oN', 'tcp-all.txt', '-oX', 'tcp-all.xml', addr
             ],
         ))
+        self.declare(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=self.nmap_tool_name,
+            command_line=[
+                '--top-ports=100', '-sV', '-sC', '-oN', 'tcp-100.txt', '-oX', 'tcp-100.xml', addr
+            ],
+        ))
 
     @Rule(
         AS.f1 << PortScanNeeded(),
@@ -56,5 +63,12 @@ class NmapRules:
             name=self.rustscan_tool_name,
             command_line=[
                 '-a', addr, '--', '-sV', '-sC', '-oN', 'tcp-all.txt', '-oX', 'tcp-all.xml'
+            ],
+        ))
+        self.declare(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=self.rustscan_tool_name,
+            command_line=[
+                '--top', addr, '--', '-sV', '-sC', '-oN', 'tcp-1000.txt', '-oX', 'tcp-1000.xml'
             ],
         ))
