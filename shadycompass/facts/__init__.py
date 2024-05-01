@@ -135,6 +135,10 @@ class DomainUdpIpService(UdpIpService):
     pass
 
 
+class SshService(TcpIpService):
+    pass
+
+
 class WinRMService(TcpIpService, HasTLS):
     pass
 

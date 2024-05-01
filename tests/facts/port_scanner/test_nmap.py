@@ -3,7 +3,7 @@ import unittest
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, TcpIpService, \
     DomainTcpIpService, HttpService, WinRMService, Kerberos5SecTcpService, MicrosoftRpcService, NetbiosSessionService, \
     LdapService, SmbService, RdpService, MsmqService, Product, OSTYPE_WINDOWS, DotNetMessageFramingService, \
-    MicrosoftRpcHttpService
+    MicrosoftRpcHttpService, SshService
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 
 
@@ -19,7 +19,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         self.assertIn(TargetHostname(hostname='hospital.htb'), facts)
         self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189'), facts)
-        self.assertIn(TcpIpService(addr='10.129.229.189', port=22), facts)
+        self.assertIn(SshService(addr='10.129.229.189', port=22), facts)
         self.assertIn(DomainTcpIpService(addr='10.129.229.189', port=53), facts)
         self.assertIn(Kerberos5SecTcpService(addr='10.129.229.189', port=88), facts)
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=135), facts)

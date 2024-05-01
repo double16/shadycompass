@@ -4,7 +4,9 @@ from experta import Fact
 
 from shadycompass.facts import FactReader, check_file_signature, TargetHostname, TargetIPv4Address, \
     HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution, HttpService, fact_reader_registry, \
-    parse_products, Product, normalize_os_type
+    parse_products, Product, normalize_os_type, VulnScanPresent
+from shadycompass.facts.services import create_service_facts
+from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
 
 class NucleiJsonFactReader(FactReader):
@@ -29,6 +31,7 @@ class NucleiJsonFactReader(FactReader):
             if hostname:
                 result.add(TargetHostname(hostname=hostname))
             if addr:
+                result.add(VulnScanPresent(name=NucleiRules.nuclei_tool_name, addr=addr))
                 if '.' in addr:
                     result.add(TargetIPv4Address(addr=addr))
                     if hostname:
@@ -50,7 +53,26 @@ class NucleiJsonFactReader(FactReader):
                     secure = True
                 result.add(HttpService(addr=addr, port=int(port), secure=secure))
             elif record_type == 'tcp':
-                pass
+                service_name = 'unknown'
+                metadata = record.get('info', {}).get('metadata', {})
+                if 'censys-query' in metadata:
+                    service_name = str(metadata['censys-query']).replace('services.service_name:', '').lower()
+                elif 'shodan-query' in metadata:
+                    service_name = str(metadata['shodan-query']).lower()
+                elif 'tags' in record.get('info', {}):
+                    tags: list[str] = list(record.get('info', {}).get('tags')).copy()
+                    for common_tag in ['detect', 'network', 'seclists', 'windows', 'linux', 'mac']:
+                        try:
+                            tags.remove(common_tag)
+                        except ValueError:
+                            pass
+                    if tags:
+                        service_name = tags[0]
+
+                services = []
+                create_service_facts([addr], None, int(port), 'tcp', services, False, service_name)
+                for service in services:
+                    result.add(service)
 
             if 'tech' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
                 extracted = record.get('extracted-results', '')
