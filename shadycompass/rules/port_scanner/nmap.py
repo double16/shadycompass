@@ -31,19 +31,29 @@ class NmapRules:
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
-        self.declare(ToolRecommended(
-            category=ToolCategory.port_scanner,
-            name=self.nmap_tool_name,
-            command_line=[
+
+        command_line_all = self.resolve_command_line(
+            self.nmap_tool_name,
+            [
                 '-p-', '-sV', '-sC', '-oN', 'tcp-all.txt', '-oX', 'tcp-all.xml', addr
-            ],
-        ))
+            ]
+        )
         self.declare(ToolRecommended(
             category=ToolCategory.port_scanner,
             name=self.nmap_tool_name,
-            command_line=[
+            command_line=command_line_all,
+        ))
+
+        command_line_top100 = self.resolve_command_line(
+            self.nmap_tool_name,
+            [
                 '--top-ports=100', '-sV', '-sC', '-oN', 'tcp-100.txt', '-oX', 'tcp-100.xml', addr
-            ],
+            ]
+        )
+        self.declare(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=self.nmap_tool_name,
+            command_line=command_line_top100,
         ))
 
     @Rule(
@@ -58,17 +68,27 @@ class NmapRules:
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
-        self.declare(ToolRecommended(
-            category=ToolCategory.port_scanner,
-            name=self.rustscan_tool_name,
-            command_line=[
+
+        command_line_all = self.resolve_command_line(
+            self.rustscan_tool_name,
+            [
                 '-a', addr, '--', '-sV', '-sC', '-oN', 'tcp-all.txt', '-oX', 'tcp-all.xml'
-            ],
-        ))
+            ]
+        )
         self.declare(ToolRecommended(
             category=ToolCategory.port_scanner,
             name=self.rustscan_tool_name,
-            command_line=[
+            command_line=command_line_all,
+        ))
+
+        command_line_top = self.resolve_command_line(
+            self.rustscan_tool_name,
+            [
                 '--top', addr, '--', '-sV', '-sC', '-oN', 'tcp-1000.txt', '-oX', 'tcp-1000.xml'
-            ],
+            ]
+        )
+        self.declare(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=self.rustscan_tool_name,
+            command_line=command_line_top,
         ))

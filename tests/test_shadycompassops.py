@@ -1,11 +1,14 @@
 import os
+import shlex
 import shutil
 import tempfile
 import unittest
 
-from shadycompass import ShadyCompassOps
+from shadycompass import ShadyCompassOps, TargetIPv4Address, TargetIPv6Address, TargetHostname, HostnameIPv4Resolution
 from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory, \
-    ToolRecommended
+    ToolRecommended, SECTION_OPTIONS
+from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
+    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -189,3 +192,102 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
         self.ops.tool_info(['info', '10'])
         self.assertTrue('[-]' in self.fd_out.output)
+
+    def test_gtnw(self):
+        self.ops.global_thermo_nuclear_war()
+        self.assertTrue(len(self.fd_out.output) > 0)
+
+    def test_show_tools(self):
+        self.ops.show_tools([])
+        self.assertTrue('# http_buster' in self.fd_out.output)
+        self.assertTrue('# port_scanner' in self.fd_out.output)
+        self.assertTrue('- nmap' in self.fd_out.output)
+
+    def test_show_targets(self):
+        self.ops.engine.declare(TargetIPv4Address(addr='127.0.0.1'))
+        self.ops.engine.declare(TargetIPv4Address(addr='127.0.0.2'))
+        self.ops.engine.declare(TargetIPv6Address(addr='::1'))
+        self.ops.engine.declare(TargetIPv6Address(addr='::2'))
+        self.ops.engine.declare(TargetHostname(hostname='localhost'))
+        self.ops.engine.declare(TargetHostname(hostname='localhost.localdomain'))
+        self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1'))
+        self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='::1'))
+        self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost3', addr='::3'))
+        self.ops.show_targets([])
+        self.assertTrue('- 127.0.0.1 localhost' in self.fd_out.output)
+        self.assertTrue('- ::1 localhost' in self.fd_out.output)
+        self.assertTrue('- 127.0.0.2' in self.fd_out.output)
+        self.assertTrue('- ::2' in self.fd_out.output)
+        self.assertTrue('- localhost.localdomain' in self.fd_out.output)
+        self.assertFalse('- ::3 localhost3' in self.fd_out.output)
+
+    def test_show_services(self):
+        self.ops.engine.declare(SshService(addr='10.0.1.1', port=22))
+        self.ops.engine.declare(DomainTcpIpService(addr='10.0.1.1', port=53))
+        self.ops.engine.declare(DomainUdpIpService(addr='10.0.1.1', port=53))
+        self.ops.engine.declare(Kerberos5SecTcpService(addr='10.0.1.1', port=88))
+        self.ops.engine.declare(MicrosoftRpcService(addr='10.0.1.1', port=135))
+        self.ops.engine.declare(NetbiosSessionService(addr='10.0.1.1', port=139))
+        self.ops.show_services([])
+        self.assertTrue('- 53/udp ' in self.fd_out.output)
+        self.assertTrue('- 53/tcp ' in self.fd_out.output)
+        self.assertTrue('- 22/tcp ' in self.fd_out.output)
+        self.assertTrue('- 88/tcp ' in self.fd_out.output)
+        self.assertTrue('- 135/tcp ' in self.fd_out.output)
+        self.assertTrue('- 139/tcp ' in self.fd_out.output)
+
+    def test_show_products(self):
+        self.ops.engine.declare(Product(product='apache httpd', version='2.4.56', os_type=OSTYPE_WINDOWS,
+                                        addr='10.0.1.1', port=443, hostname="www.example.com"))
+        self.ops.engine.declare(Product(product='openssl', version='1.1.1t', os_type=OSTYPE_WINDOWS,
+                                        addr='10.0.1.1', port=443, hostname="www.example.com"))
+        self.ops.engine.declare(Product(product='php', version='8.0.28', os_type=OSTYPE_WINDOWS,
+                                        addr='10.0.1.1', port=443, hostname="www.example.com"))
+        self.ops.show_products([])
+        self.assertTrue('# 10.0.1.1:443' in self.fd_out.output)
+        self.assertTrue('- apache httpd/2.4.56' in self.fd_out.output)
+        self.assertTrue('- openssl/1.1.1t' in self.fd_out.output)
+        self.assertTrue('- php/8.0.28' in self.fd_out.output)
+
+    def test_show_urls(self):
+        self.ops.engine.declare(HttpUrl(port=443, vhost='hospital.htb', url='https://hospital.htb:443/examples'))
+        self.ops.engine.declare(HttpUrl(port=443, vhost='hospital.htb', url='https://hospital.htb:443/favicon.ico'))
+        self.ops.engine.declare(HttpUrl(port=443, vhost='hospital.htb', url='https://hospital.htb:443/index.php'))
+        self.ops.show_urls([])
+        self.assertTrue('- https://hospital.htb:443/examples' in self.fd_out.output)
+        self.assertTrue('- https://hospital.htb:443/favicon.ico' in self.fd_out.output)
+        self.assertTrue('- https://hospital.htb:443/index.php' in self.fd_out.output)
+
+    def test_tool_option_local(self):
+        self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-files.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt']), value)
+        self.ops.tool_option(['option', 'dirb', '-r'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt', '-r']), value)
+        self.assertIsNone(self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True))
+
+        self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-small.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertEqual(shlex.join(['-w', 'raft-large-small.txt', '-r']), value)
+
+        self.ops.use_tool(['use', 'dirb', '--reset-options'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False)
+        self.assertIsNone(value)
+
+    def test_tool_option_global(self):
+        self.ops.tool_option(['option', 'global', 'dirb', '-w', 'raft-large-files.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt']), value)
+        self.ops.tool_option(['option', 'global', 'dirb', '-r'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertEqual(shlex.join(['-w', 'raft-large-files.txt', '-r']), value)
+        self.assertIsNone(self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', False))
+
+        self.ops.tool_option(['option', 'global', 'dirb', '-w', 'raft-large-small.txt'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertEqual(shlex.join(['-w', 'raft-large-small.txt', '-r']), value)
+
+        self.ops.use_tool(['use', 'global', 'dirb', '--reset-options'])
+        value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
+        self.assertIsNone(value)

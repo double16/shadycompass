@@ -7,6 +7,7 @@ from experta import Fact, Field, Rule, AS, MATCH, NOT
 from shadycompass.facts import FactReader, fact_reader_registry
 
 SECTION_TOOLS = 'tools'
+SECTION_OPTIONS = 'options'
 OPTION_VALUE_ALL = '*'
 
 
@@ -21,6 +22,9 @@ class ToolAvailable(Fact):
     name = Field(str, mandatory=True)
     tool_links = Field(list[str], mandatory=False, default=[])
     methodology_links = Field(list[str], mandatory=False, default=[])
+
+    def get_category(self):
+        return self.get('category')
 
     def get_name(self) -> str:
         return self.get('name')
@@ -90,6 +94,28 @@ def get_enum_from_string(enum_class, string_value):
         if enum_member.name == string_value:
             return enum_member
     raise ValueError(f"No enum member with name '{string_value}'")
+
+
+def combine_command_options(base: list[str], additional: list[str]) -> list[str]:
+    result = base.copy()
+    remove_idxs: list[int] = []
+    for idx, opt in enumerate(additional[0:-1]):
+        if not opt.startswith('-') or additional[idx + 1].startswith('-'):
+            continue
+        try:
+            idx2 = result.index(opt, 0, len(result) - 1)
+            if idx2 >= 0:
+                result[idx2 + 1] = additional[idx + 1]
+                remove_idxs.append(idx)
+                remove_idxs.append(idx + 1)
+        except ValueError:
+            pass
+    remove_idxs.reverse()
+    addl = additional.copy()
+    for idx in remove_idxs:
+        addl.pop(idx)
+    result.extend(addl)
+    return result
 
 
 class ConfigFactReader(FactReader):

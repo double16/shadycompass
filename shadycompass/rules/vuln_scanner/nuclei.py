@@ -31,12 +31,17 @@ class NucleiRules:
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
+
+        command_line = self.resolve_command_line(
+            self.nuclei_tool_name,
+            [
+                '-target', addr, '-json-export', f'nuclei-{addr}.json'
+            ]
+        )
         self.declare(ToolRecommended(
             category=ToolCategory.vuln_scanner,
             name=self.nuclei_tool_name,
-            command_line=[
-                '-target', addr, '-json-export', f'nuclei-{addr}.json'
-            ],
+            command_line=command_line,
             addr=f1.get_addr(),
         ))
 

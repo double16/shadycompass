@@ -147,339 +147,475 @@ class HasTLS(Fact):
 
 
 class HttpService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-web'
+    ]
 
 
 class DomainTcpIpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns'
+    ]
 
 
 class DomainUdpIpService(UdpIpService):
-    pass
+    methodology_links = DomainTcpIpService.methodology_links
 
 
 class SshService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ssh'
+    ]
 
 
 class WinRMService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/5985-5986-pentesting-winrm'
+    ]
 
 
 class FtpService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ftp'
+    ]
 
 
 class TelnetService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-telnet'
+    ]
 
 
 class SmtpService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp'
+    ]
 
 
 class WhoisService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/43-pentesting-whois'
+    ]
 
 
 class TftpUdpService(UdpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/69-udp-tftp'
+    ]
 
 
 class TftpTcpService(TcpIpService, HasTLS):
-    pass
+    methodology_links = TftpUdpService.methodology_links
 
 
 class Kerberos5SecTcpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-kerberos-88'
+    ]
 
 
 class Kerberos5SecUdpService(UdpIpService):
-    pass
+    methodology_links = Kerberos5SecTcpService.methodology_links
 
 
 class Kerberos5AdminTcpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-kerberos-88'
+    ]
 
 
 class Kerberos5AdminUdpService(UdpIpService):
-    pass
+    methodology_links = Kerberos5AdminTcpService.methodology_links
 
 
 class Kerberos4TcpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-kerberos-88'
+    ]
 
 
 class Kerberos4UdpService(UdpIpService):
-    pass
+    methodology_links = Kerberos4TcpService.methodology_links
 
 
 class PopService(TcpIpService, HasTLS):
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop'
+    ]
     version = Field(int, mandatory=False, default=3)
 
 
 class PortmapperService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-rpcbind'
+    ]
 
 
 class IdentService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/113-pentesting-ident'
+    ]
 
 
 class NtpService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ntp'
+    ]
 
 
 class MicrosoftRpcService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/135-pentesting-msrpc'
+    ]
 
 
 class MicrosoftRpcHttpService(TcpIpService):
-    pass
+    methodology_links = MicrosoftRpcService.methodology_links
 
 
 class DotNetMessageFramingService(TcpIpService):
-    pass
+    methodology_links = [
+    ]
 
 
 class NetbiosNameService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/137-138-139-pentesting-netbios'
+    ]
 
 
 class NetbiosDatagramService(UdpIpService):
-    pass
+    methodology_links = NetbiosNameService.methodology_links
 
 
 class NetbiosSessionService(TcpIpService):
-    pass
+    methodology_links = NetbiosNameService.methodology_links
 
 
 class SmbService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smb'
+    ]
 
 
 class ImapService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap'
+    ]
 
 
 class SnmpService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-snmp'
+    ]
 
 
 class IrcService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-irc'
+    ]
 
 
 class LdapService (TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap'
+    ]
 
 
 class LdapAdminService(TcpIpService, HasTLS):
-    pass
+    methodology_links = LdapService.methodology_links
 
 
 class IpsecService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/ipsec-ike-vpn-pentesting'
+    ]
 
 
 class ModbusService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-modbus'
+    ]
 
 
 class RexecService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/512-pentesting-rexec'
+    ]
 
 
 class RloginService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-rlogin'
+    ]
 
 
 class RshService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-rsh'
+    ]
 
 
 class LpdService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/515-pentesting-line-printer-daemon-lpd'
+    ]
 
 
 class AppleFileProtocol(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/515-pentesting-line-printer-daemon-lpd'
+    ]
 
 
 class RealTimeStreamingProtocol(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/554-8554-pentesting-rtsp'
+    ]
 
 
 class InternetPrintingProtocol(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-631-internet-printing-protocol-ipp'
+    ]
 
 
 class ExtensibleProvisioningProtocol(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/700-pentesting-epp'
+    ]
 
 
 class RsyncService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/873-pentesting-rsync'
+    ]
 
 
 class SocksService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/1080-pentesting-socks'
+    ]
 
 
 class IbmMqSeriesService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/1414-pentesting-ibmmq'
+    ]
 
 
 class MssqlService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-mssql-microsoft-sql-server'
+    ]
 
 
 class PptpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/1723-pentesting-pptp'
+    ]
 
 
 class MqttService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/1883-pentesting-mqtt-mosquitto'
+    ]
 
 
 class NfsService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/nfs-service-pentesting'
+    ]
 
 
 class DockerService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/2375-pentesting-docker'
+    ]
 
 
 class SquidHttpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/3128-pentesting-squid'
+    ]
 
 
 class SquidIpcService(TcpIpService):
-    pass
+    methodology_links = SquidHttpService.methodology_links
 
 
 class SquidSnmpService(TcpIpService):
-    pass
+    methodology_links = SquidHttpService.methodology_links
 
 
 class SquidHtcpService(TcpIpService):
-    pass
+    methodology_links = SquidHttpService.methodology_links
 
 
 class IscsiService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/3260-pentesting-iscsi'
+    ]
 
 
 class SaprouterService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/3299-pentesting-saprouter'
+    ]
 
 
 class MysqlService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-mysql'
+    ]
 
 
 class RdpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-rdp'
+    ]
 
 
 class DistccService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/3632-pentesting-distcc'
+    ]
 
 
 class SvnService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/3690-pentesting-subversion-svn-server'
+    ]
 
 
 class WSDiscoveryService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/3702-udp-pentesting-ws-discovery'
+    ]
 
 
 class ErlangPortMapperService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/4369-pentesting-erlang-port-mapper-daemon-epmd'
+    ]
 
 
 class OpenPlatformCommunicationsUnifiedAccessTcpService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/4840-pentesting-opc-ua'
+    ]
 
 
 class OpenPlatformCommunicationsUnifiedAccessUdpService(UdpIpService):
-    pass
+    methodology_links = OpenPlatformCommunicationsUnifiedAccessTcpService.methodology_links
 
 
 class MdnsService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/5353-udp-multicast-dns-mdns'
+    ]
 
 
 class ZeroconfService(UdpIpService):
-    pass
+    methodology_links = MdnsService.methodology_links
 
 
 class PostgresqlService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-postgresql'
+    ]
 
 
 class AmqpService(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/5671-5672-pentesting-amqp'
+    ]
 
 
 class VncService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-vnc'
+    ]
 
 
 class VncHttpService(TcpIpService):
-    pass
+    methodology_links = VncService.methodology_links
 
 
 class CouchdbService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/5984-pentesting-couchdb'
+    ]
 
 
 class X11Service(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/6000-pentesting-x11'
+    ]
 
 
 class RedisService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/6379-pentesting-redis'
+    ]
 
 
 class ApacheJServService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/8009-pentesting-apache-jserv-protocol-ajp'
+    ]
 
 
 class BitcoinService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/8333-18333-38333-18444-pentesting-bitcoin'
+    ]
 
 
 class PDLDataStreamingService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/9100-pjl'
+    ]
 
 
 class NetworkDataManagementProtocol(TcpIpService, HasTLS):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/10000-network-data-management-protocol-ndmp'
+    ]
 
 
 class MemcacheService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/11211-memcache'
+    ]
 
 
 class MemcacheDbService(TcpIpService):
-    pass
+    methodology_links = MemcacheService.methodology_links
 
 
 class MongoDbService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/27017-27018-mongodb'
+    ]
 
 
 class EtherNetIPService(TcpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/44818-ethernetip'
+    ]
 
 
 class BacnetService(UdpIpService):
-    pass
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/47808-udp-bacnet'
+    ]
 
 
 class MsmqService(TcpIpService):
-    pass
+    methodology_links = [
+        # TODO:
+    ]
 
 
 class HttpUrl(Fact):
@@ -487,6 +623,9 @@ class HttpUrl(Fact):
     port = Field(int, mandatory=True)
     vhost = Field(str, mandatory=True)
     url = Field(str, mandatory=True)
+
+    def get_url(self) -> str:
+        return self.get('url')
 
 
 def http_url(url: str, **kwargs) -> HttpUrl:
@@ -611,11 +750,24 @@ class Product(Fact):
             kwargs_copy['os_type'] = kwargs_copy['os_type'].lower()
         super().__init__(*args, **kwargs_copy)
 
+    def get_addr(self):
+        return self.get('addr')
+
+    def get_port(self):
+        if 'port' in self:
+            return int(self.get('port'))
+        return None
+
     def get_product(self):
         return self.get('product')
 
     def get_version(self):
         return self.get('version')
+
+    def get_product_spec(self):
+        if 'version' in self:
+            return self.get_product() + '/' + self.get_version()
+        return self.get_product()
 
 
 def parse_products(value: str, **kwargs) -> list[Product]:

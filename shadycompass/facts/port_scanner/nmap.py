@@ -20,7 +20,7 @@ class NmapXmlFactReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not _is_nmap_xml(file_path):
             return []
-        print(f"[*] Reading nmap facts from {file_path}")
+        print(f"[*] Reading nmap findings from {file_path}")
         result = []
         tree = ET.parse(file_path)
         for host_el in tree.findall('.//host'):

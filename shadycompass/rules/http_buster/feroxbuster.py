@@ -25,12 +25,15 @@ class FeroxBusterRules:
            PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL))
     )
     def run_feroxbuster(self, f1: HttpBustingNeeded):
+        command_line = self.resolve_command_line(
+            self.feroxbuster_tool_name,
+            [
+                '-u', f1.get_url(),
+                '-o', f"feroxbuster-{f1.get_port()}-{f1.get_vhost()}.txt",
+                '--scan-limit', '4', '--insecure',
+            ])
         self.declare(ToolRecommended(
             category=ToolCategory.http_buster,
             name=self.feroxbuster_tool_name,
-            command_line=[
-                '-u', f1.get_url(), '--random-agent', '--extract-links',
-                '-o', f"feroxbuster-{f1.get_port()}-{f1.get_vhost()}.txt", '--thorough',
-                '--scan-limit', '6', '--insecure',
-            ],
+            command_line=command_line,
         ))

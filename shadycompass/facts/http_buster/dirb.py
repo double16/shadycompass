@@ -7,7 +7,7 @@ class DirbReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not check_file_signature(file_path, 'DIRB v'):
             return []
-        print(f"[*] Reading dirb facts from {file_path}")
+        print(f"[*] Reading dirb findings from {file_path}")
         result = []
         with open(file_path, 'rt') as file:
             for line in file.readlines():

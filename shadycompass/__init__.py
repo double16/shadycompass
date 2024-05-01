@@ -1,5 +1,7 @@
 import io
 import os.path
+import random
+import re
 import shlex
 import sys
 from configparser import ConfigParser
@@ -9,8 +11,9 @@ from experta import KnowledgeEngine
 import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
-    set_local_config_path
-from shadycompass.facts import fact_reader_registry
+    set_local_config_path, SECTION_OPTIONS, combine_command_options
+from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
+    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -64,6 +67,36 @@ class ShadyCompassEngine(
                 local_configs.append(fact)
         self._save_config(local_configs, get_local_config_path())
         self._save_config(global_configs, get_global_config_path())
+
+    def config_set(self, section: str, option: str, value: str, global0: bool):
+        self.config_unset(section, option, global0)
+        self.declare(ConfigFact(section=section, option=option, value=value, global0=global0))
+
+    def config_unset(self, section: str, option: str, global0: bool):
+        existing = None
+        for fact in self.facts.values():
+            if isinstance(fact, ConfigFact) and fact.get('section') == section and fact.get(
+                    'option') == option and fact.get('global0') == global0:
+                existing = fact
+                break
+        if existing:
+            self.retract(existing)
+
+    def config_get(self, section: str, option: str, global0: bool):
+        for fact in self.facts.values():
+            if isinstance(fact, ConfigFact) and fact.get('section') == section and fact.get(
+                    'option') == option and fact.get('global0') == global0:
+                return fact.get('value')
+        return None
+
+    def resolve_command_line(self, tool_name: str, options: list[str]) -> list[str]:
+        additional_str = self.config_get(SECTION_OPTIONS, tool_name, False)
+        if not additional_str:
+            additional_str = self.config_get(SECTION_OPTIONS, tool_name, True)
+        if not additional_str:
+            return options
+        additional = shlex.split(additional_str)
+        return combine_command_options(options, additional)
 
 
 class ShadyCompassOps(object):
@@ -164,7 +197,6 @@ Press enter/return at the prompt to refresh data.
         print('[!] configuration is only saved when you run the "save" command', file=self.fd_out)
 
     def save_config(self):
-        # TODO: save on config fact declaration
         self.engine.save_config()
         print('[*] config saved', file=self.fd_out)
 
@@ -196,14 +228,33 @@ Press enter/return at the prompt to refresh data.
         if len(category) == 0:
             raise ValueError(f"{tool_name} not found")
         for cat in category:
-            self.engine.declare(ConfigFact(section=SECTION_TOOLS, option=cat, value=tool_name, global0=global0))
+            self.engine.config_set(SECTION_TOOLS, cat, tool_name, global0)
+            if reset_options:
+                self.engine.config_unset(SECTION_OPTIONS, tool_name, global0)
             print(f'[*] using {tool_name} for {cat}', file=self.fd_out)
         self.print_save_config_warning()
 
     def tool_option(self, command: list[str]):
-        # TODO: adds option(s) to a tool, i.e.: option feroxbuster --scan-limit 4
-        # TODO: [global]
-        print('[!] Submit a PR :)', file=self.fd_err)
+        global0 = False
+        tool_name = None
+        options = []
+        for arg in command[1:]:
+            if arg == 'global' and tool_name is None:
+                global0 = True
+            elif tool_name is None:
+                if arg.startswith('-'):
+                    raise ValueError(arg)
+                tool_name = arg
+            else:
+                options.append(arg)
+        existing_str = self.engine.config_get(SECTION_OPTIONS, tool_name, global0)
+        if existing_str:
+            existing = shlex.split(existing_str)
+        else:
+            existing = []
+        new_options = combine_command_options(existing, options)
+        existing.extend(options)
+        self.engine.config_set(SECTION_OPTIONS, tool_name, shlex.join(new_options), global0)
 
     def show_config(self):
         config = ConfigParser()
@@ -288,3 +339,92 @@ Press enter/return at the prompt to refresh data.
         for fact in configs:
             self.engine.retract(fact)
         self.print_save_config_warning()
+
+    def global_thermo_nuclear_war(self):
+        if random.randint(0, 100) < 30:
+            print("\nA strange game. The only winning move is not to play.", file=self.fd_out)
+        else:
+            print("\nWouldn't you prefer a nice game of chess?", file=self.fd_out)
+
+    def show_tools(self, command: list[str]):
+        tools_by_category: dict[str, list[ToolAvailable]] = dict()
+        for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
+            tool: ToolAvailable = fact
+            if tool.get_category() not in tools_by_category:
+                tools_by_category[tool.get_category()] = list()
+            tool_list = tools_by_category[tool.get_category()]
+            tool_list.append(tool)
+        categories = list(tools_by_category.keys())
+        categories.sort()
+        for category in categories:
+            print(f'\n# {category}', file=self.fd_out)
+            tools_by_category[category].sort(key=lambda ta: ta.get_name())
+            for tool in tools_by_category[category]:
+                print(f' - {tool.get_name()}', file=self.fd_out)
+
+    def show_targets(self, command: list[str]):
+        ip_only: set[str] = set()
+        hostname_only: set[str] = set()
+        resolved: dict[str, str] = dict()
+        for fact in self.engine.facts.values():
+            if isinstance(fact, TargetIPv4Address):
+                ip_only.add(fact.get_addr())
+            elif isinstance(fact, TargetIPv6Address):
+                ip_only.add(fact.get_addr())
+            elif isinstance(fact, TargetHostname):
+                hostname_only.add(fact.get_hostname())
+            elif isinstance(fact, HostnameIPv4Resolution):
+                resolved[fact.get_addr()] = fact.get_hostname()
+            elif isinstance(fact, HostnameIPv6Resolution):
+                resolved[fact.get_addr()] = fact.get_hostname()
+        print('', file=self.fd_out)
+        for addr in ip_only:
+            hostname = resolved.get(addr, None)
+            try:
+                hostname_only.remove(hostname)
+            except KeyError:
+                pass
+            if hostname:
+                print(f' - {addr} {hostname}', file=self.fd_out)
+            else:
+                print(f' - {addr}', file=self.fd_out)
+        for hostname in hostname_only:
+            print(f' - {hostname}', file=self.fd_out)
+
+    def show_services(self, command: list[str]):
+        print('', file=self.fd_out)
+        demangle_pattern = re.compile('([a-z0-9])([A-Z])')
+
+        def demangle(camel_case: str) -> str:
+            result = camel_case.replace('Service', '')
+            result = demangle_pattern.sub(lambda m: m.group(1) + ' ' + m.group(2).lower(), result).lower()
+            return result
+
+        for fact in self.engine.facts.values():
+            link_text = ''
+            if 'methodology_links' in fact.__class__.__dict__:
+                links = fact.__class__.__dict__['methodology_links']
+                if links:
+                    link_text = ', ' + ', '.join(links)
+            if isinstance(fact, TcpIpService):
+                print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
+            if isinstance(fact, UdpIpService):
+                print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
+
+    def show_products(self, command: list[str]):
+        products_by_service: dict[str, set[str]] = dict()
+        for fact in filter(lambda f: isinstance(f, Product), self.engine.facts.values()):
+            key = f'{fact.get_addr()}:{fact.get_port()}'
+            if key not in products_by_service:
+                products_by_service[key] = set()
+            products_by_service[key].add(fact.get_product_spec())
+        print('', file=self.fd_out)
+        for service, products in products_by_service.items():
+            print(f'# {service}', file=self.fd_out)
+            for product in products:
+                print(f' - {product}', file=self.fd_out)
+
+    def show_urls(self, command: list[str]):
+        print('', file=self.fd_out)
+        for fact in filter(lambda f: isinstance(f, HttpUrl), self.engine.facts.values()):
+            print(f'- {fact.get_url()}', file=self.fd_out)

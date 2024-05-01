@@ -1,5 +1,5 @@
 from shadycompass import ToolRecommended
-from shadycompass.config import ToolCategory, PreferredTool
+from shadycompass.config import ToolCategory, PreferredTool, SECTION_OPTIONS
 from shadycompass.facts import VulnScanNeeded, VulnScanPresent, TargetIPv4Address
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 from tests.rules.base import RulesBase
@@ -36,3 +36,15 @@ class NucleiTest(RulesBase):
         self.engine.run()
         assertFactNotIn(VulnScanNeeded(), self.engine)
         assertFactNotIn(self.nuclei_fact_one, self.engine)
+
+    def test_no_scan_recommend_nuclei_options(self):
+        self.engine.reset()
+        self.engine.declare(PreferredTool(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name))
+        self.engine.config_set(SECTION_OPTIONS, NucleiRules.nuclei_tool_name, '--nuclei-option', True)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.vuln_scanner,
+            name=NucleiRules.nuclei_tool_name,
+            command_line=['-target', '$IP', '-json-export', 'nuclei-$IP.json', '--nuclei-option'],
+            addr=VulnScanNeeded.ANY
+        ), self.engine)
