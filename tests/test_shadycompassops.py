@@ -212,12 +212,14 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(TargetHostname(hostname='localhost.localdomain'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='::1'))
+        self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost3', addr='::3'))
         self.ops.show_targets([])
         self.assertTrue('- 127.0.0.1 localhost' in self.fd_out.output)
         self.assertTrue('- ::1 localhost' in self.fd_out.output)
         self.assertTrue('- 127.0.0.2' in self.fd_out.output)
         self.assertTrue('- ::2' in self.fd_out.output)
         self.assertTrue('- localhost.localdomain' in self.fd_out.output)
+        self.assertFalse('- ::3 localhost3' in self.fd_out.output)
 
     def test_show_services(self):
         self.ops.engine.declare(SshService(addr='10.0.1.1', port=22))

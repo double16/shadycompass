@@ -378,20 +378,18 @@ Press enter/return at the prompt to refresh data.
             elif isinstance(fact, HostnameIPv6Resolution):
                 resolved[fact.get_addr()] = fact.get_hostname()
         print('', file=self.fd_out)
-        for addr, hostname in resolved.items():
-            try:
-                ip_only.remove(addr)
-            except KeyError:
-                pass
+        for addr in ip_only:
+            hostname = resolved.get(addr, None)
             try:
                 hostname_only.remove(hostname)
             except KeyError:
                 pass
-            print(f' - {addr} {hostname}', file=self.fd_out)
+            if hostname:
+                print(f' - {addr} {hostname}', file=self.fd_out)
+            else:
+                print(f' - {addr}', file=self.fd_out)
         for hostname in hostname_only:
             print(f' - {hostname}', file=self.fd_out)
-        for addr in ip_only:
-            print(f' - {addr}', file=self.fd_out)
 
     def show_services(self, command: list[str]):
         print('', file=self.fd_out)
