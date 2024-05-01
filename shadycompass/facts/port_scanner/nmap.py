@@ -1,11 +1,14 @@
 import xml.etree.ElementTree as ET
 from typing import Iterable
+from urllib.parse import urlparse
 
 from experta import Fact
 
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetHostname, TargetIPv6Address, \
-    HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products
+    HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
+    PortScanPresent
 from shadycompass.facts.services import create_service_facts, spread_addrs
+from shadycompass.rules.port_scanner.nmap import NmapRules
 
 
 def _is_nmap_xml(file_path: str) -> bool:
@@ -35,10 +38,12 @@ class NmapXmlFactReader(FactReader):
                     addr = el.attrib['addr']
                     ipv4.add(addr)
                     result.append(TargetIPv4Address(addr=addr))
+                    result.append(PortScanPresent(name=NmapRules.nmap_tool_name, addr=addr))
                 elif el.attrib['addrtype'] == 'ipv6':
                     addr = el.attrib['addr']
                     ipv6.add(addr)
                     result.append(TargetIPv6Address(addr=addr))
+                    result.append(PortScanPresent(name=NmapRules.nmap_tool_name, addr=addr))
             elif el.tag == 'hostnames':
                 for hostname_el in el:
                     if hostname_el.tag == 'hostname':
@@ -46,19 +51,19 @@ class NmapXmlFactReader(FactReader):
                         hostnames.add(hostname)
                         result.append(TargetHostname(hostname=hostname))
             elif el.tag == 'ports':
-                result.extend(self._parse_ports(ipv4.union(ipv6), el))
+                result.extend(self._parse_ports(ipv4.union(ipv6), hostnames, el))
 
         for addr in ipv4:
             for hostname in hostnames:
-                result.append(HostnameIPv4Resolution(hostname=hostname, addr=addr))
+                result.append(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
 
         for addr in ipv6:
             for hostname in hostnames:
-                result.append(HostnameIPv6Resolution(hostname=hostname, addr=addr))
+                result.append(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
 
         return result
 
-    def _parse_ports(self, addrs: Iterable[str], ports_el: ET.Element) -> list[Fact]:
+    def _parse_ports(self, addrs: Iterable[str], hostnames: set[str], ports_el: ET.Element) -> list[Fact]:
         result = []
         for port_el in ports_el:
             if port_el.tag != 'port':
@@ -107,8 +112,19 @@ class NmapXmlFactReader(FactReader):
                             if parsed.get_version():
                                 my_kwargs['version'] = parsed.get_version()
                             result.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
+
+            # Look for additional host names, such as http virtual hosts
+            for redirect_el in port_el.findall(".//elem[@key='redirect_url']"):
+                url = urlparse(redirect_el.text)
+                if url.hostname and url.hostname not in hostnames:
+                    result.append(TargetHostname(hostname=url.hostname))
+                    for addr in addrs:
+                        if '.' in addr:
+                            result.append(HostnameIPv4Resolution(hostname=url.hostname, addr=addr, implied=True))
+                        else:
+                            result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
+
             if state == 'open':
-                # TODO: extract extra host names
                 create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
 
         return result

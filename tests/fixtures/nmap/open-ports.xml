@@ -172,6 +172,7 @@
                 <script id="ssl-date" output="TLS randomness does not represent time"></script>
                 <script id="http-title" output="Hospital Webmail :: Welcome to Hospital Webmail">
                     <elem key="title">Hospital Webmail :: Welcome to Hospital Webmail</elem>
+                    <elem key="redirect_url">http://webmail.hospital.htb/</elem>
                 </script>
             </port>
             <port protocol="tcp" portid="445">

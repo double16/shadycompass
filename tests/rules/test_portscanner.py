@@ -1,5 +1,6 @@
 from base import RulesBase
-from shadycompass.facts import PortScanNeeded, TargetIPv4Address
+from shadycompass.facts import PortScanNeeded, TargetIPv4Address, PortScanPresent
+from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -23,6 +24,12 @@ class PortScanTest(RulesBase):
         assertFactNotIn(PortScanNeeded(addr=PortScanNeeded.ANY), self.engine)
         assertFactIn(PortScanNeeded(addr='10.1.1.1'), self.engine)
         assertFactIn(PortScanNeeded(addr='10.1.1.2'), self.engine)
+
+    def test_portscan_present(self):
+        self.engine.declare(PortScanPresent(name=NmapRules.nmap_tool_name, addr='10.1.1.1'))
+        self.engine.run()
+        assertFactNotIn(PortScanNeeded(addr=PortScanNeeded.ANY), self.engine)
+        assertFactNotIn(PortScanNeeded(addr='10.1.1.1'), self.engine)
 
 
 class PortScanNotNeededTest(RulesBase):

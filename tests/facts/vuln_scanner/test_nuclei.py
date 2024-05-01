@@ -18,7 +18,7 @@ class NucleiJsonFactReaderTest(unittest.TestCase):
         self.assertIn(VulnScanPresent(name=NucleiRules.nuclei_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         self.assertIn(TargetHostname(hostname='hospital.htb'), facts)
-        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189'), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189', implied=True), facts)
         self.assertIn(HttpService(addr='10.129.229.189', port=443, secure=True), facts)
         self.assertIn(HttpService(addr='10.129.229.189', port=80, secure=False), facts)
         self.assertIn(Product(product='apache', version='2.4.56', os_type=OSTYPE_WINDOWS,

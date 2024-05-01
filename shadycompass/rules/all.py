@@ -1,7 +1,8 @@
-from shadycompass.config import ConfigRules
 import shadycompass.rules.http_buster.all as http_buster
 import shadycompass.rules.port_scanner.all as port_scanner
 import shadycompass.rules.vuln_scanner.all as vuln_scanner
+from shadycompass.config import ConfigRules
+from shadycompass.rules.etc_hosts import EtcHostsRules
 from shadycompass.rules.httpbusting import HttpBusting
 from shadycompass.rules.portscanner import PortScan
 from shadycompass.rules.vulnscanner import VulnScan
@@ -15,6 +16,7 @@ class AllRules(
     PortScan,
     VulnScan,
     ConfigRules,
+    EtcHostsRules,
 ):
     """
     Convenience class to collect all rules.

@@ -3,8 +3,9 @@ import unittest
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, TcpIpService, \
     DomainTcpIpService, HttpService, WinRMService, Kerberos5SecTcpService, MicrosoftRpcService, NetbiosSessionService, \
     LdapService, SmbService, RdpService, MsmqService, Product, OSTYPE_WINDOWS, DotNetMessageFramingService, \
-    MicrosoftRpcHttpService, SshService
+    MicrosoftRpcHttpService, SshService, PortScanPresent
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
+from shadycompass.rules.port_scanner.nmap import NmapRules
 
 
 class NmapXmlFactReaderTest(unittest.TestCase):
@@ -15,10 +16,11 @@ class NmapXmlFactReaderTest(unittest.TestCase):
 
     def test_read_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.xml')
-        self.assertEqual(56, len(facts))
+        self.assertEqual(59, len(facts))
+        self.assertIn(PortScanPresent(name=NmapRules.nmap_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         self.assertIn(TargetHostname(hostname='hospital.htb'), facts)
-        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189'), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189', implied=True), facts)
         self.assertIn(SshService(addr='10.129.229.189', port=22), facts)
         self.assertIn(DomainTcpIpService(addr='10.129.229.189', port=53), facts)
         self.assertIn(Kerberos5SecTcpService(addr='10.129.229.189', port=88), facts)
@@ -47,7 +49,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=6637), facts)
         self.assertIn(HttpService(addr='10.129.229.189', port=8080, secure=False), facts)
         self.assertIn(DotNetMessageFramingService(addr='10.129.229.189', port=9389), facts)
-        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189'), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189', implied=True), facts)
         self.assertIn(Product(product='apache httpd', version='2.4.56', os_type=OSTYPE_WINDOWS,
                               addr='10.129.229.189', port=443, hostname="www.example.com"), facts)
         self.assertIn(Product(product='openssl', version='1.1.1t', os_type=OSTYPE_WINDOWS,
@@ -58,6 +60,9 @@ class NmapXmlFactReaderTest(unittest.TestCase):
                               version='9.0p1 ubuntu 1ubuntu8.5'), facts)
         self.assertIn(Product(addr='10.129.229.189', product='simple dns plus', os_type='windows', port=53), facts)
         self.assertIn(Product(addr='10.129.229.189', product='microsoft windows kerberos', os_type='windows', port=88),
+                      facts)
+        self.assertIn(TargetHostname(hostname='webmail.hospital.htb'), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='webmail.hospital.htb', addr='10.129.229.189', implied=True),
                       facts)
 
     def test_ignore_not_xml(self):
