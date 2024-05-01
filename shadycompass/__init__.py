@@ -1,5 +1,7 @@
 import io
 import os.path
+import random
+import re
 import shlex
 import sys
 from configparser import ConfigParser
@@ -10,7 +12,8 @@ import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
     set_local_config_path
-from shadycompass.facts import fact_reader_registry
+from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
+    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -288,3 +291,89 @@ Press enter/return at the prompt to refresh data.
         for fact in configs:
             self.engine.retract(fact)
         self.print_save_config_warning()
+
+    def global_thermo_nuclear_war(self):
+        if random.randint(0, 100) < 30:
+            print("\nA strange game. The only winning move is not to play.", file=self.fd_out)
+        else:
+            print("\nWouldn't you prefer a nice game of chess?", file=self.fd_out)
+
+    def show_tools(self, command: list[str]):
+        tools_by_category: dict[str, list[ToolAvailable]] = dict()
+        for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
+            tool: ToolAvailable = fact
+            if tool.get_category() not in tools_by_category:
+                tools_by_category[tool.get_category()] = list()
+            tool_list = tools_by_category[tool.get_category()]
+            tool_list.append(tool)
+        categories = list(tools_by_category.keys())
+        categories.sort()
+        for category in categories:
+            print(f'\n# {category}', file=self.fd_out)
+            tools_by_category[category].sort(key=lambda ta: ta.get_name())
+            for tool in tools_by_category[category]:
+                print(f' - {tool.get_name()}', file=self.fd_out)
+
+    def show_targets(self, command: list[str]):
+        ip_only: set[str] = set()
+        hostname_only: set[str] = set()
+        resolved: dict[str, str] = dict()
+        for fact in self.engine.facts.values():
+            if isinstance(fact, TargetIPv4Address):
+                ip_only.add(fact.get_addr())
+            elif isinstance(fact, TargetIPv6Address):
+                ip_only.add(fact.get_addr())
+            elif isinstance(fact, TargetHostname):
+                hostname_only.add(fact.get_hostname())
+            elif isinstance(fact, HostnameIPv4Resolution):
+                resolved[fact.get_addr()] = fact.get_hostname()
+            elif isinstance(fact, HostnameIPv6Resolution):
+                resolved[fact.get_addr()] = fact.get_hostname()
+        print('', file=self.fd_out)
+        for addr, hostname in resolved.items():
+            try:
+                ip_only.remove(addr)
+            except KeyError:
+                pass
+            try:
+                hostname_only.remove(hostname)
+            except KeyError:
+                pass
+            print(f' - {addr} {hostname}', file=self.fd_out)
+        for hostname in hostname_only:
+            print(f' - {hostname}', file=self.fd_out)
+        for addr in ip_only:
+            print(f' - {addr}', file=self.fd_out)
+
+    def show_services(self, command: list[str]):
+        print('', file=self.fd_out)
+        demangle_pattern = re.compile('([a-z0-9])([A-Z])')
+
+        def demangle(camel_case: str) -> str:
+            result = camel_case.replace('Service', '')
+            result = demangle_pattern.sub(lambda m: m.group(1) + ' ' + m.group(2).lower(), result).lower()
+            return result
+
+        for fact in self.engine.facts.values():
+            if isinstance(fact, TcpIpService):
+                print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}', file=self.fd_out)
+            if isinstance(fact, UdpIpService):
+                print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}', file=self.fd_out)
+
+    def show_products(self, command: list[str]):
+        products_by_service: dict[str, set[str]] = dict()
+        for fact in filter(lambda f: isinstance(f, Product), self.engine.facts.values()):
+            key = f'{fact.get_addr()}:{fact.get_port()}'
+            if key not in products_by_service:
+                products_by_service[key] = set()
+            products_by_service[key].add(fact.get_product_spec())
+        print('', file=self.fd_out)
+        for service, products in products_by_service.items():
+            print(f'# {service}', file=self.fd_out)
+            for product in products:
+                print(f' - {product}', file=self.fd_out)
+
+    def show_urls(self, command: list[str]):
+        print('', file=self.fd_out)
+        for fact in filter(lambda f: isinstance(f, HttpUrl), self.engine.facts.values()):
+            print(f'- {fact.get_url()}', file=self.fd_out)

@@ -18,7 +18,7 @@ class WfuzzReader(FactReader):
         return []
 
     def _read_txt(self, file_path: str):
-        print(f"[*] Reading wfuzz facts from {file_path}")
+        print(f"[*] Reading wfuzz findings from {file_path}")
         result = []
         target = None
         with open(file_path, 'rt') as file:
@@ -36,7 +36,7 @@ class WfuzzReader(FactReader):
 
     def _read_json(self, file_path: str):
         result = []
-        print(f"[*] Reading wfuzz facts from {file_path}")
+        print(f"[*] Reading wfuzz findings from {file_path}")
         with open(file_path, 'rt') as f:
             data = json.load(f)
         if not isinstance(data, list):

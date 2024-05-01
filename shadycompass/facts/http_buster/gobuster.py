@@ -15,7 +15,7 @@ class GobusterReader(FactReader):
         return []
 
     def _read_dir(self, file_path: str) -> list[Fact]:
-        print(f"[*] Reading `gobuster dir` facts from {file_path}")
+        print(f"[*] Reading `gobuster dir` findings from {file_path}")
         m = GOBUSTER_FILENAME_PATTERN.search(file_path)
         if not m:
             return []

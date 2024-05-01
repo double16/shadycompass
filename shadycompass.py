@@ -20,43 +20,53 @@ def shadycompass_cli(args: list[str]) -> int:
 
             ops.handle_tool_recommended()
 
-            user_command = shlex.split(input(f"\n{ops.base_dir} shadycompass > "))
+            while True:
+                user_command = shlex.split(input(f"\n{ops.base_dir} shadycompass > "))
 
-            if len(user_command) == 0:
-                continue
+                if len(user_command) == 0:
+                    break
 
-            if user_command[0] in ['exit', 'quit', 'x', 'q']:
-                return 0
+                if user_command[0] in ['exit', 'quit', 'x', 'q']:
+                    return 0
 
-            elif user_command[0] == 'facts':
-                print(ops.engine.facts)
+                elif user_command[0] == 'facts':
+                    print(ops.engine.facts)
+                elif user_command[0] == 'save':
+                    ops.save_config()
+                elif user_command[0] == 'use':
+                    ops.use_tool(user_command)
+                    break
+                elif user_command[0] == 'option':
+                    ops.tool_option(user_command)
+                    break
+                elif user_command == ['set']:
+                    ops.show_config()
+                elif user_command[0] == 'set':
+                    ops.set_config_value(user_command)
+                    break
+                elif user_command[0] == 'unset':
+                    ops.unset_config_value(user_command)
+                    break
+                elif user_command[0] == 'reset':
+                    ops.reset_config_values()
+                    break
+                elif user_command[0] == 'info':
+                    ops.tool_info(user_command)
+                elif user_command[0] == 'globalthermonuclearwar':
+                    ops.global_thermo_nuclear_war()
+                elif user_command[0] == 'tools':
+                    ops.show_tools(user_command)
+                elif user_command[0] == 'targets':
+                    ops.show_targets(user_command)
+                elif user_command[0] == 'services':
+                    ops.show_services(user_command)
+                elif user_command[0] == 'products':
+                    ops.show_products(user_command)
+                elif user_command[0] == 'urls':
+                    ops.show_urls(user_command)
 
-            elif user_command[0] == 'save':
-                ops.save_config()
-
-            elif user_command[0] == 'use':
-                ops.use_tool(user_command)
-
-            elif user_command[0] == 'option':
-                ops.tool_option(user_command)
-
-            elif user_command == ['set']:
-                ops.show_config()
-
-            elif user_command[0] == 'set':
-                ops.set_config_value(user_command)
-
-            elif user_command[0] == 'unset':
-                ops.unset_config_value(user_command)
-
-            elif user_command[0] == 'reset':
-                ops.reset_config_values()
-
-            elif user_command[0] == 'info':
-                ops.tool_info(user_command)
-
-            else:
-                print(f'''
+                else:
+                    print(f'''
 help
     show this text
 exit, quit, x, q

@@ -22,6 +22,9 @@ class ToolAvailable(Fact):
     tool_links = Field(list[str], mandatory=False, default=[])
     methodology_links = Field(list[str], mandatory=False, default=[])
 
+    def get_category(self):
+        return self.get('category')
+
     def get_name(self) -> str:
         return self.get('name')
 

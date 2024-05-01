@@ -11,7 +11,7 @@ class FeroxbusterReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not check_file_signature(file_path, FEROXBUSTER_PATTERN):
             return []
-        print(f"[*] Reading feroxbuster facts from {file_path}")
+        print(f"[*] Reading feroxbuster findings from {file_path}")
         result = []
         with open(file_path, 'rt') as file:
             for line in file.readlines():
