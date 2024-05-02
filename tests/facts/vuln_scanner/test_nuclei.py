@@ -1,7 +1,8 @@
 import unittest
 
+from shadycompass.config import ToolCategory
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, HttpService, Product, \
-    OSTYPE_WINDOWS, MsmqService, SshService, RdpService, VulnScanPresent
+    OSTYPE_WINDOWS, MsmqService, SshService, RdpService, ScanPresent
 from shadycompass.facts.vuln_scanner.nuclei import NucleiJsonFactReader
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
@@ -15,7 +16,7 @@ class NucleiJsonFactReaderTest(unittest.TestCase):
     def test_read_json(self):
         facts = self.reader.read_facts('tests/fixtures/nuclei/nuclei-hospital.htb.json')
         self.assertEqual(13, len(facts))
-        self.assertIn(VulnScanPresent(name=NucleiRules.nuclei_tool_name, addr='10.129.229.189'), facts)
+        self.assertIn(ScanPresent(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         self.assertIn(TargetHostname(hostname='hospital.htb'), facts)
         self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189', implied=True), facts)

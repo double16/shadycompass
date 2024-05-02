@@ -1,7 +1,7 @@
 from experta import DefFacts, Rule, AS, OR, NOT, MATCH
 
 from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
-from shadycompass.facts import VulnScanNeeded, VulnScanPresent
+from shadycompass.facts import ScanNeeded, ScanPresent
 from shadycompass.rules.library import METHOD_HTTP_AUTOMATIC_SCANNERS
 
 
@@ -20,14 +20,14 @@ class NucleiRules:
         )
 
     @Rule(
-        AS.f1 << VulnScanNeeded(),
+        AS.f1 << ScanNeeded(category=ToolCategory.vuln_scanner),
         OR(
             PreferredTool(category=ToolCategory.vuln_scanner, name=nuclei_tool_name),
             PreferredTool(category=ToolCategory.vuln_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.vuln_scanner)),
         )
     )
-    def run_nuclei(self, f1: VulnScanNeeded):
+    def run_nuclei(self, f1: ScanNeeded):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
@@ -47,7 +47,7 @@ class NucleiRules:
 
     @Rule(
         AS.f1 << ToolRecommended(category=ToolCategory.vuln_scanner, name=nuclei_tool_name, addr=MATCH.addr),
-        VulnScanPresent(addr=MATCH.addr),
+        ScanPresent(category=ToolCategory.vuln_scanner, addr=MATCH.addr),
     )
     def do_no_run_nuclei(self, f1):
         self.retract(f1)

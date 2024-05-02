@@ -286,10 +286,11 @@ Displays the things shady compass knows about to make recommendations. This is u
 
 ### ratelimit
 
-TODO: not yet implemented
-
-The rate limit is expressed in requests per second. Command that use other units will convert to be equivalent to
+The rate limit is expressed in requests per second. Tools that use other units will convert to be equivalent to
 requests per second.
+
+Local setting of ratelimit will apply it to all targets. Global setting will only apply when that target is
+considered a production target. See `production` below.
 
 ```
 shadycompass> set ratelimit 5
@@ -303,15 +304,17 @@ shadycompass> unset global ratelimit 8
 
 ### production
 
-TODO: not yet implemented
-
 Mark the targets as production. Production targets are considered more sensitive. Tools will select safer options. The
 user is still expected to know your tools and your targets! Don't copy and paste without reviewing the commands.
+
+Production targets will always use rate limiting, if configured.
 
 ```
 shadycompass> set production true
 
 shadycompass> set production false
+
+shadycompass> set global production true
 
 shadycompass> unset production
  ```

@@ -1,7 +1,8 @@
 from experta import Rule, NOT, OR, MATCH, AS, EXISTS
 
-from shadycompass.facts import TcpIpService, UdpIpService, PortScanNeeded, TargetIPv4Address, TargetIPv6Address, \
-    PortScanPresent
+from shadycompass.config import ToolCategory
+from shadycompass.facts import TcpIpService, UdpIpService, ScanNeeded, TargetIPv4Address, TargetIPv6Address, \
+    ScanPresent
 
 
 class PortScan:
@@ -11,25 +12,25 @@ class PortScan:
         salience=100
     )
     def need_port_scan_addr(self, addr):
-        self.declare(PortScanNeeded(addr=addr))
+        self.declare(ScanNeeded(category=ToolCategory.port_scanner, addr=addr))
 
     @Rule(
-        NOT(OR(TcpIpService(), UdpIpService(), PortScanPresent())),
-        NOT(PortScanNeeded())
+        NOT(OR(TcpIpService(), UdpIpService(), ScanPresent(category=ToolCategory.port_scanner))),
+        NOT(ScanNeeded(category=ToolCategory.port_scanner))
     )
     def need_port_scan(self):
-        self.declare(PortScanNeeded(addr=PortScanNeeded.ANY))
+        self.declare(ScanNeeded(category=ToolCategory.port_scanner, addr=ScanNeeded.ANY))
 
     @Rule(
-        AS.f1 << PortScanNeeded(addr=MATCH.addr),
-        OR(TcpIpService(addr=MATCH.addr), UdpIpService(addr=MATCH.addr), PortScanPresent(addr=MATCH.addr)),
+        AS.f1 << ScanNeeded(category=ToolCategory.port_scanner, addr=MATCH.addr),
+        OR(TcpIpService(addr=MATCH.addr), UdpIpService(addr=MATCH.addr), ScanPresent(category=ToolCategory.port_scanner, addr=MATCH.addr)),
     )
-    def do_not_need_port_scan(self, f1: PortScanNeeded):
+    def do_not_need_port_scan(self, f1: ScanNeeded):
         self.retract(f1)
 
     @Rule(
-        AS.f1 << PortScanNeeded(addr=PortScanNeeded.ANY),
-        OR(EXISTS(TargetIPv4Address()), EXISTS(TargetIPv6Address()), EXISTS(PortScanPresent())),
+        AS.f1 << ScanNeeded(category=ToolCategory.port_scanner, addr=ScanNeeded.ANY),
+        OR(EXISTS(TargetIPv4Address()), EXISTS(TargetIPv6Address()), EXISTS(ScanPresent(category=ToolCategory.port_scanner))),
         )
-    def do_not_need_general_port_scan(self, f1: PortScanNeeded):
+    def do_not_need_general_port_scan(self, f1: ScanNeeded):
         self.retract(f1)

@@ -639,37 +639,39 @@ def http_url(url: str, **kwargs) -> HttpUrl:
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
-# TODO: Replace with facts that use category
-class VulnScanNeeded(Fact):
+class ScanNeeded(Fact):
     ANY = ''
-    addr = Field(str, mandatory=False)
+    category = Field(str, mandatory=True)
+    addr = Field(str, mandatory=True)
+    port = Field(int, mandatory=False)
+    hostname = Field(str, mandatory=False)
+    url = Field(str, mandatory=False)
 
-    def get_addr(self):
+    def get_category(self) -> str:
+        return self.get('category')
+
+    def get_addr(self) -> str:
         return self.get('addr')
 
+    def get_port(self) -> Union[int, None]:
+        if 'port' not in self:
+            return None
+        return int(self.get('port'))
 
-class VulnScanPresent(Fact):
-    """
-    Indicates a vuln scan was detected. This is necessary because it may not produce findings.
-    """
+    def get_hostname(self) -> Union[str, None]:
+        return self.get('hostname')
+
+    def get_url(self) -> Union[str, None]:
+        return self.get('url')
+
+
+class ScanPresent(Fact):
+    category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
     addr = Field(str, mandatory=True)
-
-
-class PortScanNeeded(Fact):
-    ANY = ''
-    addr = Field(str, mandatory=False)
-
-    def get_addr(self):
-        return self.get('addr')
-
-
-class PortScanPresent(Fact):
-    """
-    Indicates a port scan was detected. A port scan may not produce findings.
-    """
-    name = Field(str, mandatory=True)
-    addr = Field(str, mandatory=True)
+    port = Field(int, mandatory=False)
+    hostname = Field(str, mandatory=False)
+    url = Field(str, mandatory=False)
 
 
 class HttpBustingNeeded(Fact):

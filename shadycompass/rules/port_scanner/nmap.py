@@ -1,7 +1,7 @@
 from experta import DefFacts, Rule, AS, OR, NOT
 
 from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
-from shadycompass.facts import PortScanNeeded
+from shadycompass.facts import ScanNeeded
 
 
 class NmapRules:
@@ -20,14 +20,14 @@ class NmapRules:
         )
 
     @Rule(
-        AS.f1 << PortScanNeeded(),
+        AS.f1 << ScanNeeded(category=ToolCategory.port_scanner),
         OR(
             PreferredTool(category=ToolCategory.port_scanner, name=nmap_tool_name),
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         )
     )
-    def run_nmap(self, f1: PortScanNeeded):
+    def run_nmap(self, f1: ScanNeeded):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
@@ -57,14 +57,14 @@ class NmapRules:
         ))
 
     @Rule(
-        AS.f1 << PortScanNeeded(),
+        AS.f1 << ScanNeeded(category=ToolCategory.port_scanner),
         OR(
             PreferredTool(category=ToolCategory.port_scanner, name=rustscan_tool_name),
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         )
     )
-    def run_rustscan(self, f1: PortScanNeeded):
+    def run_rustscan(self, f1: ScanNeeded):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
