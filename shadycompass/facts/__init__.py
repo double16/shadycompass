@@ -639,6 +639,7 @@ def http_url(url: str, **kwargs) -> HttpUrl:
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
+# TODO: Replace with facts that use category
 class VulnScanNeeded(Fact):
     ANY = ''
     addr = Field(str, mandatory=False)

@@ -14,7 +14,9 @@ OPTION_VALUE_ALL = '*'
 class ToolCategory(object):
     port_scanner = 'port_scanner'
     http_buster = 'http_buster'
+    http_scanner = 'http_scanner'
     vuln_scanner = 'vuln_scanner'
+    smb_scanner = 'smb_scanner'
 
 
 class ToolAvailable(Fact):
