@@ -4,6 +4,7 @@ import shadycompass.rules.vuln_scanner.all as vuln_scanner
 from shadycompass.config import ConfigRules
 from shadycompass.rules.etc_hosts import EtcHostsRules
 from shadycompass.rules.httpbusting import HttpBusting
+from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules
 from shadycompass.rules.portscanner import PortScan
 from shadycompass.rules.vulnscanner import VulnScan
 
@@ -17,6 +18,8 @@ class AllRules(
     VulnScan,
     ConfigRules,
     EtcHostsRules,
+    ProductionTargetRules,
+    RateLimitRules,
 ):
     """
     Convenience class to collect all rules.

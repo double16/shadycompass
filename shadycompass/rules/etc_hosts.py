@@ -1,13 +1,16 @@
+from abc import ABC
+
 from experta import Rule, AS, MATCH
 
 from shadycompass import ToolRecommended
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, HostnameIPv6Resolution, TargetIPv6Address
 from shadycompass.facts.etc_hosts import get_etc_hosts
+from shadycompass.rules.irules import IRules
 
 CATEGORY_HOSTS = 'hosts'
 
 
-class EtcHostsRules:
+class EtcHostsRules(IRules, ABC):
     def _recommend(self, addr: str, hostname: str):
         etc_hosts = get_etc_hosts()
         self.declare(

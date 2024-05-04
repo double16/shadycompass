@@ -5,8 +5,9 @@ import re
 import shlex
 import sys
 from configparser import ConfigParser
+from typing import Union
 
-from experta import KnowledgeEngine
+from experta import KnowledgeEngine, Fact
 
 import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
@@ -89,14 +90,61 @@ class ShadyCompassEngine(
                 return fact.get('value')
         return None
 
-    def resolve_command_line(self, tool_name: str, options: list[str]) -> list[str]:
-        additional_str = self.config_get(SECTION_OPTIONS, tool_name, False)
-        if not additional_str:
-            additional_str = self.config_get(SECTION_OPTIONS, tool_name, True)
-        if not additional_str:
-            return options
-        additional = shlex.split(additional_str)
-        return combine_command_options(options, additional)
+    def config_get_fallback(self, section: str, option: str, default_value: Union[str, None] = None) -> str:
+        value = self.config_get(section, option, False)
+        if not value:
+            value = self.config_get(section, option, True)
+        return default_value if value is None else value
+
+    def resolve_command_line(self, tool_name: str, options: list[str], *args) -> list[str]:
+        additional_str = self.config_get_fallback(SECTION_OPTIONS, tool_name)
+        if additional_str:
+            additional = shlex.split(additional_str)
+        else:
+            additional = []
+        return combine_command_options(options, additional, *args)
+
+    def get_matches(self, query: Fact) -> list[Fact]:
+        """ Get facts that have attributes equal to those specified in the query. """
+
+        def _is_match(fact: Fact, f1: Fact) -> bool:
+            if type(fact) != type(f1):
+                return False
+            for k, v in fact.items():
+                v1 = f1.get(k)
+                if repr(v) != repr(v1):
+                    return False
+            return True
+
+        result: list[Fact] = []
+        for f1 in self.facts.values():
+            if _is_match(query, f1):
+                result.append(f1)
+        return result
+
+    def recommend_tool(self,
+                       category: str,
+                       name: str,
+                       variant: str,
+                       command_line: list[str],
+                       addr: Union[str, None] = None,
+                       hostname: Union[str, None] = None,
+                       port: Union[int, None] = None):
+        query = {'category': category, 'name': name}
+        if variant is not None:
+            query['variant'] = variant
+        if addr is not None:
+            query['addr'] = addr
+        if port is not None:
+            query['port'] = port
+        if hostname is not None:
+            query['hostname'] = hostname
+        existing = self.get_matches(ToolRecommended(**query))
+        if existing:
+            for fact in existing:
+                self.modify(fact, command_line=command_line)
+        else:
+            self.declare(ToolRecommended(command_line=command_line, **query))
 
 
 class ShadyCompassOps(object):
@@ -163,25 +211,33 @@ class ShadyCompassOps(object):
         for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
             tools[fact.get('name')] = fact
         for arg in command[1:]:
+            tr: Union[ToolRecommended, None] = None
+            ta: Union[ToolAvailable, None]
             try:
                 i = int(arg) - 1
                 if 0 <= i < len(recommends):
-                    tr: ToolRecommended = recommends[i]
-                    ta: ToolAvailable = tools[tr.get_name()]
-                    print(f'\n# {ta.get_name()}', file=self.fd_out)
-                    if ta.get_tool_links():
-                        print('\n## tool links')
-                        print('\n'.join(ta.get_tool_links()), file=self.fd_out)
-                    if ta.get_methodology_links():
-                        print('\n## methodology')
-                        print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
-                    print('\n## example command\n```shell')
-                    print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
-                    print('```')
+                    tr = recommends[i]
+                    ta = tools[tr.get_name()]
                 else:
                     print(f'[-] invalid number, expecting 1-{len(recommends)}', file=self.fd_out)
+                    continue
             except ValueError:
-                print(f'[-] number expected: {arg}', file=self.fd_out)
+                if arg.lower() in tools:
+                    ta = tools[arg]
+                else:
+                    print(f'[-] unknown tool: {arg}', file=self.fd_out)
+                    continue
+            print(f'\n# {ta.get_name()}', file=self.fd_out)
+            if ta.get_tool_links():
+                print('\n## tool links')
+                print('\n'.join(ta.get_tool_links()), file=self.fd_out)
+            if ta.get_methodology_links():
+                print('\n## methodology')
+                print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
+            if tr:
+                print('\n## example command\n```shell')
+                print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
+                print('```')
 
     def print_banner(self):
         print("""
@@ -363,36 +419,39 @@ Press enter/return at the prompt to refresh data.
                 print(f' - {tool.get_name()}', file=self.fd_out)
 
     def show_targets(self, command: list[str]):
-        ip_only: set[str] = set()
-        hostname_only: set[str] = set()
-        resolved: dict[str, str] = dict()
+        addr_targets: set[str] = set()
+        hostname_targets: set[str] = set()
+        resolved: list[tuple[str, str]] = []
         for fact in self.engine.facts.values():
             if isinstance(fact, TargetIPv4Address):
-                ip_only.add(fact.get_addr())
+                addr_targets.add(fact.get_addr())
             elif isinstance(fact, TargetIPv6Address):
-                ip_only.add(fact.get_addr())
+                addr_targets.add(fact.get_addr())
             elif isinstance(fact, TargetHostname):
-                hostname_only.add(fact.get_hostname())
+                hostname_targets.add(fact.get_hostname())
             elif isinstance(fact, HostnameIPv4Resolution):
-                resolved[fact.get_addr()] = fact.get_hostname()
+                resolved.append((fact.get_addr(), fact.get_hostname()))
             elif isinstance(fact, HostnameIPv6Resolution):
-                resolved[fact.get_addr()] = fact.get_hostname()
+                resolved.append((fact.get_addr(), fact.get_hostname()))
         print('', file=self.fd_out)
-        for addr in ip_only:
-            hostname = resolved.get(addr, None)
-            try:
-                hostname_only.remove(hostname)
-            except KeyError:
-                pass
-            if hostname:
+        for addr, hostname in resolved:
+            if addr in addr_targets or hostname in hostname_targets:
                 print(f' - {addr} {hostname}', file=self.fd_out)
-            else:
-                print(f' - {addr}', file=self.fd_out)
-        for hostname in hostname_only:
+                try:
+                    addr_targets.remove(addr)
+                except KeyError:
+                    pass
+                try:
+                    hostname_targets.remove(hostname)
+                except KeyError:
+                    pass
+        for addr in addr_targets:
+            print(f' - {addr}', file=self.fd_out)
+        for hostname in hostname_targets:
             print(f' - {hostname}', file=self.fd_out)
 
     def show_services(self, command: list[str]):
-        print('', file=self.fd_out)
+
         demangle_pattern = re.compile('([a-z0-9])([A-Z])')
 
         def demangle(camel_case: str) -> str:
@@ -400,16 +459,29 @@ Press enter/return at the prompt to refresh data.
             result = demangle_pattern.sub(lambda m: m.group(1) + ' ' + m.group(2).lower(), result).lower()
             return result
 
+        services_by_addr: dict[str, set] = dict()
         for fact in self.engine.facts.values():
-            link_text = ''
-            if 'methodology_links' in fact.__class__.__dict__:
-                links = fact.__class__.__dict__['methodology_links']
-                if links:
-                    link_text = ', ' + ', '.join(links)
-            if isinstance(fact, TcpIpService):
-                print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
-            if isinstance(fact, UdpIpService):
-                print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
+            if isinstance(fact, TcpIpService) or isinstance(fact, UdpIpService):
+                addr = fact.get('addr')
+                if addr not in services_by_addr:
+                    services_by_addr[addr] = set()
+                services_by_addr[addr].add(fact)
+
+        print('', file=self.fd_out)
+        for addr, services in services_by_addr.items():
+            print(f'# {addr}', file=self.fd_out)
+            sorted_services = list(services)
+            sorted_services.sort(key=lambda e: int(e.get('port')))
+            for fact in sorted_services:
+                link_text = ''
+                if 'methodology_links' in fact.__class__.__dict__:
+                    links = fact.__class__.__dict__['methodology_links']
+                    if links:
+                        link_text = ', ' + ', '.join(links)
+                if isinstance(fact, TcpIpService):
+                    print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
+                if isinstance(fact, UdpIpService):
+                    print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
 
     def show_products(self, command: list[str]):
         products_by_service: dict[str, set[str]] = dict()

@@ -119,10 +119,10 @@ urls
 
 ### info 
 
-Arguments: `n [ ... ]`
+Arguments: `<n or name> [ ... ]`
 
 Displays detailed information about a recommended tool. Arguments are one or more numbers shown to the left of the
-recommendation. The numbers change as recommendations change!
+recommendation, or a tool name. The numbers change as recommendations change!
 
 ```
 [$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
@@ -140,6 +140,16 @@ https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-for
 
 ## example command
 feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+
+tests/fixtures shadycompass > info feroxbuster
+
+# feroxbuster
+
+## tool links
+https://github.com/epi052/feroxbuster
+
+## methodology
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
 ```
 
 ### save
@@ -286,10 +296,11 @@ Displays the things shady compass knows about to make recommendations. This is u
 
 ### ratelimit
 
-TODO: not yet implemented
-
-The rate limit is expressed in requests per second. Command that use other units will convert to be equivalent to
+The rate limit is expressed in requests per second. Tools that use other units will convert to be equivalent to
 requests per second.
+
+Local setting of ratelimit will apply it to all targets. Global setting will only apply when that target is
+considered a production target. See `production` below.
 
 ```
 shadycompass> set ratelimit 5
@@ -303,15 +314,17 @@ shadycompass> unset global ratelimit 8
 
 ### production
 
-TODO: not yet implemented
-
 Mark the targets as production. Production targets are considered more sensitive. Tools will select safer options. The
 user is still expected to know your tools and your targets! Don't copy and paste without reviewing the commands.
+
+Production targets will always use rate limiting, if configured.
 
 ```
 shadycompass> set production true
 
 shadycompass> set production false
+
+shadycompass> set global production true
 
 shadycompass> unset production
  ```

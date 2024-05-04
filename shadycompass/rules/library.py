@@ -9,3 +9,7 @@ METHOD_HTTP_BRUTE_FORCE = [
 METHOD_HTTP_AUTOMATIC_SCANNERS = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#automatic-scanners'
 ]
+
+METHOD_NETWORK = [
+    'https://book.hacktricks.xyz/generic-methodologies-and-resources/pentesting-network'
+]

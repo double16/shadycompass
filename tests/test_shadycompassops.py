@@ -9,6 +9,7 @@ from shadycompass.config import set_local_config_path, set_global_config_path, C
     ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
     NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl
+from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn
 
 
@@ -193,6 +194,12 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.tool_info(['info', '10'])
         self.assertTrue('[-]' in self.fd_out.output)
 
+    def test_tool_info_name(self):
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
+        self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
+        self.ops.tool_info(['info', 'feroxbuster'])
+        self.assertTrue('feroxbuster' in self.fd_out.output)
+
     def test_gtnw(self):
         self.ops.global_thermo_nuclear_war()
         self.assertTrue(len(self.fd_out.output) > 0)
@@ -291,3 +298,20 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.use_tool(['use', 'global', 'dirb', '--reset-options'])
         value = self.ops.engine.config_get(SECTION_OPTIONS, 'dirb', True)
         self.assertIsNone(value)
+
+    def test_config_ratelimit(self):
+        self.ops.use_tool(['use', 'dirb'])
+        self.ops.set_config_value(['set', 'ratelimit', '5'])
+        self.ops.refresh()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=NmapRules.nmap_tool_name,
+            command_line=['-p-', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml', '--max-rate', '5',
+                          '$IP'],
+        ), self.ops.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=NmapRules.nmap_tool_name,
+            command_line=['--top-ports=100', '-sV', '-sC', '-oN', 'nmap-tcp-100.txt', '-oX', 'nmap-tcp-100.xml',
+                          '--max-rate', '5', '$IP'],
+        ), self.ops.engine)

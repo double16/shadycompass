@@ -71,8 +71,8 @@ help
     show this text
 exit, quit, x, q
     quit, eh?
-info n [ ... ]
-    show information on a recommendation, multiple numbers (separated by whitespace) accepted
+info <n or name> [ ... ]
+    show information on a recommendation, multiple numbers (separated by whitespace) accepted or tool names
 save
     save configuration changes to {get_local_config_path()} (local) and {get_global_config_path()} (global) 
 use [global] <tool> [--reset-options]

@@ -1,11 +1,15 @@
-from experta import Rule, DefFacts, OR, AS
+from abc import ABC
 
-from shadycompass.config import ToolCategory, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended
-from shadycompass.facts import HttpBustingNeeded
+from experta import Rule, DefFacts, OR, AS, NOT, MATCH
+from math import floor
+
+from shadycompass.config import ToolCategory, PreferredTool, ToolAvailable, OPTION_VALUE_ALL
+from shadycompass.facts import HttpBustingNeeded, RateLimitEnable
+from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_HTTP_BRUTE_FORCE
 
 
-class WfuzzRules:
+class WfuzzRules(IRules, ABC):
     wfuzz_tool_name = 'wfuzz'
 
     @DefFacts()
@@ -15,27 +19,48 @@ class WfuzzRules:
             name=self.wfuzz_tool_name,
             tool_links=[
                 'http://www.edge-security.com/wfuzz.php',
+                'https://www.kali.org/tools/wfuzz/',
             ],
             methodology_links=METHOD_HTTP_BRUTE_FORCE,
         )
 
-    @Rule(
-        AS.f1 << HttpBustingNeeded(),
-        OR(PreferredTool(category=ToolCategory.http_buster, name=wfuzz_tool_name),
-           PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL))
-    )
-    def run_wfuzz(self, f1: HttpBustingNeeded):
+    def _declare_wfuzz(self, f1: HttpBustingNeeded, ratelimit: RateLimitEnable = None):
+        more_options = []
+        if ratelimit:
+            more_options.append(['-t', '1', '-s', str(floor(60 / ratelimit.get_request_per_second()))])
         command_line = self.resolve_command_line(
             self.wfuzz_tool_name,
             [
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
                 '-f', f'wfuzz-{f1.get_port()}-{f1.get_vhost()}.json,json',
-                f'{f1.get_url()}/FUZZ',
-            ]
+            ], *more_options
         )
-        self.declare(ToolRecommended(
+        command_line.append(f'{f1.get_url()}/FUZZ')
+        self.recommend_tool(
             category=ToolCategory.http_buster,
             name=self.wfuzz_tool_name,
+            variant=None,
             command_line=command_line,
-        ))
+            addr=f1.get_addr(),
+            port=f1.get_port(),
+            hostname=f1.get_vhost(),
+        )
+
+    @Rule(
+        AS.f1 << HttpBustingNeeded(addr=MATCH.addr),
+        OR(PreferredTool(category=ToolCategory.http_buster, name=wfuzz_tool_name),
+           PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL)),
+        NOT(RateLimitEnable(addr=MATCH.addr))
+    )
+    def run_wfuzz(self, f1: HttpBustingNeeded):
+        self._declare_wfuzz(f1)
+
+    @Rule(
+        AS.f1 << HttpBustingNeeded(addr=MATCH.addr),
+        AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
+        OR(PreferredTool(category=ToolCategory.http_buster, name=wfuzz_tool_name),
+           PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL)),
+    )
+    def run_wfuzz_ratelimit(self, f1: HttpBustingNeeded, ratelimit: RateLimitEnable):
+        self._declare_wfuzz(f1, ratelimit)

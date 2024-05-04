@@ -2,9 +2,10 @@ import json
 
 from experta import Fact
 
+from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetHostname, TargetIPv4Address, \
     HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution, HttpService, fact_reader_registry, \
-    parse_products, Product, normalize_os_type, VulnScanPresent
+    parse_products, Product, normalize_os_type, ScanPresent
 from shadycompass.facts.services import create_service_facts
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
@@ -31,7 +32,7 @@ class NucleiJsonFactReader(FactReader):
             if hostname:
                 result.add(TargetHostname(hostname=hostname))
             if addr:
-                result.add(VulnScanPresent(name=NucleiRules.nuclei_tool_name, addr=addr))
+                result.add(ScanPresent(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name, addr=addr))
                 if '.' in addr:
                     result.add(TargetIPv4Address(addr=addr))
                     if hostname:

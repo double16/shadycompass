@@ -4,9 +4,10 @@ from urllib.parse import urlparse
 
 from experta import Fact
 
+from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetHostname, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    PortScanPresent
+    ScanPresent, OperatingSystem
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -38,12 +39,12 @@ class NmapXmlFactReader(FactReader):
                     addr = el.attrib['addr']
                     ipv4.add(addr)
                     result.append(TargetIPv4Address(addr=addr))
-                    result.append(PortScanPresent(name=NmapRules.nmap_tool_name, addr=addr))
+                    result.append(ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr=addr))
                 elif el.attrib['addrtype'] == 'ipv6':
                     addr = el.attrib['addr']
                     ipv6.add(addr)
                     result.append(TargetIPv6Address(addr=addr))
-                    result.append(PortScanPresent(name=NmapRules.nmap_tool_name, addr=addr))
+                    result.append(ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr=addr))
             elif el.tag == 'hostnames':
                 for hostname_el in el:
                     if hostname_el.tag == 'hostname':
@@ -125,6 +126,8 @@ class NmapXmlFactReader(FactReader):
                             result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
 
             if state == 'open':
+                if os_type:
+                    result.extend(spread_addrs(OperatingSystem, addrs, port=port, os_type=os_type))
                 create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
 
         return result
