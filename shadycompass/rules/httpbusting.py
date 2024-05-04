@@ -1,14 +1,17 @@
+from abc import ABC
+
 from experta import Rule, OR, AS, MATCH, NOT
 
 from shadycompass.facts import HttpService, HttpUrl, HttpBustingNeeded, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution
+from shadycompass.rules.irules import IRules
 
 """
 Rules to decide if we need to bust HTTP servers.
 """
 
 
-class HttpBusting:
+class HttpBusting(IRules, ABC):
     @Rule(
         AS.f1 << HttpService(addr=MATCH.addr, port=MATCH.port),
         OR(TargetIPv4Address(addr=MATCH.addr), TargetIPv6Address(addr=MATCH.addr)),

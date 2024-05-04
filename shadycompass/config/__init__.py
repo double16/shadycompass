@@ -1,13 +1,18 @@
 import os
+from abc import ABC
 from configparser import ConfigParser
 from typing import Union
 
 from experta import Fact, Field, Rule, AS, MATCH, NOT
 
 from shadycompass.facts import FactReader, fact_reader_registry
+from shadycompass.rules.irules import IRules
 
 SECTION_TOOLS = 'tools'
 SECTION_OPTIONS = 'options'
+SECTION_DEFAULT = 'general'
+OPTION_RATELIMIT = 'ratelimit'
+OPTION_PRODUCTION = 'production'
 OPTION_VALUE_ALL = '*'
 
 
@@ -98,25 +103,32 @@ def get_enum_from_string(enum_class, string_value):
     raise ValueError(f"No enum member with name '{string_value}'")
 
 
-def combine_command_options(base: list[str], additional: list[str]) -> list[str]:
+def combine_command_options(base: list[str], *args) -> list[str]:
     result = base.copy()
-    remove_idxs: list[int] = []
-    for idx, opt in enumerate(additional[0:-1]):
-        if not opt.startswith('-') or additional[idx + 1].startswith('-'):
+    for arg in args:
+        if isinstance(arg, list):
+            additional = arg
+        else:
+            additional = [str(arg)]
+        if not additional:
             continue
-        try:
-            idx2 = result.index(opt, 0, len(result) - 1)
-            if idx2 >= 0:
-                result[idx2 + 1] = additional[idx + 1]
-                remove_idxs.append(idx)
-                remove_idxs.append(idx + 1)
-        except ValueError:
-            pass
-    remove_idxs.reverse()
-    addl = additional.copy()
-    for idx in remove_idxs:
-        addl.pop(idx)
-    result.extend(addl)
+        remove_idxs: list[int] = []
+        for idx, opt in enumerate(additional[0:-1]):
+            if not opt.startswith('-') or additional[idx + 1].startswith('-'):
+                continue
+            try:
+                idx2 = result.index(opt, 0, len(result) - 1)
+                if idx2 >= 0:
+                    result[idx2 + 1] = additional[idx + 1]
+                    remove_idxs.append(idx)
+                    remove_idxs.append(idx + 1)
+            except ValueError:
+                pass
+        remove_idxs.reverse()
+        addl = additional.copy()
+        for idx in remove_idxs:
+            addl.pop(idx)
+        result.extend(addl)
     return result
 
 
@@ -156,14 +168,23 @@ class ToolChoiceNeeded(Fact):
 class ToolRecommended(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
+    """ The name of the tool as run from the command line. """
+    variation = Field(str, mandatory=False)
+    """ If a tool is recommended multiple times, provide a variant to identify it. Not shown to the user."""
     command_line = Field(list[str], mandatory=False)
+    """ Command line to run without the tool name. """
     addr = Field(str, mandatory=False)
+    port = Field(int, mandatory=False)
+    hostname = Field(str, mandatory=False)
 
     def get_category(self) -> str:
         return self.get('category')
 
     def get_name(self) -> str:
         return self.get('name')
+
+    def get_variation(self) -> str:
+        return self.get('variation')
 
     def get_command_line(self) -> list[str]:
         if 'command_line' in self:
@@ -173,8 +194,16 @@ class ToolRecommended(Fact):
     def get_addr(self) -> str:
         return self.get('addr')
 
+    def get_port(self) -> Union[int, None]:
+        if 'port' in self:
+            return int(self.get('port'))
+        return None
 
-class ConfigRules:
+    def get_hostname(self) -> str:
+        return self.get('hostname')
+
+
+class ConfigRules(IRules, ABC):
     def _get_tools(self, category: str) -> list[ToolAvailable]:
         tools = []
         for fact in self.facts.values():

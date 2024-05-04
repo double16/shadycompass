@@ -1,5 +1,6 @@
 from shadycompass import ToolRecommended
-from shadycompass.config import ToolCategory, PreferredTool, SECTION_OPTIONS
+from shadycompass.config import ToolCategory, PreferredTool, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT, \
+    OPTION_PRODUCTION
 from shadycompass.facts import ScanNeeded, ScanPresent, TargetIPv4Address
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 from tests.rules.base import RulesBase
@@ -46,5 +47,24 @@ class NucleiTest(RulesBase):
             category=ToolCategory.vuln_scanner,
             name=NucleiRules.nuclei_tool_name,
             command_line=['-target', '$IP', '-json-export', 'nuclei-$IP.json', '--nuclei-option'],
+            addr=ScanNeeded.ANY
+        ), self.engine)
+
+    def test_no_scan_recommend_nuclei_ratelimit(self):
+        self.engine.declare(PreferredTool(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name))
+        self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', False)
+        self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.vuln_scanner), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.vuln_scanner,
+            name=NucleiRules.nuclei_tool_name,
+            command_line=['-target', '$IP', '-json-export', 'nuclei-$IP.json', '-rate-limit', '5'],
+            addr=ScanNeeded.ANY
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.vuln_scanner,
+            name=NucleiRules.nuclei_tool_name,
+            command_line=['-target', '$IP', '-json-export', 'nuclei-$IP.json'],
             addr=ScanNeeded.ANY
         ), self.engine)

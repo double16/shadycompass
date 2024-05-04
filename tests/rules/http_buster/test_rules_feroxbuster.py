@@ -1,7 +1,8 @@
-from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS
+from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, \
+    OPTION_RATELIMIT, OPTION_PRODUCTION
 from shadycompass.rules.http_buster.feroxbuster import FeroxBusterRules
 from tests.rules.base import RulesBase
-from tests.tests import assertFactIn
+from tests.tests import assertFactIn, assertFactNotIn
 
 
 class FeroxBusterTest(RulesBase):
@@ -16,15 +17,15 @@ class FeroxBusterTest(RulesBase):
             category=ToolCategory.http_buster,
             name=FeroxBusterRules.feroxbuster_tool_name,
             command_line=['-u', 'http://hospital.htb:8080',
-                          '-o', "feroxbuster-8080-hospital.htb.txt",
-                          '--scan-limit', '4', '--insecure'],
+                          '-o', "feroxbuster-8080-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '4'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=FeroxBusterRules.feroxbuster_tool_name,
             command_line=['-u', 'https://hospital.htb:443',
-                          '-o', "feroxbuster-443-hospital.htb.txt",
-                          '--scan-limit', '4', '--insecure'],
+                          '-o', "feroxbuster-443-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '4'],
         ), self.engine)
 
     def test_feroxbuster_options(self):
@@ -35,6 +36,40 @@ class FeroxBusterTest(RulesBase):
             category=ToolCategory.http_buster,
             name=FeroxBusterRules.feroxbuster_tool_name,
             command_line=['-u', 'http://hospital.htb:8080',
-                          '-o', "feroxbuster-8080-hospital.htb.txt",
-                          '--scan-limit', '53', '--insecure'],
+                          '-o', "feroxbuster-8080-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '53'],
+        ), self.engine)
+
+    def test_feroxbuster_ratelimit(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, FeroxBusterRules.feroxbuster_tool_name, True)
+        self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', True)
+        self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=FeroxBusterRules.feroxbuster_tool_name,
+            command_line=['-u', 'http://hospital.htb:8080',
+                          '-o', "feroxbuster-8080-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '1', '--rate-limit', '5'],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=FeroxBusterRules.feroxbuster_tool_name,
+            command_line=['-u', 'https://hospital.htb:443',
+                          '-o', "feroxbuster-443-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '1', '--rate-limit', '5'],
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=FeroxBusterRules.feroxbuster_tool_name,
+            command_line=['-u', 'http://hospital.htb:8080',
+                          '-o', "feroxbuster-8080-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '4'],
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=FeroxBusterRules.feroxbuster_tool_name,
+            command_line=['-u', 'https://hospital.htb:443',
+                          '-o', "feroxbuster-443-hospital.htb.txt", '--insecure',
+                          '--scan-limit', '4'],
         ), self.engine)

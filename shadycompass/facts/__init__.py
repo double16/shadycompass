@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from experta import Fact, Field
 
-HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
 
 
@@ -117,26 +117,23 @@ class HostnameIPv6Resolution(Fact):
         return self.get('implied')
 
 
-class TcpIpService(Fact):
+class HasIpService(Fact):
     addr = Field(str, mandatory=True)
     port = Field(int, mandatory=True)
 
-    def get_target(self):
+    def get_addr(self):
         return self.get('addr')
 
     def get_port(self):
         return self.get('port')
 
 
-class UdpIpService(Fact):
-    addr = Field(str, mandatory=True)
-    port = Field(int, mandatory=True)
+class TcpIpService(HasIpService):
+    pass
 
-    def get_target(self):
-        return self.get('addr')
 
-    def get_port(self):
-        return self.get('port')
+class UdpIpService(HasIpService):
+    pass
 
 
 class HasTLS(Fact):
@@ -702,7 +699,10 @@ class OperatingSystem(Fact):
     addr = Field(str, mandatory=True)
     port = Field(int, mandatory=True)
     hostname = Field(str, mandatory=False)
-    os_type = Field(str, mandatory=True)
+    os_type = Field(str, mandatory=True)  # OSTYPE_* constants: windows, linux, mac, ...
+    name = Field(str, mandatory=False)  # Windows, Ubuntu, ...
+    version = Field(str, mandatory=False)  # 10 (Windows 10), 22.04 (Ubuntu)
+    kernel_version = Field(str, mandatory=False)
 
 
 OSTYPE_WINDOWS = 'windows'
@@ -780,3 +780,24 @@ def parse_products(value: str, **kwargs) -> list[Product]:
     for match in re.findall(PRODUCT_PATTERN, value):
         result.add(Product(product=match[0].lower(), version=match[1].lower(), **kwargs))
     return list(result)
+
+
+class RateLimitEnable(Fact):
+    addr = Field(str, mandatory=True)
+    request_per_second = Field(int, mandatory=True)
+
+    def get_addr(self):
+        return self.get('addr')
+
+    def get_request_per_second(self) -> int:
+        return int(self.get('request_per_second'))
+
+
+class ProductionTarget(Fact):
+    """
+    Marks a target as production and needing extra care not to disrupt.
+    """
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self):
+        return self.get('addr')

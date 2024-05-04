@@ -1,10 +1,13 @@
+from abc import ABC
+
 from experta import Rule, NOT, OR, MATCH, AS, EXISTS
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import ScanNeeded, ScanPresent, TargetIPv4Address, TargetIPv6Address
+from shadycompass.rules.irules import IRules
 
 
-class VulnScan:
+class VulnScan(IRules, ABC):
     @Rule(
         OR(TargetIPv4Address(addr=MATCH.addr), TargetIPv6Address(addr=MATCH.addr)),
         NOT(ScanPresent(category=ToolCategory.vuln_scanner, addr=MATCH.addr)),

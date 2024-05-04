@@ -4,7 +4,7 @@ from shadycompass.config import ToolCategory
 from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, TcpIpService, \
     DomainTcpIpService, HttpService, WinRMService, Kerberos5SecTcpService, MicrosoftRpcService, NetbiosSessionService, \
     LdapService, SmbService, RdpService, MsmqService, Product, OSTYPE_WINDOWS, DotNetMessageFramingService, \
-    MicrosoftRpcHttpService, SshService, ScanPresent
+    MicrosoftRpcHttpService, SshService, ScanPresent, OperatingSystem
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -17,7 +17,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
 
     def test_read_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.xml')
-        self.assertEqual(59, len(facts))
+        self.assertEqual(80, len(facts))
         self.assertIn(ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         self.assertIn(TargetHostname(hostname='hospital.htb'), facts)
@@ -65,6 +65,8 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(TargetHostname(hostname='webmail.hospital.htb'), facts)
         self.assertIn(HostnameIPv4Resolution(hostname='webmail.hospital.htb', addr='10.129.229.189', implied=True),
                       facts)
+        self.assertIn(OperatingSystem(addr='10.129.229.189', port=593, os_type='windows'), facts)
+        self.assertIn(OperatingSystem(addr='10.129.229.189', port=22, os_type='linux'), facts)
 
     def test_ignore_not_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.txt')

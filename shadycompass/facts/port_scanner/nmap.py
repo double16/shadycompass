@@ -7,7 +7,7 @@ from experta import Fact
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetHostname, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    ScanPresent
+    ScanPresent, OperatingSystem
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -126,6 +126,8 @@ class NmapXmlFactReader(FactReader):
                             result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
 
             if state == 'open':
+                if os_type:
+                    result.extend(spread_addrs(OperatingSystem, addrs, port=port, os_type=os_type))
                 create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
 
         return result

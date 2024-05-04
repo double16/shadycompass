@@ -119,10 +119,10 @@ urls
 
 ### info 
 
-Arguments: `n [ ... ]`
+Arguments: `<n or name> [ ... ]`
 
 Displays detailed information about a recommended tool. Arguments are one or more numbers shown to the left of the
-recommendation. The numbers change as recommendations change!
+recommendation, or a tool name. The numbers change as recommendations change!
 
 ```
 [$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
@@ -140,6 +140,16 @@ https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-for
 
 ## example command
 feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+
+tests/fixtures shadycompass > info feroxbuster
+
+# feroxbuster
+
+## tool links
+https://github.com/epi052/feroxbuster
+
+## methodology
+https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
 ```
 
 ### save

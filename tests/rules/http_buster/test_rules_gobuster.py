@@ -1,7 +1,8 @@
-from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS
+from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, \
+    OPTION_RATELIMIT, OPTION_PRODUCTION
 from shadycompass.rules.http_buster.gobuster import GoBusterRules
 from tests.rules.base import RulesBase
-from tests.tests import assertFactIn
+from tests.tests import assertFactIn, assertFactNotIn
 
 
 class GobusterTest(RulesBase):
@@ -42,5 +43,49 @@ class GobusterTest(RulesBase):
                 'dir', '-k',
                 '-o', "gobuster-8080-hospital.htb.txt",
                 '-u', 'http://hospital.htb:8080', '--retry'
+            ],
+        ), self.engine)
+
+    def test_gobuster_ratelimit(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, GoBusterRules.gobuster_tool_name, True)
+        self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', True)
+        self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=GoBusterRules.gobuster_tool_name,
+            command_line=[
+                'dir', '-k',
+                '-o', "gobuster-8080-hospital.htb.txt",
+                '-u', 'http://hospital.htb:8080',
+                '--threads', '1', '--delay', '12000ms'
+            ],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=GoBusterRules.gobuster_tool_name,
+            command_line=[
+                'dir', '-k',
+                '-o', "gobuster-443-hospital.htb.txt",
+                '-u', 'https://hospital.htb:443',
+                '--threads', '1', '--delay', '12000ms'
+            ],
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=GoBusterRules.gobuster_tool_name,
+            command_line=[
+                'dir', '-k',
+                '-o', "gobuster-8080-hospital.htb.txt",
+                '-u', 'http://hospital.htb:8080'
+            ],
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=GoBusterRules.gobuster_tool_name,
+            command_line=[
+                'dir', '-k',
+                '-o', "gobuster-443-hospital.htb.txt",
+                '-u', 'https://hospital.htb:443'
             ],
         ), self.engine)

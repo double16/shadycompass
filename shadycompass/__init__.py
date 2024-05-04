@@ -7,7 +7,7 @@ import sys
 from configparser import ConfigParser
 from typing import Union
 
-from experta import KnowledgeEngine
+from experta import KnowledgeEngine, Fact
 
 import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
@@ -96,12 +96,55 @@ class ShadyCompassEngine(
             value = self.config_get(section, option, True)
         return default_value if value is None else value
 
-    def resolve_command_line(self, tool_name: str, options: list[str]) -> list[str]:
+    def resolve_command_line(self, tool_name: str, options: list[str], *args) -> list[str]:
         additional_str = self.config_get_fallback(SECTION_OPTIONS, tool_name)
-        if not additional_str:
-            return options
-        additional = shlex.split(additional_str)
-        return combine_command_options(options, additional)
+        if additional_str:
+            additional = shlex.split(additional_str)
+        else:
+            additional = []
+        return combine_command_options(options, additional, *args)
+
+    def get_matches(self, query: Fact) -> list[Fact]:
+        """ Get facts that have attributes equal to those specified in the query. """
+
+        def _is_match(fact: Fact, f1: Fact) -> bool:
+            if type(fact) != type(f1):
+                return False
+            for k, v in fact.items():
+                v1 = f1.get(k)
+                if repr(v) != repr(v1):
+                    return False
+            return True
+
+        result: list[Fact] = []
+        for f1 in self.facts.values():
+            if _is_match(query, f1):
+                result.append(f1)
+        return result
+
+    def recommend_tool(self,
+                       category: str,
+                       name: str,
+                       variant: str,
+                       command_line: list[str],
+                       addr: Union[str, None] = None,
+                       hostname: Union[str, None] = None,
+                       port: Union[int, None] = None):
+        query = {'category': category, 'name': name}
+        if variant is not None:
+            query['variant'] = variant
+        if addr is not None:
+            query['addr'] = addr
+        if port is not None:
+            query['port'] = port
+        if hostname is not None:
+            query['hostname'] = hostname
+        existing = self.get_matches(ToolRecommended(**query))
+        if existing:
+            for fact in existing:
+                self.modify(fact, command_line=command_line)
+        else:
+            self.declare(ToolRecommended(command_line=command_line, **query))
 
 
 class ShadyCompassOps(object):
@@ -168,25 +211,33 @@ class ShadyCompassOps(object):
         for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
             tools[fact.get('name')] = fact
         for arg in command[1:]:
+            tr: Union[ToolRecommended, None] = None
+            ta: Union[ToolAvailable, None]
             try:
                 i = int(arg) - 1
                 if 0 <= i < len(recommends):
-                    tr: ToolRecommended = recommends[i]
-                    ta: ToolAvailable = tools[tr.get_name()]
-                    print(f'\n# {ta.get_name()}', file=self.fd_out)
-                    if ta.get_tool_links():
-                        print('\n## tool links')
-                        print('\n'.join(ta.get_tool_links()), file=self.fd_out)
-                    if ta.get_methodology_links():
-                        print('\n## methodology')
-                        print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
-                    print('\n## example command\n```shell')
-                    print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
-                    print('```')
+                    tr = recommends[i]
+                    ta = tools[tr.get_name()]
                 else:
                     print(f'[-] invalid number, expecting 1-{len(recommends)}', file=self.fd_out)
+                    continue
             except ValueError:
-                print(f'[-] number expected: {arg}', file=self.fd_out)
+                if arg.lower() in tools:
+                    ta = tools[arg]
+                else:
+                    print(f'[-] unknown tool: {arg}', file=self.fd_out)
+                    continue
+            print(f'\n# {ta.get_name()}', file=self.fd_out)
+            if ta.get_tool_links():
+                print('\n## tool links')
+                print('\n'.join(ta.get_tool_links()), file=self.fd_out)
+            if ta.get_methodology_links():
+                print('\n## methodology')
+                print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
+            if tr:
+                print('\n## example command\n```shell')
+                print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
+                print('```')
 
     def print_banner(self):
         print("""
