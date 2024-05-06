@@ -2,7 +2,8 @@ from abc import ABC
 
 from experta import DefFacts, Rule, AS, OR, NOT, MATCH
 
-from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
+from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended, \
+    ConfigFact, SECTION_OPTIONS
 from shadycompass.facts import ScanNeeded, ScanPresent, RateLimitEnable
 from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_HTTP_AUTOMATIC_SCANNERS
@@ -54,6 +55,8 @@ class NucleiRules(IRules, ABC):
             PreferredTool(category=ToolCategory.vuln_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.vuln_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nuclei_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nuclei_tool_name))),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
     def run_nuclei(self, f1: ScanNeeded):
@@ -67,6 +70,8 @@ class NucleiRules(IRules, ABC):
             PreferredTool(category=ToolCategory.vuln_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.vuln_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nuclei_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nuclei_tool_name))),
     )
     def run_nuclei_ratelimit(self, f1: ScanNeeded, ratelimit: RateLimitEnable):
         self._declare_nuclei(f1, ratelimit)

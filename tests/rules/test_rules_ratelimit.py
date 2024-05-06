@@ -20,13 +20,13 @@ class RateLimitRulesTest(RulesBase):
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '10', False)
         self.engine.run()
         assertFactIn(RateLimitEnable(addr=ScanNeeded.ANY, request_per_second=10), self.engine)
-        assertFactIn(RateLimitEnable(request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=10), self.engine)
 
     def test_local_override_global_non_prod(self):
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', True)
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '10', False)
         self.engine.run()
-        assertFactIn(RateLimitEnable(request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=10), self.engine)
         assertFactIn(RateLimitEnable(addr=ScanNeeded.ANY, request_per_second=10), self.engine)
 
     def test_global_ratelimit(self):
@@ -39,14 +39,16 @@ class RateLimitRulesTest(RulesBase):
         self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '10', False)
         self.engine.run()
-        assertFactIn(RateLimitEnable(request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr=ScanNeeded.ANY, request_per_second=10), self.engine)
 
     def test_local_override_global(self):
         self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', True)
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '10', False)
         self.engine.run()
-        assertFactIn(RateLimitEnable(request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr=ScanNeeded.ANY, request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=10), self.engine)
 
     def test_global_ratelimit_retract(self):
         self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
@@ -61,7 +63,8 @@ class RateLimitRulesTest(RulesBase):
         self.engine.config_set(SECTION_DEFAULT, OPTION_PRODUCTION, 'true', True)
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '10', False)
         self.engine.run()
-        assertFactIn(RateLimitEnable(request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr=ScanNeeded.ANY, request_per_second=10), self.engine)
         self.engine.config_unset(SECTION_DEFAULT, OPTION_RATELIMIT, False)
         self.engine.run()
         assertFactNotIn(RateLimitEnable(), self.engine)
@@ -71,10 +74,10 @@ class RateLimitRulesTest(RulesBase):
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', True)
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '10', False)
         self.engine.run()
-        assertFactIn(RateLimitEnable(request_per_second=10), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=10), self.engine)
         self.engine.config_unset(SECTION_DEFAULT, OPTION_RATELIMIT, False)
         self.engine.run()
-        assertFactIn(RateLimitEnable(request_per_second=5), self.engine)
+        assertFactIn(RateLimitEnable(addr='10.129.229.189', request_per_second=5), self.engine)
 
     def test_ratelimit_public_ip(self):
         self.engine.config_set(SECTION_DEFAULT, OPTION_RATELIMIT, '5', True)

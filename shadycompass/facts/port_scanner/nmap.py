@@ -5,9 +5,9 @@ from urllib.parse import urlparse
 from experta import Fact
 
 from shadycompass.config import ToolCategory
-from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetHostname, TargetIPv6Address, \
+from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    ScanPresent, OperatingSystem
+    ScanPresent, OperatingSystem, guess_target
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -52,17 +52,19 @@ class NmapXmlFactReader(FactReader):
                     if hostname_el.tag == 'hostname':
                         hostname = hostname_el.attrib['name']
                         hostnames.add(hostname)
-                        result.append(TargetHostname(hostname=hostname))
+                        result.append(guess_target(hostname))
             elif el.tag == 'ports':
                 result.extend(self._parse_ports(ipv4.union(ipv6), hostnames, el))
 
         for addr in ipv4:
             for hostname in hostnames:
-                result.append(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
+                if hostname != addr:
+                    result.append(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
 
         for addr in ipv6:
             for hostname in hostnames:
-                result.append(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
+                if hostname != addr:
+                    result.append(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
 
         return result
 
@@ -120,12 +122,14 @@ class NmapXmlFactReader(FactReader):
             for redirect_el in port_el.findall(".//elem[@key='redirect_url']"):
                 url = urlparse(redirect_el.text)
                 if url.hostname and url.hostname not in hostnames:
-                    result.append(TargetHostname(hostname=url.hostname))
+                    result.append(guess_target(url.hostname))
                     for addr in addrs:
                         if '.' in addr:
-                            result.append(HostnameIPv4Resolution(hostname=url.hostname, addr=addr, implied=True))
+                            if addr != url.hostname:
+                                result.append(HostnameIPv4Resolution(hostname=url.hostname, addr=addr, implied=True))
                         else:
-                            result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
+                            if addr != url.hostname:
+                                result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
 
             if state == 'open':
                 if os_type:

@@ -15,27 +15,28 @@ class HttpBustingTest(RulesBase):
         self.engine.run()
 
     def test_httpbusting_needed(self):
-        assertFactIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'), self.engine)
-        assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb'),
+        assertFactIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test'),
+                     self.engine)
+        assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test'),
                      self.engine)
 
     def test_httpbusting_not_needed(self):
-        self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb',
-                                    url="https://hospital.htb/"))
-        self.engine.declare(HttpUrl(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb',
-                                    url="https://hospital.htb/"))
+        self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test',
+                                    url="https://shadycompass.test/"))
+        self.engine.declare(HttpUrl(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test',
+                                    url="https://shadycompass.test/"))
         self.engine.run()
-        assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'),
+        assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test'),
                         self.engine)
-        assertFactNotIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb'),
+        assertFactNotIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test'),
                         self.engine)
 
     def test_httpbusting_retract(self):
         self.engine.run()
-        self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb',
-                                    url="https://hospital.htb/"))
+        self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test',
+                                    url="https://shadycompass.test/"))
         self.engine.run()
-        assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'),
+        assertFactNotIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test'),
                         self.engine)
-        assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='hospital.htb'),
+        assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test'),
                      self.engine)

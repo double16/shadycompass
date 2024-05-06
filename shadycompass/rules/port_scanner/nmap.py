@@ -2,7 +2,8 @@ from abc import ABC
 
 from experta import DefFacts, Rule, AS, OR, NOT, MATCH
 
-from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
+from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended, \
+    ConfigFact, SECTION_OPTIONS
 from shadycompass.facts import ScanNeeded, RateLimitEnable
 from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_NETWORK
@@ -85,6 +86,8 @@ class NmapRules(IRules, ABC):
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name))),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
     def run_nmap(self, f1: ScanNeeded):
@@ -98,6 +101,8 @@ class NmapRules(IRules, ABC):
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name))),
     )
     def run_nmap_ratelimit(self, f1: ScanNeeded, ratelimit: RateLimitEnable):
         self._declare_nmap(f1, ratelimit)
@@ -109,6 +114,8 @@ class NmapRules(IRules, ABC):
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=rustscan_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=rustscan_tool_name))),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
     def run_rustscan(self, f1: ScanNeeded):

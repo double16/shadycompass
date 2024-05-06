@@ -1,5 +1,5 @@
-# Nmap 7.94 scan initiated Mon Jan  1 11:58:45 2024 as: nmap -p- -sV -sC -Pn -oN open-ports.txt -oX open-ports.xml --open hospital.htb
-Nmap scan report for hospital.htb (10.129.229.189)
+# Nmap 7.94 scan initiated Mon Jan  1 11:58:45 2024 as: nmap -p- -sV -sC -Pn -oN open-ports.txt -oX open-ports.xml --open shadycompass.test
+Nmap scan report for shadycompass.test (10.129.229.189)
 Host is up (0.045s latency).
 Not shown: 65507 filtered tcp ports (no-response)
 Some closed ports may be reported as filtered due to --defeat-rst-ratelimit
@@ -12,9 +12,9 @@ PORT     STATE SERVICE           VERSION
 88/tcp   open  kerberos-sec      Microsoft Windows Kerberos (server time: 2024-01-02 00:00:37Z)
 135/tcp  open  msrpc             Microsoft Windows RPC
 139/tcp  open  netbios-ssn       Microsoft Windows netbios-ssn
-389/tcp  open  ldap              Microsoft Windows Active Directory LDAP (Domain: hospital.htb0., Site: Default-First-Site-Name)
+389/tcp  open  ldap              Microsoft Windows Active Directory LDAP (Domain: shadycompass.test0., Site: Default-First-Site-Name)
 | ssl-cert: Subject: commonName=DC
-| Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb
+| Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test
 | Not valid before: 2023-09-06T10:49:03
 |_Not valid after:  2028-09-06T10:49:03
 443/tcp  open  ssl/http          Apache httpd 2.4.56 (OpenSSL/1.1.1t PHP/8.0.28)
@@ -31,7 +31,7 @@ PORT     STATE SERVICE           VERSION
 593/tcp  open  ncacn_http        Microsoft Windows RPC over HTTP 1.0
 636/tcp  open  ldapssl?
 | ssl-cert: Subject: commonName=DC
-| Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb
+| Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test
 | Not valid before: 2023-09-06T10:49:03
 |_Not valid after:  2028-09-06T10:49:03
 1801/tcp open  msmq?
@@ -39,27 +39,27 @@ PORT     STATE SERVICE           VERSION
 2105/tcp open  msrpc             Microsoft Windows RPC
 2107/tcp open  msrpc             Microsoft Windows RPC
 2179/tcp open  vmrdp?
-3268/tcp open  ldap              Microsoft Windows Active Directory LDAP (Domain: hospital.htb0., Site: Default-First-Site-Name)
+3268/tcp open  ldap              Microsoft Windows Active Directory LDAP (Domain: shadycompass.test0., Site: Default-First-Site-Name)
 | ssl-cert: Subject: commonName=DC
-| Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb
+| Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test
 | Not valid before: 2023-09-06T10:49:03
 |_Not valid after:  2028-09-06T10:49:03
 3269/tcp open  globalcatLDAPssl?
 | ssl-cert: Subject: commonName=DC
-| Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb
+| Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test
 | Not valid before: 2023-09-06T10:49:03
 |_Not valid after:  2028-09-06T10:49:03
 3389/tcp open  ms-wbt-server     Microsoft Terminal Services
-| ssl-cert: Subject: commonName=DC.hospital.htb
+| ssl-cert: Subject: commonName=DC.shadycompass.test
 | Not valid before: 2023-09-05T18:39:34
 |_Not valid after:  2024-03-06T18:39:34
 | rdp-ntlm-info: 
 |   Target_Name: HOSPITAL
 |   NetBIOS_Domain_Name: HOSPITAL
 |   NetBIOS_Computer_Name: DC
-|   DNS_Domain_Name: hospital.htb
-|   DNS_Computer_Name: DC.hospital.htb
-|   DNS_Tree_Name: hospital.htb
+|   DNS_Domain_Name: shadycompass.test
+|   DNS_Computer_Name: DC.shadycompass.test
+|   DNS_Tree_Name: shadycompass.test
 |   Product_Version: 10.0.17763
 |_  System_Time: 2024-01-02T00:01:33+00:00
 5985/tcp open  http              Microsoft HTTPAPI httpd 2.0 (SSDP/UPnP)

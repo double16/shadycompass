@@ -13,3 +13,7 @@ METHOD_HTTP_AUTOMATIC_SCANNERS = [
 METHOD_NETWORK = [
     'https://book.hacktricks.xyz/generic-methodologies-and-resources/pentesting-network'
 ]
+
+METHOD_SMB = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smb',
+]

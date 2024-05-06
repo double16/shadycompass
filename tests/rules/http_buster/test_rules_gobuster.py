@@ -18,8 +18,8 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-8080-hospital.htb.txt",
-                '-u', 'http://hospital.htb:8080'
+                '-o', "gobuster-8080-shadycompass.test.txt",
+                '-u', 'http://shadycompass.test:8080'
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -27,8 +27,8 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-443-hospital.htb.txt",
-                '-u', 'https://hospital.htb:443'
+                '-o', "gobuster-443-shadycompass.test.txt",
+                '-u', 'https://shadycompass.test:443'
             ],
         ), self.engine)
 
@@ -41,8 +41,8 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-8080-hospital.htb.txt",
-                '-u', 'http://hospital.htb:8080', '--retry'
+                '-o', "gobuster-8080-shadycompass.test.txt",
+                '-u', 'http://shadycompass.test:8080', '--retry'
             ],
         ), self.engine)
 
@@ -56,8 +56,8 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-8080-hospital.htb.txt",
-                '-u', 'http://hospital.htb:8080',
+                '-o', "gobuster-8080-shadycompass.test.txt",
+                '-u', 'http://shadycompass.test:8080',
                 '--threads', '1', '--delay', '12000ms'
             ],
         ), self.engine)
@@ -66,8 +66,8 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-443-hospital.htb.txt",
-                '-u', 'https://hospital.htb:443',
+                '-o', "gobuster-443-shadycompass.test.txt",
+                '-u', 'https://shadycompass.test:443',
                 '--threads', '1', '--delay', '12000ms'
             ],
         ), self.engine)
@@ -76,8 +76,8 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-8080-hospital.htb.txt",
-                '-u', 'http://hospital.htb:8080'
+                '-o', "gobuster-8080-shadycompass.test.txt",
+                '-u', 'http://shadycompass.test:8080'
             ],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
@@ -85,7 +85,7 @@ class GobusterTest(RulesBase):
             name=GoBusterRules.gobuster_tool_name,
             command_line=[
                 'dir', '-k',
-                '-o', "gobuster-443-hospital.htb.txt",
-                '-u', 'https://hospital.htb:443'
+                '-o', "gobuster-443-shadycompass.test.txt",
+                '-u', 'https://shadycompass.test:443'
             ],
         ), self.engine)

@@ -19,8 +19,8 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
-                '-f', 'wfuzz-8080-hospital.htb.json,json',
-                'http://hospital.htb:8080/FUZZ',
+                '-f', 'wfuzz-8080-shadycompass.test.json,json',
+                'http://shadycompass.test:8080/FUZZ',
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -29,8 +29,8 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
-                '-f', 'wfuzz-443-hospital.htb.json,json',
-                'https://hospital.htb:443/FUZZ',
+                '-f', 'wfuzz-443-shadycompass.test.json,json',
+                'https://shadycompass.test:443/FUZZ',
             ],
         ), self.engine)
 
@@ -44,8 +44,8 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404,500',
-                '-f', 'wfuzz-8080-hospital.htb.json,json',
-                'http://hospital.htb:8080/FUZZ',
+                '-f', 'wfuzz-8080-shadycompass.test.json,json',
+                'http://shadycompass.test:8080/FUZZ',
             ],
         ), self.engine)
 
@@ -60,9 +60,9 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
-                '-f', 'wfuzz-8080-hospital.htb.json,json',
+                '-f', 'wfuzz-8080-shadycompass.test.json,json',
                 '-t', '1', '-s', '12',
-                'http://hospital.htb:8080/FUZZ'
+                'http://shadycompass.test:8080/FUZZ'
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -71,9 +71,9 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
-                '-f', 'wfuzz-443-hospital.htb.json,json',
+                '-f', 'wfuzz-443-shadycompass.test.json,json',
                 '-t', '1', '-s', '12',
-                'https://hospital.htb:443/FUZZ'
+                'https://shadycompass.test:443/FUZZ'
             ],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
@@ -82,8 +82,8 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
-                '-f', 'wfuzz-8080-hospital.htb.json,json',
-                'http://hospital.htb:8080/FUZZ'
+                '-f', 'wfuzz-8080-shadycompass.test.json,json',
+                'http://shadycompass.test:8080/FUZZ'
             ],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
@@ -92,7 +92,7 @@ class WfuzzTest(RulesBase):
             command_line=[
                 '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
                 '--hc', '404',
-                '-f', 'wfuzz-443-hospital.htb.json,json',
-                'https://hospital.htb:443/FUZZ'
+                '-f', 'wfuzz-443-shadycompass.test.json,json',
+                'https://shadycompass.test:443/FUZZ'
             ],
         ), self.engine)

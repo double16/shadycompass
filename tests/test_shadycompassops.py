@@ -8,7 +8,7 @@ from shadycompass import ShadyCompassOps, TargetIPv4Address, TargetIPv6Address, 
 from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory, \
     ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
-    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl
+    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn
 
@@ -232,6 +232,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(SshService(addr='10.0.1.1', port=22))
         self.ops.engine.declare(DomainTcpIpService(addr='10.0.1.1', port=53))
         self.ops.engine.declare(DomainUdpIpService(addr='10.0.1.1', port=53))
+        self.ops.engine.declare(ImapService(addr='10.0.1.1', port=993, secure=True))
         self.ops.engine.declare(Kerberos5SecTcpService(addr='10.0.1.1', port=88))
         self.ops.engine.declare(MicrosoftRpcService(addr='10.0.1.1', port=135))
         self.ops.engine.declare(NetbiosSessionService(addr='10.0.1.1', port=139))
@@ -242,6 +243,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- 88/tcp ' in self.fd_out.output)
         self.assertTrue('- 135/tcp ' in self.fd_out.output)
         self.assertTrue('- 139/tcp ' in self.fd_out.output)
+        self.assertTrue('- 993/tcp imap/ssl,' in self.fd_out.output)
 
     def test_show_products(self):
         self.ops.engine.declare(Product(product='apache httpd', version='2.4.56', os_type=OSTYPE_WINDOWS,
@@ -257,13 +259,16 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- php/8.0.28' in self.fd_out.output)
 
     def test_show_urls(self):
-        self.ops.engine.declare(HttpUrl(port=443, vhost='hospital.htb', url='https://hospital.htb:443/examples'))
-        self.ops.engine.declare(HttpUrl(port=443, vhost='hospital.htb', url='https://hospital.htb:443/favicon.ico'))
-        self.ops.engine.declare(HttpUrl(port=443, vhost='hospital.htb', url='https://hospital.htb:443/index.php'))
+        self.ops.engine.declare(
+            HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test:443/examples'))
+        self.ops.engine.declare(
+            HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test:443/favicon.ico'))
+        self.ops.engine.declare(
+            HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test:443/index.php'))
         self.ops.show_urls([])
-        self.assertTrue('- https://hospital.htb:443/examples' in self.fd_out.output)
-        self.assertTrue('- https://hospital.htb:443/favicon.ico' in self.fd_out.output)
-        self.assertTrue('- https://hospital.htb:443/index.php' in self.fd_out.output)
+        self.assertTrue('- https://shadycompass.test:443/examples' in self.fd_out.output)
+        self.assertTrue('- https://shadycompass.test:443/favicon.ico' in self.fd_out.output)
+        self.assertTrue('- https://shadycompass.test:443/index.php' in self.fd_out.output)
 
     def test_tool_option_local(self):
         self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-files.txt'])

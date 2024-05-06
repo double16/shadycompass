@@ -1,6 +1,7 @@
 from experta import Fact
 
-from shadycompass.facts import FactReader, check_file_signature, HTTP_PATTERN, http_url
+from shadycompass.facts import FactReader, check_file_signature, HTTP_PATTERN, http_url, http_url_targets, \
+    fact_reader_registry
 
 
 class DirbReader(FactReader):
@@ -16,5 +17,8 @@ class DirbReader(FactReader):
                 m = HTTP_PATTERN.search(line)
                 if m:
                     result.append(http_url(m.group(0)))
-
+        result.extend(http_url_targets(result))
         return result
+
+
+fact_reader_registry.append(DirbReader())

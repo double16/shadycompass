@@ -14,7 +14,7 @@ from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
     set_local_config_path, SECTION_OPTIONS, combine_command_options
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
-    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl
+    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -473,15 +473,20 @@ Press enter/return at the prompt to refresh data.
             sorted_services = list(services)
             sorted_services.sort(key=lambda e: int(e.get('port')))
             for fact in sorted_services:
+                secure_text = ''
+                if isinstance(fact, HasTLS) and fact.is_secure():
+                    secure_text = '/ssl'
                 link_text = ''
                 if 'methodology_links' in fact.__class__.__dict__:
                     links = fact.__class__.__dict__['methodology_links']
                     if links:
                         link_text = ', ' + ', '.join(links)
                 if isinstance(fact, TcpIpService):
-                    print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
+                    print(f'- {fact.get_port()}/tcp {demangle(fact.__class__.__name__)}{secure_text}{link_text}',
+                          file=self.fd_out)
                 if isinstance(fact, UdpIpService):
-                    print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}{link_text}', file=self.fd_out)
+                    print(f'- {fact.get_port()}/udp {demangle(fact.__class__.__name__)}{secure_text}{link_text}',
+                          file=self.fd_out)
 
     def show_products(self, command: list[str]):
         products_by_service: dict[str, set[str]] = dict()

@@ -3,7 +3,7 @@ import re
 
 from experta import Fact
 
-from shadycompass.facts import FactReader, check_file_signature, http_url
+from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry
 
 WFUZZ_TARGET_PATTERN = re.compile(r'Target:\s+(.*)\s*')
 WFUZZ_TXT_PATTERN = re.compile(r'\D(\d\d\d)\s.*\s\d+ L\s.*\s\d+ W\s.*\s\d+\sC.*"(.*)"')
@@ -32,6 +32,7 @@ class WfuzzReader(FactReader):
                         http_status = int(m.group(1))
                         if http_status not in [404, 403]:
                             result.append(http_url(target.replace('FUZZ', m.group(2))))
+        result.extend(http_url_targets(result))
         return result
 
     def _read_json(self, file_path: str):
@@ -45,4 +46,8 @@ class WfuzzReader(FactReader):
             url = record.get('url', None)
             if url:
                 result.append(http_url(url))
+        result.extend(http_url_targets(result))
         return result
+
+
+fact_reader_registry.append(WfuzzReader())

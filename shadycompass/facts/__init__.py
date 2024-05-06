@@ -295,10 +295,11 @@ class SmbService(TcpIpService):
     ]
 
 
-class ImapService(TcpIpService):
+class ImapService(TcpIpService, HasTLS):
     methodology_links = [
         'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap'
     ]
+    version = Field(int, mandatory=False, default=4)
 
 
 class SnmpService(UdpIpService):
@@ -624,6 +625,9 @@ class HttpUrl(Fact):
     def get_url(self) -> str:
         return self.get('url')
 
+    def get_vhost(self) -> str:
+        return self.get('vhost')
+
 
 def http_url(url: str, **kwargs) -> HttpUrl:
     parsed = urlparse(url)
@@ -634,6 +638,48 @@ def http_url(url: str, **kwargs) -> HttpUrl:
         elif url.startswith('https:'):
             port = 443
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
+
+
+def http_url_targets(facts: list[Fact]) -> list[Fact]:
+    """
+    Creates TargetHostname, TargetIPv4Address and/or TargetIPv6Address facts from HttpUrl facts. This isn't done with
+    rules because the presence of HttpUrl doesn't imply a target. We want the fact reader to make that decision.
+    :param facts:
+    :return:
+    """
+    hostnames = set()
+    for url_fact in filter(lambda e: isinstance(e, HttpUrl), facts):
+        hostnames.add(url_fact.get_vhost())
+    return list(map(guess_target, hostnames))
+
+
+def guess_target(target: str) -> Union[Fact, None]:
+    """
+    Guesses the type of target, hostname, IPv4 or IPv6.
+    :param target:
+    :return:
+    """
+    if not target:
+        return None
+    # check for network
+    if '/' in target:
+        try:
+            ipaddress.ip_network(target)
+            if '.' in target:
+                return TargetIPv4Network(network=target)
+            else:
+                return TargetIPv6Network(network=target)
+        except ValueError:
+            pass
+    # assume host
+    try:
+        ipaddress.ip_address(target)
+        if '.' in target:
+            return TargetIPv4Address(addr=target)
+        else:
+            return TargetIPv6Address(addr=target)
+    except ValueError:
+        return TargetHostname(hostname=target)
 
 
 class ScanNeeded(Fact):
@@ -811,3 +857,15 @@ class PublicTarget(Fact):
 
     def get_addr(self):
         return self.get('addr')
+
+
+class WindowsDomain(Fact):
+    netbios_name = Field(str, mandatory=True)
+    dns_name = Field(str, mandatory=False)
+
+
+class WindowsDomainController(Fact):
+    netbios_domain_name = Field(str, mandatory=True)
+    dns_tree_name = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+    addr = Field(str, mandatory=False)
