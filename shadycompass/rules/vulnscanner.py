@@ -2,7 +2,7 @@ from abc import ABC
 
 from experta import Rule, NOT, OR, MATCH, AS, EXISTS
 
-from shadycompass.config import ToolCategory
+from shadycompass.config import ToolCategory, ToolRecommended
 from shadycompass.facts import ScanNeeded, ScanPresent, TargetIPv4Address, TargetIPv6Address
 from shadycompass.rules.irules import IRules
 
@@ -35,4 +35,11 @@ class VulnScan(IRules, ABC):
         OR(EXISTS(TargetIPv4Address()), EXISTS(TargetIPv6Address())),
         )
     def do_not_need_general_vuln_scan(self, f1: ScanNeeded):
+        self.retract(f1)
+
+    @Rule(
+        AS.f1 << ToolRecommended(category=ToolCategory.vuln_scanner, addr=MATCH.addr),
+        ScanPresent(category=ToolCategory.vuln_scanner, addr=MATCH.addr),
+        )
+    def retract_nmap(self, f1: ToolRecommended):
         self.retract(f1)

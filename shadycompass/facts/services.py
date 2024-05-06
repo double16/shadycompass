@@ -103,7 +103,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(SnmpService, addrs, port=port))
     elif service_name.startswith('irc'):
         result.extend(spread_addrs(IrcService, addrs, port=port, secure=secure or service_name.endswith('s')))
-    elif service_name.startswith('ldap'):
+    elif service_name.startswith('ldap') or service_name == 'globalcatLDAPssl':
         result.extend(spread_addrs(
             LdapService, addrs, port=port,
             secure=secure or service_name.endswith('s') or service_name.endswith('ssl')))
@@ -161,7 +161,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(SaprouterService, addrs, port=port))
     elif service_name == 'mysql':
         result.extend(spread_addrs(MysqlService, addrs, port=port))
-    elif service_name in ['rdp', 'ms-wbt-server']:
+    elif service_name in ['rdp', 'vmrdp', 'ms-wbt-server']:
         result.extend(spread_addrs(RdpService, addrs, port=port))
     elif service_name.startswith('distcc'):
         result.extend(spread_addrs(DistccService, addrs, port=port))

@@ -87,6 +87,10 @@ class NmapXmlFactReader(FactReader):
                             port_detail_el.attrib.get('extrainfo', None))
                     if port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) == 'http-server-header':
                         os_type = os_type or normalize_os_type(port_detail_el.attrib.get('output', None))
+                if port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) == 'ssl-cert':
+                    cert = self._parse_table_to_dict(port_detail_el)
+                    if cert.get('subject', {}).get('commonName'):
+                        secure = True
 
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
@@ -136,6 +140,15 @@ class NmapXmlFactReader(FactReader):
                     result.extend(spread_addrs(OperatingSystem, addrs, port=port, os_type=os_type))
                 create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
 
+        return result
+
+    def _parse_table_to_dict(self, root_el: ET.Element) -> dict:
+        result = dict()
+        for el in root_el:
+            if el.tag == 'table' and 'key' in el.attrib:
+                result[el.attrib['key']] = self._parse_table_to_dict(el)
+            elif el.tag == 'elem' and 'key' in el.attrib:
+                result[el.attrib['key']] = el.text
         return result
 
 
