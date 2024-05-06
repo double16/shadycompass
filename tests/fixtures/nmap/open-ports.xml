@@ -95,6 +95,7 @@
                         <elem key="bits">2048</elem>
                         <elem key="modulus">
                             EE86C03F9DE4D6AC931AB62EDFA77731FA9645FFA73C4162EA2F862BBFFC70EA107D03E33CD30C1DC9B31DA16090E74072FD768DCB4DCD0621EB1510639477CEA8D7949C91A2B7EDBC194A0D4D364B810E2AC772B67CE21DB1C6E5912F443A028151F7BAFB7853B72AC24D6E134AFA896C1E80AFF1C6D4D504F90E6E67A98D33B50C43328FC8FA514F63C32087F2313955308252258923FABE07FB5C25C20D7C57ABBF8A036A0A6D2AB30021FB17F917AA6D9A23083E444448CC5329FE0228194DEC9292C7AC3360B2E9F915932A42A26925A89C366082250E73F1761DE90308F25256DC6FA5B01396842B0B848324725C711310AC1C50121AEF2DE2452542A5
+                            EE86C03F9DE4D6AC931AB62EDFA77731FA9645FFA73C4162EA2F862BBFFC70EA107D03E33CD30C1DC9B31DA16090E74072FD768DCB4DCD0621EB1510639477CEA8D7949C91A2B7EDBC194A0D4D364B810E2AC772B67CE21DB1C6E5912F443A028151F7BAFB7853B72AC24D6E134AFA896C1E80AFF1C6D4D504F90E6E67A98D33B50C43328FC8FA514F63C32087F2313955308252258923FABE07FB5C25C20D7C57ABBF8A036A0A6D2AB30021FB17F917AA6D9A23083E444448CC5329FE0228194DEC9292C7AC3360B2E9F915932A42A26925A89C366082250E73F1761DE90308F25256DC6FA5B01396842B0B848324725C711310AC1C50121AEF2DE2452542A5
                         </elem>
                         <elem key="exponent">65537</elem>
                     </table>
@@ -417,9 +418,9 @@
                     </elem>
                 </script>
                 <script id="rdp-ntlm-info"
-                        output="&#xa;  Target_Name: HOSPITAL&#xa;  NetBIOS_Domain_Name: HOSPITAL&#xa;  NetBIOS_Computer_Name: DC&#xa;  DNS_Domain_Name: shadycompass.test&#xa;  DNS_Computer_Name: DC.shadycompass.test&#xa;  DNS_Tree_Name: shadycompass.test&#xa;  Product_Version: 10.0.17763&#xa;  System_Time: 2024-01-02T00:01:33+00:00">
-                    <elem key="Target_Name">HOSPITAL</elem>
-                    <elem key="NetBIOS_Domain_Name">HOSPITAL</elem>
+                        output="&#xa;  Target_Name: SHADYCOMPASS&#xa;  NetBIOS_Domain_Name: SHADYCOMPASS&#xa;  NetBIOS_Computer_Name: DC&#xa;  DNS_Domain_Name: shadycompass.test&#xa;  DNS_Computer_Name: DC.shadycompass.test&#xa;  DNS_Tree_Name: shadycompass.test&#xa;  Product_Version: 10.0.17763&#xa;  System_Time: 2024-01-02T00:01:33+00:00">
+                    <elem key="Target_Name">SHADYCOMPASS</elem>
+                    <elem key="NetBIOS_Domain_Name">SHADYCOMPASS</elem>
                     <elem key="NetBIOS_Computer_Name">DC</elem>
                     <elem key="DNS_Domain_Name">shadycompass.test</elem>
                     <elem key="DNS_Computer_Name">DC.shadycompass.test</elem>

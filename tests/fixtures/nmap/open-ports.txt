@@ -54,8 +54,8 @@ PORT     STATE SERVICE           VERSION
 | Not valid before: 2023-09-05T18:39:34
 |_Not valid after:  2024-03-06T18:39:34
 | rdp-ntlm-info: 
-|   Target_Name: HOSPITAL
-|   NetBIOS_Domain_Name: HOSPITAL
+|   Target_Name: SHADYCOMPASS
+|   NetBIOS_Domain_Name: SHADYCOMPASS
 |   NetBIOS_Computer_Name: DC
 |   DNS_Domain_Name: shadycompass.test
 |   DNS_Computer_Name: DC.shadycompass.test

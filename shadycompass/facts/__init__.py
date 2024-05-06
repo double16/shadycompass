@@ -860,12 +860,24 @@ class PublicTarget(Fact):
 
 
 class WindowsDomain(Fact):
-    netbios_name = Field(str, mandatory=True)
-    dns_name = Field(str, mandatory=False)
+    netbios_domain_name = Field(str, mandatory=True)
+    dns_domain_name = Field(str, mandatory=False)
+    dns_tree_name = Field(str, mandatory=False)
+
+    def get_netbios_domain_name(self) -> str:
+        return self.get('netbios_domain_name')
+
+    def get_dns_domain_name(self) -> str:
+        return self.get('dns_domain_name')
+
+    def get_dns_tree_name(self) -> str:
+        return self.get('dns_tree_name')
 
 
 class WindowsDomainController(Fact):
     netbios_domain_name = Field(str, mandatory=True)
-    dns_tree_name = Field(str, mandatory=False)
-    hostname = Field(str, mandatory=False)
+    netbios_computer_name = Field(str, mandatory=True)
+    dns_domain_name = Field(str, mandatory=True)
+    dns_tree_name = Field(str, mandatory=True)
+    hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)

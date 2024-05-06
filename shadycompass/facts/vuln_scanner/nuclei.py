@@ -5,12 +5,10 @@ from experta import Fact
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, \
     HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution, HttpService, fact_reader_registry, \
-    parse_products, Product, normalize_os_type, ScanPresent, guess_target
+    parse_products, Product, normalize_os_type, ScanPresent, guess_target, WindowsDomain
 from shadycompass.facts.services import create_service_facts
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
-
-# TODO: parse AD info
 
 class NucleiJsonFactReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
@@ -89,6 +87,21 @@ class NucleiJsonFactReader(FactReader):
                     kwargs['os_type'] = os_type
                 for parsed in parse_products(extracted):
                     result.add(Product(product=parsed.get_product(), version=parsed.get_version(), **kwargs))
+
+            if 'smb' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
+                extracted = record.get('extracted-results', '')
+                if isinstance(extracted, list):
+                    data = dict()
+                    for line in extracted:
+                        split = line.split(':', 1)
+                        if len(split) == 2:
+                            data[split[0].strip()] = split[1].strip()
+                    if 'NetBIOSDomainName' in data:
+                        kwargs = {'netbios_domain_name': data['NetBIOSDomainName']}
+                        if 'ForestName' in data:
+                            kwargs['dns_domain_name'] = data['ForestName']
+                            kwargs['dns_tree_name'] = data['ForestName']
+                        result.add(WindowsDomain(**kwargs))
 
         return list(result)
 
