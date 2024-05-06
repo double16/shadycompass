@@ -10,6 +10,8 @@ from shadycompass.facts.services import create_service_facts
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
 
+# TODO: parse AD info
+
 class NucleiJsonFactReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not check_file_signature(file_path, '"matcher-name"'):

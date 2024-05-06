@@ -36,6 +36,9 @@ class NmapRules(IRules, ABC):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
+            addr_file_name_part = ''
+        else:
+            addr_file_name_part = f'-{addr}'
 
         more_options = []
         if ratelimit:
@@ -44,7 +47,9 @@ class NmapRules(IRules, ABC):
         command_line_all = self.resolve_command_line(
             self.nmap_tool_name,
             [
-                '-p-', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml'
+                '-p-', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-all.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-all.xml'
             ], *more_options
         )
         command_line_all.append(addr)
@@ -59,7 +64,9 @@ class NmapRules(IRules, ABC):
         command_line_top100 = self.resolve_command_line(
             self.nmap_tool_name,
             [
-                '--top-ports=100', '-sV', '-sC', '-oN', 'nmap-tcp-100.txt', '-oX', 'nmap-tcp-100.xml'
+                '--top-ports=100', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-100.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-100.xml'
             ], *more_options
         )
         command_line_top100.append(addr)
@@ -108,11 +115,16 @@ class NmapRules(IRules, ABC):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
+            addr_file_name_part = ''
+        else:
+            addr_file_name_part = f'-{addr}'
 
         command_line_all = self.resolve_command_line(
             self.rustscan_tool_name,
             [
-                '-a', addr, '--', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml'
+                '-a', addr, '--', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-all.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-all.xml'
             ]
         )
         self.recommend_tool(
@@ -126,7 +138,9 @@ class NmapRules(IRules, ABC):
         command_line_top = self.resolve_command_line(
             self.rustscan_tool_name,
             [
-                '--top', addr, '--', '-sV', '-sC', '-oN', 'nmap-tcp-1000.txt', '-oX', 'nmap-tcp-1000.xml'
+                '--top', addr, '--', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-1000.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-1000.xml'
             ]
         )
         self.recommend_tool(

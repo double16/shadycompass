@@ -16,6 +16,8 @@ def _is_nmap_xml(file_path: str) -> bool:
     return check_file_signature(file_path, '<nmaprun ')
 
 
+# TODO: parse AD info
+
 class NmapXmlFactReader(FactReader):
 
     def read_facts(self, file_path: str) -> list[Fact]:

@@ -801,3 +801,13 @@ class ProductionTarget(Fact):
 
     def get_addr(self):
         return self.get('addr')
+
+
+class PublicTarget(Fact):
+    """
+    Marks a target as available on the public internet.
+    """
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self):
+        return self.get('addr')

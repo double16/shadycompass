@@ -22,6 +22,7 @@ class ToolCategory(object):
     http_scanner = 'http_scanner'
     vuln_scanner = 'vuln_scanner'
     smb_scanner = 'smb_scanner'
+    dns_scanner = 'dns_scanner'
 
 
 class ToolAvailable(Fact):

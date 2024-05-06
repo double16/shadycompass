@@ -125,24 +125,24 @@ class NmapTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.port_scanner,
             name=NmapRules.nmap_tool_name,
-            command_line=['-p-', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml', '--max-rate', '5',
+            command_line=['-p-', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-all.txt', '-oX', 'nmap-10.1.1.1-tcp-all.xml', '--max-rate', '5',
                           '10.1.1.1'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.port_scanner,
             name=NmapRules.nmap_tool_name,
-            command_line=['--top-ports=100', '-sV', '-sC', '-oN', 'nmap-tcp-100.txt', '-oX', 'nmap-tcp-100.xml',
+            command_line=['--top-ports=100', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-100.txt', '-oX', 'nmap-10.1.1.1-tcp-100.xml',
                           '--max-rate', '5', '10.1.1.1'],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
             category=ToolCategory.port_scanner,
             name=NmapRules.nmap_tool_name,
-            command_line=['-p-', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml', '10.1.1.1'],
+            command_line=['-p-', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-all.txt', '-oX', 'nmap-10.1.1.1-tcp-all.xml', '10.1.1.1'],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
             category=ToolCategory.port_scanner,
             name=NmapRules.nmap_tool_name,
-            command_line=['--top-ports=100', '5', '-sV', '-sC', '-oN', 'nmap-tcp-100.txt', '-oX', 'nmap-tcp-100.xml',
+            command_line=['--top-ports=100', '5', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-100.txt', '-oX', 'nmap-10.1.1.1-tcp-100.xml',
                           '10.1.1.1'],
         ), self.engine)
 
@@ -161,3 +161,18 @@ class NmapTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.port_scanner), self.engine)
         assertFactNotIn(self.rustscan_all_fact, self.engine)
         assertFactNotIn(self.rustscan_top_fact, self.engine)
+
+    def test_rustscan_one(self):
+        self.engine.declare(TargetIPv4Address(addr='10.1.1.1'))
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.port_scanner, addr='10.1.1.1'), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=NmapRules.rustscan_tool_name,
+            command_line=['-a', '10.1.1.1', '--', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-all.txt', '-oX', 'nmap-10.1.1.1-tcp-all.xml'],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.port_scanner,
+            name=NmapRules.rustscan_tool_name,
+            command_line=['--top', '10.1.1.1', '--', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-1000.txt', '-oX', 'nmap-10.1.1.1-tcp-1000.xml'],
+        ), self.engine)
