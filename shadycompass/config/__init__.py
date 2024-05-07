@@ -24,6 +24,34 @@ class ToolCategory(object):
     vuln_scanner = 'vuln_scanner'
     smb_scanner = 'smb_scanner'
     dns_scanner = 'dns_scanner'
+    etc_hosts = 'hosts'
+
+
+def tool_category_priority(category: str) -> int:
+    """
+    Returns priority for a category. Greater number is a greater priority.
+    :param category:
+    :return:
+    """
+    match category:
+        case ToolCategory.etc_hosts:
+            return 1000
+        case ToolCategory.port_scanner:
+            return 900
+        case ToolCategory.dns_scanner:
+            return 850
+        case ToolCategory.vuln_scanner:
+            return 800
+        case ToolCategory.vhost_scanner:
+            return 700
+        case ToolCategory.http_spider:
+            return 600
+        case ToolCategory.http_buster:
+            return 500
+        case ToolCategory.smb_scanner:
+            return 650
+        case _:
+            return 10000
 
 
 class ToolAvailable(Fact):

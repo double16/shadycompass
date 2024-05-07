@@ -12,7 +12,7 @@ from experta import KnowledgeEngine, Fact
 import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
-    set_local_config_path, SECTION_OPTIONS, combine_command_options
+    set_local_config_path, SECTION_OPTIONS, combine_command_options, tool_category_priority
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
     HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain
 from shadycompass.facts.filemetadata import FileMetadataCache
@@ -200,13 +200,18 @@ class ShadyCompassOps(object):
     def _command_line(self, args: list[str]) -> str:
         return shlex.join(args)
 
+    def _find_tool_recommended(self) -> list[ToolRecommended]:
+        facts = list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))
+        facts.sort(key=lambda e: [-tool_category_priority(e.get('category')), e.get('name')])
+        return facts
+
     def handle_tool_recommended(self):
-        for idx, tool in enumerate(list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))):
+        for idx, tool in enumerate(self._find_tool_recommended()):
             print(f"[$] {str(idx + 1).rjust(2, ' ')}. {tool.get_name()} {self._command_line(tool.get_command_line())}",
                   file=self.fd_out)
 
     def tool_info(self, command: list[str]):
-        recommends = list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))
+        recommends = self._find_tool_recommended()
         tools = {}
         for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
             tools[fact.get('name')] = fact
