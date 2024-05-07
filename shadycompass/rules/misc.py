@@ -6,7 +6,7 @@ from experta import Rule, AS, MATCH, OR, NOT, P, AND
 from shadycompass import ConfigFact
 from shadycompass.config import SECTION_DEFAULT, OPTION_PRODUCTION, OPTION_RATELIMIT
 from shadycompass.facts import ProductionTarget, TargetIPv4Address, TargetIPv6Address, RateLimitEnable, ScanNeeded, \
-    PublicTarget
+    PublicTarget, WindowsDomain, TargetDomain, TlsCertificate
 from shadycompass.rules.irules import IRules
 
 TRUTHY = P(lambda v: str(v).lower() in ['true', 't', '1'])
@@ -115,3 +115,19 @@ class PublicAddrRules(IRules, ABC):
     )
     def public_defaults_to_production(self, addr):
         self.declare(ProductionTarget(addr=addr))
+
+
+class MiscRules(IRules, ABC):
+    @Rule(
+        WindowsDomain(dns_domain_name=MATCH.target_domain),
+        NOT(TargetDomain(domain=MATCH.target_domain))
+    )
+    def windows_domain_target_domain(self, target_domain: str):
+        self.declare(TargetDomain(domain=target_domain))
+
+    @Rule(
+        AS.f1 << TlsCertificate()
+    )
+    def tls_cert_target_domain(self, f1: TlsCertificate):
+        if 'localhost' not in f1.get_domain():
+            self.declare(TargetDomain(domain=f1.get_domain()))

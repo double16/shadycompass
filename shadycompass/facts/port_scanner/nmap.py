@@ -8,12 +8,12 @@ from experta import Fact
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController
+    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
 _EXTRAINFO_DOMAIN_MATCH = re.compile(r'Domain:\s+(\S+?)0[.],')
-
+_X509v3_SUBJECT_ALT_MATCH = re.compile(r'DNS:([^\s,]+)')
 
 def _is_nmap_xml(file_path: str) -> bool:
     return check_file_signature(file_path, '<nmaprun ')
@@ -98,6 +98,14 @@ class NmapXmlFactReader(FactReader):
                     cert = self._parse_table_to_dict(port_detail_el)
                     if cert.get('subject', {}).get('commonName'):
                         secure = True
+                        issuer = cert.get('issuer', {}).get('commonName', '')
+                        subjects = [cert.get('subject', {}).get('commonName')]
+                        for ext in cert.get('extensions', []):
+                            if 'Alternative' in ext.get('name', ''):
+                                for match in _X509v3_SUBJECT_ALT_MATCH.finditer(ext.get('value', '')):
+                                    if match.group(1) not in subjects:
+                                        subjects.append(match.group(1))
+                        result.append(TlsCertificate(subjects=subjects, issuer=issuer))
 
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
@@ -174,14 +182,21 @@ class NmapXmlFactReader(FactReader):
 
         return result
 
-    def _parse_table_to_dict(self, root_el: ET.Element) -> dict:
-        result = dict()
+    def _parse_table_to_dict(self, root_el: ET.Element):
+        result_dict = dict()
+        result_list = list()
         for el in root_el:
-            if el.tag == 'table' and 'key' in el.attrib:
-                result[el.attrib['key']] = self._parse_table_to_dict(el)
+            if el.tag == 'table':
+                if 'key' in el.attrib:
+                    result_dict[el.attrib['key']] = self._parse_table_to_dict(el)
+                else:
+                    result_list.append(self._parse_table_to_dict(el))
             elif el.tag == 'elem' and 'key' in el.attrib:
-                result[el.attrib['key']] = el.text
-        return result
+                if 'key' in el.attrib:
+                    result_dict[el.attrib['key']] = el.text
+                else:
+                    result_list.append(el.text)
+        return result_dict or result_list
 
     def _parse_windows_domain(self, root_el: ET.Element) -> Union[WindowsDomain, None]:
         netbios_domain_el = root_el.find(".//elem[@key='NetBIOS_Domain_Name']")

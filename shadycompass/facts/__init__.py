@@ -881,3 +881,19 @@ class WindowsDomainController(Fact):
     dns_tree_name = Field(str, mandatory=True)
     hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
+
+
+class TlsCertificate(Fact):
+    subjects = Field(list[str], mandatory=True)
+    issuer = Field(str, mandatory=False)
+
+    def get_domain(self) -> str:
+        fqdn = self.get_fqdn()
+        if fqdn.count('.') < 2:
+            return fqdn
+        return fqdn.split('.', 1)[1]
+
+    def get_fqdn(self) -> str:
+        subs: list[str] = list(self.get('subjects'))
+        subs.sort(key=lambda e: e.count('.'), reverse=True)
+        return subs[0]
