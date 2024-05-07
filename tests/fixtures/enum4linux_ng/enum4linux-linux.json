@@ -1,0 +1,149 @@
+{
+  "target": {
+    "host": "10.129.229.189"
+  },
+  "credentials": {
+    "auth_method": "null",
+    "user": "",
+    "password": "",
+    "domain": "",
+    "ticket_file": "",
+    "nthash": "",
+    "random_user": "rfcnktwn"
+  },
+  "listeners": {
+    "LDAP": {
+      "port": 389,
+      "accessible": false
+    },
+    "LDAPS": {
+      "port": 636,
+      "accessible": false
+    },
+    "SMB": {
+      "port": 445,
+      "accessible": true
+    },
+    "SMB over NetBIOS": {
+      "port": 139,
+      "accessible": true
+    }
+  },
+  "domain": "WORKGROUP",
+  "nmblookup": [
+    "SHADYCOMPASS           <00> -         B <ACTIVE>  Workstation Service",
+    "SHADYCOMPASS           <03> -         B <ACTIVE>  Messenger Service",
+    "SHADYCOMPASS           <20> -         B <ACTIVE>  File Server Service",
+    "..__MSBROWSE__. <01> - <GROUP> B <ACTIVE>  Master Browser",
+    "WORKGROUP       <00> - <GROUP> B <ACTIVE>  Domain/Workgroup Name",
+    "WORKGROUP       <1d> -         B <ACTIVE>  Master Browser",
+    "WORKGROUP       <1e> - <GROUP> B <ACTIVE>  Browser Service Elections",
+    "MAC Address = 00-00-00-00-00-00"
+  ],
+  "smb_dialects": {
+    "Supported dialects": {
+      "SMB 1.0": false,
+      "SMB 2.02": true,
+      "SMB 2.1": true,
+      "SMB 3.0": true,
+      "SMB 3.1.1": true
+    },
+    "Preferred dialect": "SMB 3.0",
+    "SMB1 only": false,
+    "SMB signing required": false
+  },
+  "smb_domain_info": {
+    "NetBIOS computer name": "SHADYCOMPASS",
+    "NetBIOS domain name": "",
+    "DNS domain": "",
+    "FQDN": "media",
+    "Derived membership": "workgroup member",
+    "Derived domain": "unknown"
+  },
+  "sessions": {
+    "sessions_possible": true,
+    "null": true,
+    "password": false,
+    "kerberos": false,
+    "nthash": false,
+    "random_user": true
+  },
+  "rpc_domain_info": {
+    "Domain": null,
+    "Domain SID": null,
+    "Membership": null
+  },
+  "os_info": {
+    "OS": "Linux/Unix (Samba Server)",
+    "OS version": "6.1",
+    "OS release": "",
+    "OS build": "0",
+    "Native OS": "not supported",
+    "Native LAN manager": "not supported",
+    "Platform id": "500",
+    "Server type": "0x809a03",
+    "Server type string": "Wk Sv PrQ Unx NT SNT Samba Server"
+  },
+  "users": null,
+  "groups": null,
+  "shares": {
+    "share1": {
+      "type": "Disk",
+      "comment": "",
+      "access": {
+        "mapping": "ok",
+        "listing": "ok"
+      }
+    },
+    "share2": {
+      "type": "Disk",
+      "comment": "",
+      "access": {
+        "mapping": "denied",
+        "listing": "n/a"
+      }
+    },
+    "IPC$": {
+      "type": "IPC",
+      "comment": "IPC Service (Samba Server)",
+      "access": {
+        "mapping": "ok",
+        "listing": "not supported"
+      }
+    }
+  },
+  "policy": null,
+  "printers": {},
+  "errors": {
+    "listeners": {
+      "enum_listeners": [
+        "Could not connect to LDAP on 389/tcp: connection refused",
+        "Could not connect to LDAPS on 636/tcp: connection refused"
+      ]
+    },
+    "rpc_domain_info": {
+      "enum_lsaquery_domain_info": [
+        "Could not get domain information via 'lsaquery': STATUS_ACCESS_DENIED"
+      ]
+    },
+    "users": {
+      "enum_users_rpc": [
+        "Could not find users via 'querydispinfo': STATUS_ACCESS_DENIED",
+        "Could not find users via 'enumdomusers': STATUS_ACCESS_DENIED"
+      ]
+    },
+    "groups": {
+      "enum_groups_rpc": [
+        "Could not get groups via 'enumalsgroups domain': STATUS_ACCESS_DENIED",
+        "Could not get groups via 'enumalsgroups builtin': STATUS_ACCESS_DENIED",
+        "Could not get groups via 'enumdomgroups': STATUS_ACCESS_DENIED"
+      ]
+    },
+    "policy": {
+      "enum_policy": [
+        "SMB connection error on port 445/tcp: STATUS_ACCESS_DENIED",
+        "SMB connection error on port 139/tcp: STATUS_ACCESS_DENIED"
+      ]
+    }
+  }
+}

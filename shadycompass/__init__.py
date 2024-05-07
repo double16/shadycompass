@@ -14,7 +14,7 @@ from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
     set_local_config_path, SECTION_OPTIONS, combine_command_options
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
-    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS
+    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -421,6 +421,7 @@ Press enter/return at the prompt to refresh data.
     def show_targets(self, command: list[str]):
         addr_targets: set[str] = set()
         hostname_targets: set[str] = set()
+        domains: set[str] = set()
         resolved: list[tuple[str, str]] = []
         for fact in self.engine.facts.values():
             if isinstance(fact, TargetIPv4Address):
@@ -429,6 +430,8 @@ Press enter/return at the prompt to refresh data.
                 addr_targets.add(fact.get_addr())
             elif isinstance(fact, TargetHostname):
                 hostname_targets.add(fact.get_hostname())
+            elif isinstance(fact, TargetDomain):
+                domains.add(fact.get_domain())
             elif isinstance(fact, HostnameIPv4Resolution):
                 resolved.append((fact.get_addr(), fact.get_hostname()))
             elif isinstance(fact, HostnameIPv6Resolution):
@@ -449,6 +452,8 @@ Press enter/return at the prompt to refresh data.
             print(f' - {addr}', file=self.fd_out)
         for hostname in hostname_targets:
             print(f' - {hostname}', file=self.fd_out)
+        for domain in domains:
+            print(f' - *.{domain}', file=self.fd_out)
 
     def show_services(self, command: list[str]):
 

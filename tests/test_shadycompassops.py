@@ -8,7 +8,7 @@ from shadycompass import ShadyCompassOps, TargetIPv4Address, TargetIPv6Address, 
 from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory, \
     ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
-    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService
+    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService, TargetDomain
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn
 
@@ -217,6 +217,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(TargetIPv6Address(addr='::2'))
         self.ops.engine.declare(TargetHostname(hostname='localhost'))
         self.ops.engine.declare(TargetHostname(hostname='localhost.localdomain'))
+        self.ops.engine.declare(TargetDomain(domain='localdomain'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='::1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost3', addr='::3'))
@@ -226,6 +227,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- 127.0.0.2' in self.fd_out.output)
         self.assertTrue('- ::2' in self.fd_out.output)
         self.assertTrue('- localhost.localdomain' in self.fd_out.output)
+        self.assertTrue('- *.localdomain' in self.fd_out.output)
         self.assertFalse('- ::3 localhost3' in self.fd_out.output)
 
     def test_show_services(self):

@@ -43,6 +43,9 @@ def check_file_signature(file_path: str, signature) -> bool:
 class TargetDomain(Fact):
     domain = Field(str, mandatory=True)
 
+    def get_domain(self) -> str:
+        return self.get('domain')
+
 
 class TargetIPv4Network(Fact):
     network = Field(str, mandatory=True)
@@ -711,7 +714,7 @@ class ScanNeeded(Fact):
 class ScanPresent(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
-    addr = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     url = Field(str, mandatory=False)
@@ -742,8 +745,8 @@ class HttpBustingNeeded(Fact):
 
 
 class OperatingSystem(Fact):
-    addr = Field(str, mandatory=True)
-    port = Field(int, mandatory=True)
+    addr = Field(str, mandatory=False)
+    port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     os_type = Field(str, mandatory=True)  # OSTYPE_* constants: windows, linux, mac, ...
     name = Field(str, mandatory=False)  # Windows, Ubuntu, ...
@@ -779,8 +782,8 @@ def normalize_os_type(*args) -> Union[str, None]:
 
 
 class Product(Fact):
-    addr = Field(str, mandatory=True)
-    port = Field(int, mandatory=True)
+    addr = Field(str, mandatory=False)
+    port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     product = Field(str, mandatory=True)
     """
@@ -860,7 +863,7 @@ class PublicTarget(Fact):
 
 
 class WindowsDomain(Fact):
-    netbios_domain_name = Field(str, mandatory=True)
+    netbios_domain_name = Field(str, mandatory=False)
     dns_domain_name = Field(str, mandatory=False)
     dns_tree_name = Field(str, mandatory=False)
 
