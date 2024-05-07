@@ -1,10 +1,11 @@
 import unittest
 
 from shadycompass.config import ToolCategory
-from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, TcpIpService, \
+from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, TargetHostname, \
     DomainTcpIpService, HttpService, WinRMService, Kerberos5SecTcpService, MicrosoftRpcService, NetbiosSessionService, \
     LdapService, SmbService, RdpService, MsmqService, Product, OSTYPE_WINDOWS, DotNetMessageFramingService, \
-    MicrosoftRpcHttpService, SshService, ScanPresent, OperatingSystem
+    MicrosoftRpcHttpService, SshService, ScanPresent, OperatingSystem, WindowsDomain, WindowsDomainController, \
+    TlsCertificate
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -17,17 +18,17 @@ class NmapXmlFactReaderTest(unittest.TestCase):
 
     def test_read_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.xml')
-        self.assertEqual(80, len(facts))
+        self.assertEqual(89, len(facts))
         self.assertIn(ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
-        self.assertIn(TargetHostname(hostname='hospital.htb'), facts)
-        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189', implied=True), facts)
+        self.assertIn(TargetHostname(hostname='shadycompass.test'), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='shadycompass.test', addr='10.129.229.189', implied=True), facts)
         self.assertIn(SshService(addr='10.129.229.189', port=22), facts)
         self.assertIn(DomainTcpIpService(addr='10.129.229.189', port=53), facts)
         self.assertIn(Kerberos5SecTcpService(addr='10.129.229.189', port=88), facts)
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=135), facts)
         self.assertIn(NetbiosSessionService(addr='10.129.229.189', port=139), facts)
-        self.assertIn(LdapService(addr='10.129.229.189', port=389, secure=False), facts)
+        self.assertIn(LdapService(addr='10.129.229.189', port=389, secure=True), facts)
         self.assertIn(HttpService(addr='10.129.229.189', port=443, secure=True), facts)
         self.assertIn(SmbService(addr='10.129.229.189', port=445), facts)
         self.assertIn(Kerberos5SecTcpService(addr='10.129.229.189', port=464), facts)
@@ -37,9 +38,9 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=2103), facts)
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=2105), facts)
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=2107), facts)
-        self.assertIn(TcpIpService(addr='10.129.229.189', port=2179), facts)
-        self.assertIn(LdapService(addr='10.129.229.189', port=3268, secure=False), facts)
-        self.assertIn(TcpIpService(addr='10.129.229.189', port=3269), facts)
+        self.assertIn(RdpService(addr='10.129.229.189', port=2179), facts)
+        self.assertIn(LdapService(addr='10.129.229.189', port=3268, secure=True), facts)
+        self.assertIn(LdapService(addr='10.129.229.189', port=3269, secure=True), facts)
         self.assertIn(RdpService(addr='10.129.229.189', port=3389), facts)
         self.assertIn(WinRMService(addr='10.129.229.189', port=5985, secure=False), facts)
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=6404), facts)
@@ -50,7 +51,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(MicrosoftRpcService(addr='10.129.229.189', port=6637), facts)
         self.assertIn(HttpService(addr='10.129.229.189', port=8080, secure=False), facts)
         self.assertIn(DotNetMessageFramingService(addr='10.129.229.189', port=9389), facts)
-        self.assertIn(HostnameIPv4Resolution(hostname='hospital.htb', addr='10.129.229.189', implied=True), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='shadycompass.test', addr='10.129.229.189', implied=True), facts)
         self.assertIn(Product(product='apache httpd', version='2.4.56', os_type=OSTYPE_WINDOWS,
                               addr='10.129.229.189', port=443, hostname="www.example.com"), facts)
         self.assertIn(Product(product='openssl', version='1.1.1t', os_type=OSTYPE_WINDOWS,
@@ -62,11 +63,31 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.assertIn(Product(addr='10.129.229.189', product='simple dns plus', os_type='windows', port=53), facts)
         self.assertIn(Product(addr='10.129.229.189', product='microsoft windows kerberos', os_type='windows', port=88),
                       facts)
-        self.assertIn(TargetHostname(hostname='webmail.hospital.htb'), facts)
-        self.assertIn(HostnameIPv4Resolution(hostname='webmail.hospital.htb', addr='10.129.229.189', implied=True),
+        self.assertIn(
+            Product(addr='10.129.229.189', product='microsoft terminal services', os_type='windows', port=3389,
+                    version='10.0.17763'), facts)
+        self.assertIn(TargetHostname(hostname='webmail.shadycompass.test'), facts)
+        self.assertIn(HostnameIPv4Resolution(hostname='webmail.shadycompass.test', addr='10.129.229.189', implied=True),
                       facts)
         self.assertIn(OperatingSystem(addr='10.129.229.189', port=593, os_type='windows'), facts)
         self.assertIn(OperatingSystem(addr='10.129.229.189', port=22, os_type='linux'), facts)
+        self.assertIn(WindowsDomain(
+            netbios_domain_name='SHADYCOMPASS',
+            dns_domain_name='shadycompass.test',
+            dns_tree_name='shadycompass.test',
+        ), facts)
+        self.assertIn(WindowsDomainController(
+            netbios_domain_name='SHADYCOMPASS',
+            netbios_computer_name='DC',
+            dns_domain_name='shadycompass.test',
+            dns_tree_name='shadycompass.test',
+            hostname='DC.shadycompass.test',
+            addr='10.129.229.189'
+        ), facts)
+        self.assertIn(TlsCertificate(
+            subjects=['DC', 'DC.shadycompass.test'],
+            issuer='DC',
+        ), facts)
 
     def test_ignore_not_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.txt')

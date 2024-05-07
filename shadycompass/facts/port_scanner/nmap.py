@@ -1,16 +1,19 @@
+import re
 import xml.etree.ElementTree as ET
-from typing import Iterable
+from typing import Iterable, Union
 from urllib.parse import urlparse
 
 from experta import Fact
 
 from shadycompass.config import ToolCategory
-from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetHostname, TargetIPv6Address, \
+from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    ScanPresent, OperatingSystem
+    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
+_EXTRAINFO_DOMAIN_MATCH = re.compile(r'Domain:\s+(\S+?)0[.],')
+_X509v3_SUBJECT_ALT_MATCH = re.compile(r'DNS:([^\s,]+)')
 
 def _is_nmap_xml(file_path: str) -> bool:
     return check_file_signature(file_path, '<nmaprun ')
@@ -30,6 +33,11 @@ class NmapXmlFactReader(FactReader):
 
     def _parse_host(self, host_el: ET.Element) -> list[Fact]:
         result = []
+
+        windows_domain = self._parse_windows_domain(host_el)
+        if windows_domain:
+            result.append(windows_domain)
+
         hostnames = set()
         ipv4 = set()
         ipv6 = set()
@@ -50,21 +58,24 @@ class NmapXmlFactReader(FactReader):
                     if hostname_el.tag == 'hostname':
                         hostname = hostname_el.attrib['name']
                         hostnames.add(hostname)
-                        result.append(TargetHostname(hostname=hostname))
+                        result.append(guess_target(hostname))
             elif el.tag == 'ports':
-                result.extend(self._parse_ports(ipv4.union(ipv6), hostnames, el))
+                result.extend(self._parse_ports(ipv4.union(ipv6), hostnames, windows_domain, el))
 
         for addr in ipv4:
             for hostname in hostnames:
-                result.append(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
+                if hostname != addr:
+                    result.append(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
 
         for addr in ipv6:
             for hostname in hostnames:
-                result.append(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
+                if hostname != addr:
+                    result.append(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
 
         return result
 
-    def _parse_ports(self, addrs: Iterable[str], hostnames: set[str], ports_el: ET.Element) -> list[Fact]:
+    def _parse_ports(self, addrs: Iterable[str], hostnames: set[str], windows_domain: WindowsDomain,
+                     ports_el: ET.Element) -> list[Fact]:
         result = []
         for port_el in ports_el:
             if port_el.tag != 'port':
@@ -83,6 +94,18 @@ class NmapXmlFactReader(FactReader):
                             port_detail_el.attrib.get('extrainfo', None))
                     if port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) == 'http-server-header':
                         os_type = os_type or normalize_os_type(port_detail_el.attrib.get('output', None))
+                if port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) == 'ssl-cert':
+                    cert = self._parse_table_to_dict(port_detail_el)
+                    if cert.get('subject', {}).get('commonName'):
+                        secure = True
+                        issuer = cert.get('issuer', {}).get('commonName', '')
+                        subjects = [cert.get('subject', {}).get('commonName')]
+                        for ext in cert.get('extensions', []):
+                            if 'Alternative' in ext.get('name', ''):
+                                for match in _X509v3_SUBJECT_ALT_MATCH.finditer(ext.get('value', '')):
+                                    if match.group(1) not in subjects:
+                                        subjects.append(match.group(1))
+                        result.append(TlsCertificate(subjects=subjects, issuer=issuer))
 
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
@@ -96,6 +119,10 @@ class NmapXmlFactReader(FactReader):
 
                     product = port_detail_el.attrib.get('product', None)
                     product_version = port_detail_el.attrib.get('version', None)
+                    if not product_version:
+                        product_version_els = port_el.findall(".//elem[@key='Product_Version']")
+                        if product_version_els:
+                            product_version = product_version_els[0].text
                     product_kwargs = {}
                     if hostname:
                         product_kwargs['hostname'] = hostname
@@ -114,16 +141,39 @@ class NmapXmlFactReader(FactReader):
                                 my_kwargs['version'] = parsed.get_version()
                             result.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
 
+                    if product and 'Active Directory' in product:
+                        ad_kwargs = dict(hostname=hostname, netbios_computer_name=hostname)
+
+                        if windows_domain:
+                            dns_domain_name = windows_domain.get_dns_domain_name()
+                            if windows_domain.get_dns_tree_name():
+                                ad_kwargs['dns_tree_name'] = windows_domain.get_dns_tree_name()
+                            if windows_domain.get_netbios_domain_name():
+                                ad_kwargs['netbios_domain_name'] = windows_domain.get_netbios_domain_name()
+                        else:
+                            m = _EXTRAINFO_DOMAIN_MATCH.search(extra_info)
+                            if m:
+                                dns_domain_name = m.group(1)
+                            else:
+                                continue
+                        ad_kwargs['dns_domain_name'] = dns_domain_name
+                        if not hostname.endswith(dns_domain_name):
+                            hostname = hostname + '.' + dns_domain_name
+                            ad_kwargs['hostname'] = hostname
+                        result.extend(spread_addrs(WindowsDomainController, addrs, **ad_kwargs))
+
             # Look for additional host names, such as http virtual hosts
             for redirect_el in port_el.findall(".//elem[@key='redirect_url']"):
                 url = urlparse(redirect_el.text)
                 if url.hostname and url.hostname not in hostnames:
-                    result.append(TargetHostname(hostname=url.hostname))
+                    result.append(guess_target(url.hostname))
                     for addr in addrs:
                         if '.' in addr:
-                            result.append(HostnameIPv4Resolution(hostname=url.hostname, addr=addr, implied=True))
+                            if addr != url.hostname:
+                                result.append(HostnameIPv4Resolution(hostname=url.hostname, addr=addr, implied=True))
                         else:
-                            result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
+                            if addr != url.hostname:
+                                result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
 
             if state == 'open':
                 if os_type:
@@ -131,6 +181,36 @@ class NmapXmlFactReader(FactReader):
                 create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
 
         return result
+
+    def _parse_table_to_dict(self, root_el: ET.Element):
+        result_dict = dict()
+        result_list = list()
+        for el in root_el:
+            if el.tag == 'table':
+                if 'key' in el.attrib:
+                    result_dict[el.attrib['key']] = self._parse_table_to_dict(el)
+                else:
+                    result_list.append(self._parse_table_to_dict(el))
+            elif el.tag == 'elem' and 'key' in el.attrib:
+                if 'key' in el.attrib:
+                    result_dict[el.attrib['key']] = el.text
+                else:
+                    result_list.append(el.text)
+        return result_dict or result_list
+
+    def _parse_windows_domain(self, root_el: ET.Element) -> Union[WindowsDomain, None]:
+        netbios_domain_el = root_el.find(".//elem[@key='NetBIOS_Domain_Name']")
+        if netbios_domain_el is None:
+            return None
+        ntlm_dict = {'netbios_domain_name': netbios_domain_el.text}
+        dns_domain_el = root_el.find(".//elem[@key='DNS_Domain_Name']")
+        if dns_domain_el is not None:
+            ntlm_dict['dns_domain_name'] = dns_domain_el.text
+        dns_tree_el = root_el.find(".//elem[@key='DNS_Tree_Name']")
+        if dns_tree_el is not None:
+            ntlm_dict['dns_tree_name'] = dns_tree_el.text
+        windows_domain = WindowsDomain(**ntlm_dict)
+        return windows_domain
 
 
 fact_reader_registry.append(NmapXmlFactReader())

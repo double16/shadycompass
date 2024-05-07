@@ -19,9 +19,11 @@ OPTION_VALUE_ALL = '*'
 class ToolCategory(object):
     port_scanner = 'port_scanner'
     http_buster = 'http_buster'
-    http_scanner = 'http_scanner'
+    http_spider = 'http_spider'
+    vhost_scanner = 'vhost_scanner'
     vuln_scanner = 'vuln_scanner'
     smb_scanner = 'smb_scanner'
+    dns_scanner = 'dns_scanner'
 
 
 class ToolAvailable(Fact):
@@ -213,7 +215,8 @@ class ConfigRules(IRules, ABC):
 
     def _declare_preferred_tool(self, category: str, tool_name: str):
         retract_queue = []
-        for fact in filter(lambda f: isinstance(f, PreferredTool) and f.get('category') == category,
+        for fact in filter(
+                lambda f: isinstance(f, PreferredTool) and f.get('category') == category and f.get('name') != tool_name,
                            self.facts.values()):
             retract_queue.append(fact)
         for fact in retract_queue:

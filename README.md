@@ -15,21 +15,21 @@ Press enter/return at the prompt to refresh data.
 [*] Reading nmap facts from tests/fixtures/nmap/open-ports.xml
 [*] Reading hosts from /etc/hosts
 
-[$]  1. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. gobuster dir -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
-[$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-hospital.htb.json,json http://hospital.htb:8080/FUZZ
-[$]  4. dirb http://hospital.htb:8080 -o dirb-8080-hospital.htb.txt
-[$]  5. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  6. gobuster dir -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
-[$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-hospital.htb.json,json https://hospital.htb:443/FUZZ
-[$]  8. dirb https://hospital.htb:443 -o dirb-443-hospital.htb.txt
+[$]  1. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. gobuster dir -k -o gobuster-8080-shadycompass.test.txt -u http://shadycompass.test:8080
+[$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-shadycompass.test.json,json http://shadycompass.test:8080/FUZZ
+[$]  4. dirb http://shadycompass.test:8080 -o dirb-8080-shadycompass.test.txt
+[$]  5. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  6. gobuster dir -k -o gobuster-443-shadycompass.test.txt -u https://shadycompass.test:443
+[$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-shadycompass.test.json,json https://shadycompass.test:443/FUZZ
+[$]  8. dirb https://shadycompass.test:443 -o dirb-443-shadycompass.test.txt
 
 tests/fixtures shadycompass > use feroxbuster
 [*] using feroxbuster for http_buster
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > info 2
 
@@ -42,10 +42,10 @@ https://github.com/epi052/feroxbuster
 https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
 
 ## example command
-feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > exit
 
@@ -125,8 +125,8 @@ Displays detailed information about a recommended tool. Arguments are one or mor
 recommendation, or a tool name. The numbers change as recommendations change!
 
 ```
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > info 2
 
@@ -139,7 +139,7 @@ https://github.com/epi052/feroxbuster
 https://book.hacktricks.xyz/network-services-pentesting/pentesting-web#brute-force-directories-and-files
 
 ## example command
-feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > info feroxbuster
 
@@ -174,28 +174,28 @@ is configured at the local level.
 The `--reset-options` will remove any custom options set for the tool, considering the `global` keyword if specified.
 
 ```
-[$]  1. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. gobuster dir -k -o gobuster-8080-hospital.htb.txt -u http://hospital.htb:8080
-[$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-hospital.htb.json,json http://hospital.htb:8080/FUZZ
-[$]  4. dirb http://hospital.htb:8080 -o dirb-8080-hospital.htb.txt
-[$]  5. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  6. gobuster dir -k -o gobuster-443-hospital.htb.txt -u https://hospital.htb:443
-[$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-hospital.htb.json,json https://hospital.htb:443/FUZZ
-[$]  8. dirb https://hospital.htb:443 -o dirb-443-hospital.htb.txt
+[$]  1. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. gobuster dir -k -o gobuster-8080-shadycompass.test.txt -u http://shadycompass.test:8080
+[$]  3. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-8080-shadycompass.test.json,json http://shadycompass.test:8080/FUZZ
+[$]  4. dirb http://shadycompass.test:8080 -o dirb-8080-shadycompass.test.txt
+[$]  5. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  6. gobuster dir -k -o gobuster-443-shadycompass.test.txt -u https://shadycompass.test:443
+[$]  7. wfuzz -w /usr/share/seclists/Discovery/Web-Content/raft-small-files.txt --hc 404 -f wfuzz-443-shadycompass.test.json,json https://shadycompass.test:443/FUZZ
+[$]  8. dirb https://shadycompass.test:443 -o dirb-443-shadycompass.test.txt
 
 tests/fixtures shadycompass > use feroxbuster
 [*] using feroxbuster for http_buster
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > use global feroxbuster
 [*] using feroxbuster for http_buster
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 ```
 
 ### option
@@ -208,14 +208,14 @@ replace similar values. The `global` keyword will set for all targets. Any local
 be ignored. Run `use [global] <tool> --reset-options` to reset the options.
 
 ```
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 4 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 4 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 4 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
 
 tests/fixtures shadycompass > option feroxbuster --scan-limit 5
 [!] configuration is only saved when you run the "save" command
 
-[$]  1. feroxbuster -u https://hospital.htb:443 -o feroxbuster-443-hospital.htb.txt --scan-limit 5 --insecure
-[$]  2. feroxbuster -u http://hospital.htb:8080 -o feroxbuster-8080-hospital.htb.txt --scan-limit 5 --insecure
+[$]  1. feroxbuster -u https://shadycompass.test:443 -o feroxbuster-443-shadycompass.test.txt --scan-limit 5 --insecure
+[$]  2. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 5 --insecure
 ```
 
 ### set

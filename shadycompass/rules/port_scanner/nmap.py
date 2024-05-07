@@ -2,7 +2,8 @@ from abc import ABC
 
 from experta import DefFacts, Rule, AS, OR, NOT, MATCH
 
-from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended
+from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTION_VALUE_ALL, ToolRecommended, \
+    ConfigFact, SECTION_OPTIONS
 from shadycompass.facts import ScanNeeded, RateLimitEnable
 from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_NETWORK
@@ -36,6 +37,9 @@ class NmapRules(IRules, ABC):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
+            addr_file_name_part = ''
+        else:
+            addr_file_name_part = f'-{addr}'
 
         more_options = []
         if ratelimit:
@@ -44,7 +48,9 @@ class NmapRules(IRules, ABC):
         command_line_all = self.resolve_command_line(
             self.nmap_tool_name,
             [
-                '-p-', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml'
+                '-p-', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-all.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-all.xml'
             ], *more_options
         )
         command_line_all.append(addr)
@@ -59,7 +65,9 @@ class NmapRules(IRules, ABC):
         command_line_top100 = self.resolve_command_line(
             self.nmap_tool_name,
             [
-                '--top-ports=100', '-sV', '-sC', '-oN', 'nmap-tcp-100.txt', '-oX', 'nmap-tcp-100.xml'
+                '--top-ports=100', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-100.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-100.xml'
             ], *more_options
         )
         command_line_top100.append(addr)
@@ -78,6 +86,8 @@ class NmapRules(IRules, ABC):
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name))),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
     def run_nmap(self, f1: ScanNeeded):
@@ -91,6 +101,8 @@ class NmapRules(IRules, ABC):
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name))),
     )
     def run_nmap_ratelimit(self, f1: ScanNeeded, ratelimit: RateLimitEnable):
         self._declare_nmap(f1, ratelimit)
@@ -102,17 +114,24 @@ class NmapRules(IRules, ABC):
             PreferredTool(category=ToolCategory.port_scanner, name=OPTION_VALUE_ALL),
             NOT(PreferredTool(category=ToolCategory.port_scanner)),
         ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=rustscan_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=rustscan_tool_name))),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
     def run_rustscan(self, f1: ScanNeeded):
         addr = f1.get_addr()
         if not addr:
             addr = '$IP'
+            addr_file_name_part = ''
+        else:
+            addr_file_name_part = f'-{addr}'
 
         command_line_all = self.resolve_command_line(
             self.rustscan_tool_name,
             [
-                '-a', addr, '--', '-sV', '-sC', '-oN', 'nmap-tcp-all.txt', '-oX', 'nmap-tcp-all.xml'
+                '-a', addr, '--', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-all.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-all.xml'
             ]
         )
         self.recommend_tool(
@@ -126,7 +145,9 @@ class NmapRules(IRules, ABC):
         command_line_top = self.resolve_command_line(
             self.rustscan_tool_name,
             [
-                '--top', addr, '--', '-sV', '-sC', '-oN', 'nmap-tcp-1000.txt', '-oX', 'nmap-tcp-1000.xml'
+                '--top', addr, '--', '-sV', '-sC',
+                '-oN', f'nmap{addr_file_name_part}-tcp-1000.txt',
+                '-oX', f'nmap{addr_file_name_part}-tcp-1000.xml'
             ]
         )
         self.recommend_tool(

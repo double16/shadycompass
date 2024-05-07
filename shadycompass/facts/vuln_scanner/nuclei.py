@@ -3,9 +3,9 @@ import json
 from experta import Fact
 
 from shadycompass.config import ToolCategory
-from shadycompass.facts import FactReader, check_file_signature, TargetHostname, TargetIPv4Address, \
+from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, \
     HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution, HttpService, fact_reader_registry, \
-    parse_products, Product, normalize_os_type, ScanPresent
+    parse_products, Product, normalize_os_type, ScanPresent, guess_target, WindowsDomain
 from shadycompass.facts.services import create_service_facts
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
@@ -30,16 +30,16 @@ class NucleiJsonFactReader(FactReader):
                 hostname = hostname.replace(f':{port}', '')
 
             if hostname:
-                result.add(TargetHostname(hostname=hostname))
+                result.add(guess_target(hostname))
             if addr:
                 result.add(ScanPresent(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name, addr=addr))
                 if '.' in addr:
                     result.add(TargetIPv4Address(addr=addr))
-                    if hostname:
+                    if hostname and hostname != addr:
                         result.add(HostnameIPv4Resolution(hostname=hostname, addr=addr, implied=True))
                 else:
                     result.add(TargetIPv6Address(addr=addr))
-                    if hostname:
+                    if hostname and hostname != addr:
                         result.add(HostnameIPv6Resolution(hostname=hostname, addr=addr, implied=True))
             else:
                 continue
@@ -87,6 +87,21 @@ class NucleiJsonFactReader(FactReader):
                     kwargs['os_type'] = os_type
                 for parsed in parse_products(extracted):
                     result.add(Product(product=parsed.get_product(), version=parsed.get_version(), **kwargs))
+
+            if 'smb' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
+                extracted = record.get('extracted-results', '')
+                if isinstance(extracted, list):
+                    data = dict()
+                    for line in extracted:
+                        split = line.split(':', 1)
+                        if len(split) == 2:
+                            data[split[0].strip()] = split[1].strip()
+                    if 'NetBIOSDomainName' in data:
+                        kwargs = {'netbios_domain_name': data['NetBIOSDomainName']}
+                        if 'ForestName' in data:
+                            kwargs['dns_domain_name'] = data['ForestName']
+                            kwargs['dns_tree_name'] = data['ForestName']
+                        result.add(WindowsDomain(**kwargs))
 
         return list(result)
 

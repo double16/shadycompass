@@ -1,3 +1,4 @@
+import sys
 from typing import Iterable
 
 from experta import Fact
@@ -21,6 +22,7 @@ from shadycompass.facts import HttpService, DomainTcpIpService, DomainUdpIpServi
 
 
 def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, secure, service_name):
+    service_name = ''.join((service_name or '').split()[0:1])
     if service_name == 'http':
         if os_type == OSTYPE_WINDOWS and port == 5985:
             result.extend(spread_addrs(WinRMService, addrs, port=port, secure=secure))
@@ -101,7 +103,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(SnmpService, addrs, port=port))
     elif service_name.startswith('irc'):
         result.extend(spread_addrs(IrcService, addrs, port=port, secure=secure or service_name.endswith('s')))
-    elif service_name.startswith('ldap'):
+    elif service_name.startswith('ldap') or service_name == 'globalcatLDAPssl':
         result.extend(spread_addrs(
             LdapService, addrs, port=port,
             secure=secure or service_name.endswith('s') or service_name.endswith('ssl')))
@@ -159,7 +161,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(SaprouterService, addrs, port=port))
     elif service_name == 'mysql':
         result.extend(spread_addrs(MysqlService, addrs, port=port))
-    elif service_name in ['rdp', 'ms-wbt-server']:
+    elif service_name in ['rdp', 'vmrdp', 'ms-wbt-server']:
         result.extend(spread_addrs(RdpService, addrs, port=port))
     elif service_name.startswith('distcc'):
         result.extend(spread_addrs(DistccService, addrs, port=port))
@@ -217,10 +219,14 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(MsmqService, addrs, port=port))
     elif service_name == 'mc-nmf':
         result.extend(spread_addrs(DotNetMessageFramingService, addrs, port=port))
-    elif protocol == 'tcp':
-        result.extend(spread_addrs(TcpIpService, addrs, port=port))
-    elif protocol == 'udp':
-        result.extend(spread_addrs(UdpIpService, addrs, port=port))
+    else:
+        if service_name:
+            print(f'[!] unknown service "{service_name}", report at https://github.com/double16/shadycompass/issues',
+                  file=sys.stderr)
+        if protocol == 'tcp':
+            result.extend(spread_addrs(TcpIpService, addrs, port=port))
+        elif protocol == 'udp':
+            result.extend(spread_addrs(UdpIpService, addrs, port=port))
 
 
 def spread_addrs(fact_type, addrs: Iterable[str], **kwargs) -> list[Fact]:

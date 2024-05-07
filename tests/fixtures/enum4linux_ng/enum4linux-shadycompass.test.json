@@ -1,0 +1,103 @@
+{
+  "target": {
+    "host": "shadycompass.test"
+  },
+  "credentials": {
+    "auth_method": "null",
+    "user": "",
+    "password": "",
+    "domain": "",
+    "ticket_file": "",
+    "nthash": "",
+    "random_user": "muszswbq"
+  },
+  "listeners": {
+    "LDAP": {
+      "port": 389,
+      "accessible": false
+    },
+    "LDAPS": {
+      "port": 636,
+      "accessible": false
+    },
+    "SMB": {
+      "port": 445,
+      "accessible": true
+    },
+    "SMB over NetBIOS": {
+      "port": 139,
+      "accessible": true
+    }
+  },
+  "domain": null,
+  "nmblookup": null,
+  "smb_dialects": {
+    "Supported dialects": {
+      "SMB 1.0": false,
+      "SMB 2.02": true,
+      "SMB 2.1": true,
+      "SMB 3.0": true,
+      "SMB 3.1.1": true
+    },
+    "Preferred dialect": "SMB 3.0",
+    "SMB1 only": false,
+    "SMB signing required": false
+  },
+  "smb_domain_info": {
+    "NetBIOS computer name": "SHADYCOMPASS",
+    "NetBIOS domain name": "SHADYCOMPASS",
+    "DNS domain": "shadycompass.test",
+    "FQDN": "SHADYCOMPASS",
+    "Derived membership": "workgroup member",
+    "Derived domain": "unknown"
+  },
+  "sessions": {
+    "sessions_possible": false,
+    "null": false,
+    "password": false,
+    "kerberos": false,
+    "nthash": false,
+    "random_user": false
+  },
+  "os_info": {
+    "OS": "Windows 10, Windows Server 2019, Windows Server 2016",
+    "OS version": "10.0",
+    "OS release": "2004",
+    "OS build": "19041",
+    "Native OS": "not supported",
+    "Native LAN manager": "not supported",
+    "Platform id": null,
+    "Server type": null,
+    "Server type string": null
+  },
+  "errors": {
+    "listeners": {
+      "enum_listeners": [
+        "Could not connect to LDAP on 389/tcp: timed out",
+        "Could not connect to LDAPS on 636/tcp: timed out"
+      ]
+    },
+    "nmblookup": {
+      "enum_netbios": [
+        "Could not get NetBIOS names information via 'nmblookup': timed out"
+      ]
+    },
+    "domain": {
+      "enum_netbios": [
+        "Could not get NetBIOS names information via 'nmblookup': timed out"
+      ]
+    },
+    "sessions": {
+      "enum_sessions": [
+        "Could not establish null session: STATUS_ACCESS_DENIED",
+        "Could not establish random user session: STATUS_LOGON_FAILURE",
+        "Sessions failed, neither null nor user sessions were possible"
+      ]
+    },
+    "os_info": {
+      "enum_os_info": [
+        "Skipping 'srvinfo' run, not possible with provided credentials"
+      ]
+    }
+  }
+}

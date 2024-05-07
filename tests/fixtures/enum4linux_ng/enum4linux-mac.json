@@ -1,0 +1,104 @@
+{
+  "target": {
+    "host": "10.129.229.189"
+  },
+  "credentials": {
+    "auth_method": "null",
+    "user": "",
+    "password": "",
+    "domain": "",
+    "ticket_file": "",
+    "nthash": "",
+    "random_user": "ixpszrsy"
+  },
+  "listeners": {
+    "LDAP": {
+      "port": 389,
+      "accessible": false
+    },
+    "LDAPS": {
+      "port": 636,
+      "accessible": false
+    },
+    "SMB": {
+      "port": 445,
+      "accessible": true
+    },
+    "SMB over NetBIOS": {
+      "port": 139,
+      "accessible": false
+    }
+  },
+  "domain": null,
+  "nmblookup": null,
+  "smb_dialects": {
+    "Supported dialects": {
+      "SMB 1.0": false,
+      "SMB 2.02": true,
+      "SMB 2.1": true,
+      "SMB 3.0": true,
+      "SMB 3.1.1": false
+    },
+    "Preferred dialect": "SMB 3.0",
+    "SMB1 only": false,
+    "SMB signing required": true
+  },
+  "smb_domain_info": {
+    "NetBIOS computer name": "SHADYCOMPASS",
+    "NetBIOS domain name": "",
+    "DNS domain": "shadycompass.test",
+    "FQDN": "shadycompass.test",
+    "Derived membership": "workgroup member",
+    "Derived domain": "unknown"
+  },
+  "sessions": {
+    "sessions_possible": false,
+    "null": false,
+    "password": false,
+    "kerberos": false,
+    "nthash": false,
+    "random_user": false
+  },
+  "os_info": {
+    "OS": "Windows 7, Windows Server 2008 R2",
+    "OS version": "6.1",
+    "OS release": "",
+    "OS build": "7600",
+    "Native OS": "not supported",
+    "Native LAN manager": "not supported",
+    "Platform id": null,
+    "Server type": null,
+    "Server type string": null
+  },
+  "errors": {
+    "listeners": {
+      "enum_listeners": [
+        "Could not connect to LDAP on 389/tcp: connection refused",
+        "Could not connect to LDAPS on 636/tcp: connection refused",
+        "Could not connect to SMB over NetBIOS on 139/tcp: connection refused"
+      ]
+    },
+    "nmblookup": {
+      "enum_netbios": [
+        "Could not get NetBIOS names information via 'nmblookup': timed out"
+      ]
+    },
+    "domain": {
+      "enum_netbios": [
+        "Could not get NetBIOS names information via 'nmblookup': timed out"
+      ]
+    },
+    "sessions": {
+      "enum_sessions": [
+        "Could not establish null session: STATUS_LOGON_FAILURE",
+        "Could not establish random user session: STATUS_LOGON_FAILURE",
+        "Sessions failed, neither null nor user sessions were possible"
+      ]
+    },
+    "os_info": {
+      "enum_os_info": [
+        "Skipping 'srvinfo' run, not possible with provided credentials"
+      ]
+    }
+  }
+}

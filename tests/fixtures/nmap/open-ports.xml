@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nmaprun>
 <?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
-<!-- Nmap 7.94 scan initiated Mon Jan  1 11:58:45 2024 as: nmap -p- -sV -sC -Pn -oN open-ports.txt -oX open-ports.xml -&#45;open hospital.htb -->
-<nmaprun scanner="nmap" args="nmap -p- -sV -sC -Pn -oN open-ports.txt -oX open-ports.xml -&#45;open hospital.htb"
+<!-- Nmap 7.94 scan initiated Mon Jan  1 11:58:45 2024 as: nmap -p- -sV -sC -Pn -oN open-ports.txt -oX open-ports.xml -&#45;open shadycompass.test -->
+<nmaprun scanner="nmap" args="nmap -p- -sV -sC -Pn -oN open-ports.txt -oX open-ports.xml -&#45;open shadycompass.test"
          start="1704128325" startstr="Mon Jan  1 11:58:45 2024" version="7.94" xmloutputversion="1.05">
     <scaninfo type="connect" protocol="tcp" numservices="65535" services="1-65535"/>
     <verbose level="0"/>
@@ -14,8 +14,8 @@
         <status state="up" reason="user-set" reason_ttl="0"/>
         <address addr="10.129.229.189" addrtype="ipv4"/>
         <hostnames>
-            <hostname name="hospital.htb" type="user"/>
-            <hostname name="hospital.htb" type="PTR"/>
+            <hostname name="shadycompass.test" type="user"/>
+            <hostname name="shadycompass.test" type="PTR"/>
         </hostnames>
         <ports>
             <extraports state="filtered" count="65507">
@@ -78,12 +78,12 @@
             <port protocol="tcp" portid="389">
                 <state state="open" reason="syn-ack" reason_ttl="0"/>
                 <service name="ldap" product="Microsoft Windows Active Directory LDAP"
-                         extrainfo="Domain: hospital.htb0., Site: Default-First-Site-Name" hostname="DC"
+                         extrainfo="Domain: shadycompass.test0., Site: Default-First-Site-Name" hostname="DC"
                          ostype="Windows" method="probed" conf="10">
                     <cpe>cpe:/o:microsoft:windows</cpe>
                 </service>
                 <script id="ssl-cert"
-                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
+                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
                     <table key="subject">
                         <elem key="commonName">DC</elem>
                     </table>
@@ -94,6 +94,7 @@
                         <elem key="type">rsa</elem>
                         <elem key="bits">2048</elem>
                         <elem key="modulus">
+                            EE86C03F9DE4D6AC931AB62EDFA77731FA9645FFA73C4162EA2F862BBFFC70EA107D03E33CD30C1DC9B31DA16090E74072FD768DCB4DCD0621EB1510639477CEA8D7949C91A2B7EDBC194A0D4D364B810E2AC772B67CE21DB1C6E5912F443A028151F7BAFB7853B72AC24D6E134AFA896C1E80AFF1C6D4D504F90E6E67A98D33B50C43328FC8FA514F63C32087F2313955308252258923FABE07FB5C25C20D7C57ABBF8A036A0A6D2AB30021FB17F917AA6D9A23083E444448CC5329FE0228194DEC9292C7AC3360B2E9F915932A42A26925A89C366082250E73F1761DE90308F25256DC6FA5B01396842B0B848324725C711310AC1C50121AEF2DE2452542A5
                             EE86C03F9DE4D6AC931AB62EDFA77731FA9645FFA73C4162EA2F862BBFFC70EA107D03E33CD30C1DC9B31DA16090E74072FD768DCB4DCD0621EB1510639477CEA8D7949C91A2B7EDBC194A0D4D364B810E2AC772B67CE21DB1C6E5912F443A028151F7BAFB7853B72AC24D6E134AFA896C1E80AFF1C6D4D504F90E6E67A98D33B50C43328FC8FA514F63C32087F2313955308252258923FABE07FB5C25C20D7C57ABBF8A036A0A6D2AB30021FB17F917AA6D9A23083E444448CC5329FE0228194DEC9292C7AC3360B2E9F915932A42A26925A89C366082250E73F1761DE90308F25256DC6FA5B01396842B0B848324725C711310AC1C50121AEF2DE2452542A5
                         </elem>
                         <elem key="exponent">65537</elem>
@@ -106,7 +107,7 @@
                         </table>
                         <table>
                             <elem key="name">X509v3 Subject Alternative Name</elem>
-                            <elem key="value">DNS:DC, DNS:DC.hospital.htb</elem>
+                            <elem key="value">DNS:DC, DNS:DC.shadycompass.test</elem>
                         </table>
                         <table>
                             <elem key="name">X509v3 Extended Key Usage</elem>
@@ -172,7 +173,7 @@
                 <script id="ssl-date" output="TLS randomness does not represent time"></script>
                 <script id="http-title" output="Hospital Webmail :: Welcome to Hospital Webmail">
                     <elem key="title">Hospital Webmail :: Welcome to Hospital Webmail</elem>
-                    <elem key="redirect_url">http://webmail.hospital.htb/</elem>
+                    <elem key="redirect_url">http://webmail.shadycompass.test/</elem>
                 </script>
             </port>
             <port protocol="tcp" portid="445">
@@ -194,7 +195,7 @@
                 <state state="open" reason="syn-ack" reason_ttl="0"/>
                 <service name="ldapssl" method="table" conf="3"/>
                 <script id="ssl-cert"
-                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
+                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
                     <table key="subject">
                         <elem key="commonName">DC</elem>
                     </table>
@@ -217,7 +218,7 @@
                         </table>
                         <table>
                             <elem key="name">X509v3 Subject Alternative Name</elem>
-                            <elem key="value">DNS:DC, DNS:DC.hospital.htb</elem>
+                            <elem key="value">DNS:DC, DNS:DC.shadycompass.test</elem>
                         </table>
                         <table>
                             <elem key="name">X509v3 Extended Key Usage</elem>
@@ -270,12 +271,12 @@
             <port protocol="tcp" portid="3268">
                 <state state="open" reason="syn-ack" reason_ttl="0"/>
                 <service name="ldap" product="Microsoft Windows Active Directory LDAP"
-                         extrainfo="Domain: hospital.htb0., Site: Default-First-Site-Name" hostname="DC"
+                         extrainfo="Domain: shadycompass.test0., Site: Default-First-Site-Name" hostname="DC"
                          ostype="Windows" method="probed" conf="10">
                     <cpe>cpe:/o:microsoft:windows</cpe>
                 </service>
                 <script id="ssl-cert"
-                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
+                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
                     <table key="subject">
                         <elem key="commonName">DC</elem>
                     </table>
@@ -298,7 +299,7 @@
                         </table>
                         <table>
                             <elem key="name">X509v3 Subject Alternative Name</elem>
-                            <elem key="value">DNS:DC, DNS:DC.hospital.htb</elem>
+                            <elem key="value">DNS:DC, DNS:DC.shadycompass.test</elem>
                         </table>
                         <table>
                             <elem key="name">X509v3 Extended Key Usage</elem>
@@ -326,7 +327,7 @@
                 <state state="open" reason="syn-ack" reason_ttl="0"/>
                 <service name="globalcatLDAPssl" method="table" conf="3"/>
                 <script id="ssl-cert"
-                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.hospital.htb&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
+                        output="Subject: commonName=DC&#xa;Subject Alternative Name: DNS:DC, DNS:DC.shadycompass.test&#xa;Not valid before: 2023-09-06T10:49:03&#xa;Not valid after:  2028-09-06T10:49:03">
                     <table key="subject">
                         <elem key="commonName">DC</elem>
                     </table>
@@ -349,7 +350,7 @@
                         </table>
                         <table>
                             <elem key="name">X509v3 Subject Alternative Name</elem>
-                            <elem key="value">DNS:DC, DNS:DC.hospital.htb</elem>
+                            <elem key="value">DNS:DC, DNS:DC.shadycompass.test</elem>
                         </table>
                         <table>
                             <elem key="name">X509v3 Extended Key Usage</elem>
@@ -380,12 +381,12 @@
                     <cpe>cpe:/o:microsoft:windows</cpe>
                 </service>
                 <script id="ssl-cert"
-                        output="Subject: commonName=DC.hospital.htb&#xa;Not valid before: 2023-09-05T18:39:34&#xa;Not valid after:  2024-03-06T18:39:34">
+                        output="Subject: commonName=DC.shadycompass.test&#xa;Not valid before: 2023-09-05T18:39:34&#xa;Not valid after:  2024-03-06T18:39:34">
                     <table key="subject">
-                        <elem key="commonName">DC.hospital.htb</elem>
+                        <elem key="commonName">DC.shadycompass.test</elem>
                     </table>
                     <table key="issuer">
-                        <elem key="commonName">DC.hospital.htb</elem>
+                        <elem key="commonName">DC.shadycompass.test</elem>
                     </table>
                     <table key="pubkey">
                         <elem key="type">rsa</elem>
@@ -417,13 +418,13 @@
                     </elem>
                 </script>
                 <script id="rdp-ntlm-info"
-                        output="&#xa;  Target_Name: HOSPITAL&#xa;  NetBIOS_Domain_Name: HOSPITAL&#xa;  NetBIOS_Computer_Name: DC&#xa;  DNS_Domain_Name: hospital.htb&#xa;  DNS_Computer_Name: DC.hospital.htb&#xa;  DNS_Tree_Name: hospital.htb&#xa;  Product_Version: 10.0.17763&#xa;  System_Time: 2024-01-02T00:01:33+00:00">
-                    <elem key="Target_Name">HOSPITAL</elem>
-                    <elem key="NetBIOS_Domain_Name">HOSPITAL</elem>
+                        output="&#xa;  Target_Name: SHADYCOMPASS&#xa;  NetBIOS_Domain_Name: SHADYCOMPASS&#xa;  NetBIOS_Computer_Name: DC&#xa;  DNS_Domain_Name: shadycompass.test&#xa;  DNS_Computer_Name: DC.shadycompass.test&#xa;  DNS_Tree_Name: shadycompass.test&#xa;  Product_Version: 10.0.17763&#xa;  System_Time: 2024-01-02T00:01:33+00:00">
+                    <elem key="Target_Name">SHADYCOMPASS</elem>
+                    <elem key="NetBIOS_Domain_Name">SHADYCOMPASS</elem>
                     <elem key="NetBIOS_Computer_Name">DC</elem>
-                    <elem key="DNS_Domain_Name">hospital.htb</elem>
-                    <elem key="DNS_Computer_Name">DC.hospital.htb</elem>
-                    <elem key="DNS_Tree_Name">hospital.htb</elem>
+                    <elem key="DNS_Domain_Name">shadycompass.test</elem>
+                    <elem key="DNS_Computer_Name">DC.shadycompass.test</elem>
+                    <elem key="DNS_Tree_Name">shadycompass.test</elem>
                     <elem key="Product_Version">10.0.17763</elem>
                     <elem key="System_Time">2024-01-02T00:01:33+00:00</elem>
                 </script>

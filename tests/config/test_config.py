@@ -140,7 +140,7 @@ class ConfigRulesTest(unittest.TestCase):
         cFerox = ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value='feroxbuster', global0=False)
 
         self.engine.declare(cAll)
-        self.engine.declare(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='hospital.htb'))
+        self.engine.declare(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test'))
         self.engine.run()
         assertFactIn(t1, self.engine)
         assertFactIn(t2, self.engine)

@@ -43,6 +43,9 @@ def check_file_signature(file_path: str, signature) -> bool:
 class TargetDomain(Fact):
     domain = Field(str, mandatory=True)
 
+    def get_domain(self) -> str:
+        return self.get('domain')
+
 
 class TargetIPv4Network(Fact):
     network = Field(str, mandatory=True)
@@ -295,10 +298,11 @@ class SmbService(TcpIpService):
     ]
 
 
-class ImapService(TcpIpService):
+class ImapService(TcpIpService, HasTLS):
     methodology_links = [
         'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap'
     ]
+    version = Field(int, mandatory=False, default=4)
 
 
 class SnmpService(UdpIpService):
@@ -624,6 +628,9 @@ class HttpUrl(Fact):
     def get_url(self) -> str:
         return self.get('url')
 
+    def get_vhost(self) -> str:
+        return self.get('vhost')
+
 
 def http_url(url: str, **kwargs) -> HttpUrl:
     parsed = urlparse(url)
@@ -634,6 +641,48 @@ def http_url(url: str, **kwargs) -> HttpUrl:
         elif url.startswith('https:'):
             port = 443
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
+
+
+def http_url_targets(facts: list[Fact]) -> list[Fact]:
+    """
+    Creates TargetHostname, TargetIPv4Address and/or TargetIPv6Address facts from HttpUrl facts. This isn't done with
+    rules because the presence of HttpUrl doesn't imply a target. We want the fact reader to make that decision.
+    :param facts:
+    :return:
+    """
+    hostnames = set()
+    for url_fact in filter(lambda e: isinstance(e, HttpUrl), facts):
+        hostnames.add(url_fact.get_vhost())
+    return list(map(guess_target, hostnames))
+
+
+def guess_target(target: str) -> Union[Fact, None]:
+    """
+    Guesses the type of target, hostname, IPv4 or IPv6.
+    :param target:
+    :return:
+    """
+    if not target:
+        return None
+    # check for network
+    if '/' in target:
+        try:
+            ipaddress.ip_network(target)
+            if '.' in target:
+                return TargetIPv4Network(network=target)
+            else:
+                return TargetIPv6Network(network=target)
+        except ValueError:
+            pass
+    # assume host
+    try:
+        ipaddress.ip_address(target)
+        if '.' in target:
+            return TargetIPv4Address(addr=target)
+        else:
+            return TargetIPv6Address(addr=target)
+    except ValueError:
+        return TargetHostname(hostname=target)
 
 
 class ScanNeeded(Fact):
@@ -665,7 +714,7 @@ class ScanNeeded(Fact):
 class ScanPresent(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
-    addr = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     url = Field(str, mandatory=False)
@@ -696,8 +745,8 @@ class HttpBustingNeeded(Fact):
 
 
 class OperatingSystem(Fact):
-    addr = Field(str, mandatory=True)
-    port = Field(int, mandatory=True)
+    addr = Field(str, mandatory=False)
+    port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     os_type = Field(str, mandatory=True)  # OSTYPE_* constants: windows, linux, mac, ...
     name = Field(str, mandatory=False)  # Windows, Ubuntu, ...
@@ -733,8 +782,8 @@ def normalize_os_type(*args) -> Union[str, None]:
 
 
 class Product(Fact):
-    addr = Field(str, mandatory=True)
-    port = Field(int, mandatory=True)
+    addr = Field(str, mandatory=False)
+    port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     product = Field(str, mandatory=True)
     """
@@ -801,3 +850,53 @@ class ProductionTarget(Fact):
 
     def get_addr(self):
         return self.get('addr')
+
+
+class PublicTarget(Fact):
+    """
+    Marks a target as available on the public internet.
+    """
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self):
+        return self.get('addr')
+
+
+class WindowsDomain(Fact):
+    netbios_domain_name = Field(str, mandatory=False)
+    dns_domain_name = Field(str, mandatory=False)
+    dns_tree_name = Field(str, mandatory=False)
+
+    def get_netbios_domain_name(self) -> str:
+        return self.get('netbios_domain_name')
+
+    def get_dns_domain_name(self) -> str:
+        return self.get('dns_domain_name')
+
+    def get_dns_tree_name(self) -> str:
+        return self.get('dns_tree_name')
+
+
+class WindowsDomainController(Fact):
+    netbios_domain_name = Field(str, mandatory=True)
+    netbios_computer_name = Field(str, mandatory=True)
+    dns_domain_name = Field(str, mandatory=True)
+    dns_tree_name = Field(str, mandatory=True)
+    hostname = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+
+
+class TlsCertificate(Fact):
+    subjects = Field(list[str], mandatory=True)
+    issuer = Field(str, mandatory=False)
+
+    def get_domain(self) -> str:
+        fqdn = self.get_fqdn()
+        if fqdn.count('.') < 2:
+            return fqdn
+        return fqdn.split('.', 1)[1]
+
+    def get_fqdn(self) -> str:
+        subs: list[str] = list(self.get('subjects'))
+        subs.sort(key=lambda e: e.count('.'), reverse=True)
+        return subs[0]

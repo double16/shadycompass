@@ -16,12 +16,12 @@ class DirbTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt'],
+            command_line=['http://shadycompass.test:8080', '-o', 'dirb-8080-shadycompass.test.txt'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt'],
+            command_line=['https://shadycompass.test:443', '-o', 'dirb-443-shadycompass.test.txt'],
         ), self.engine)
 
     def test_dirb_options_local(self):
@@ -31,12 +31,12 @@ class DirbTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt', '-r'],
+            command_line=['http://shadycompass.test:8080', '-o', 'dirb-8080-shadycompass.test.txt', '-r'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt', '-r'],
+            command_line=['https://shadycompass.test:443', '-o', 'dirb-443-shadycompass.test.txt', '-r'],
         ), self.engine)
 
     def test_dirb_options_global(self):
@@ -46,12 +46,12 @@ class DirbTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt', '-r'],
+            command_line=['http://shadycompass.test:8080', '-o', 'dirb-8080-shadycompass.test.txt', '-r'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt', '-r'],
+            command_line=['https://shadycompass.test:443', '-o', 'dirb-443-shadycompass.test.txt', '-r'],
         ), self.engine)
 
     def test_dirb_ratelimit(self):
@@ -62,20 +62,20 @@ class DirbTest(RulesBase):
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt', '-z', '12000'],
+            command_line=['http://shadycompass.test:8080', '-o', 'dirb-8080-shadycompass.test.txt', '-z', '12000'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt', '-z', '12000'],
+            command_line=['https://shadycompass.test:443', '-o', 'dirb-443-shadycompass.test.txt', '-z', '12000'],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['http://hospital.htb:8080', '-o', 'dirb-8080-hospital.htb.txt'],
+            command_line=['http://shadycompass.test:8080', '-o', 'dirb-8080-shadycompass.test.txt'],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
-            command_line=['https://hospital.htb:443', '-o', 'dirb-443-hospital.htb.txt'],
+            command_line=['https://shadycompass.test:443', '-o', 'dirb-443-shadycompass.test.txt'],
         ), self.engine)

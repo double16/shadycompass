@@ -17,14 +17,14 @@ class HttpBusting(IRules, ABC):
         OR(TargetIPv4Address(addr=MATCH.addr), TargetIPv6Address(addr=MATCH.addr)),
         OR(HostnameIPv4Resolution(hostname=MATCH.hostname, addr=MATCH.addr),
            HostnameIPv6Resolution(hostname=MATCH.hostname, addr=MATCH.addr)),
-        NOT(HttpUrl(addr=MATCH.addr, port=MATCH.port, vhost=MATCH.hostname)),
+        NOT(HttpUrl(port=MATCH.port, vhost=MATCH.hostname)),
     )
     def need_http_busting(self, f1: HttpService, addr, port, hostname):
         self.declare(HttpBustingNeeded(secure=f1.is_secure(), addr=addr, port=port, vhost=hostname))
 
     @Rule(
         AS.f1 << HttpBustingNeeded(secure=MATCH.secure, addr=MATCH.addr, port=MATCH.port, vhost=MATCH.hostname),
-        HttpUrl(secure=MATCH.secure, addr=MATCH.addr, port=MATCH.port, vhost=MATCH.hostname),
+        HttpUrl(secure=MATCH.secure, port=MATCH.port, vhost=MATCH.hostname),
     )
     def do_not_need_http_busting(self, f1: HttpBustingNeeded):
         self.retract(f1)
