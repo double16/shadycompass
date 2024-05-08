@@ -140,7 +140,7 @@ class UdpIpService(HasIpService):
 
 
 class HasTLS(Fact):
-    secure = Field(bool, mandatory=True, default=False)
+    secure = Field(bool, mandatory=False, default=False)
 
     def is_secure(self) -> bool:
         return bool(self.get('secure'))

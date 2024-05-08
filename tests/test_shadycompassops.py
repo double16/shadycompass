@@ -205,6 +205,10 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.tool_info(['info', 'feroxbuster'])
         self.assertTrue('feroxbuster' in self.fd_out.output)
 
+    def test_tool_info_name_nmap(self):
+        self.ops.tool_info(['info', 'nmap'])
+        self.assertEqual(2, self.fd_out.output.count('# nmap'))
+
     def test_gtnw(self):
         self.ops.global_thermo_nuclear_war()
         self.assertTrue(len(self.fd_out.output) > 0)

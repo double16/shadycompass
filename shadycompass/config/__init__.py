@@ -24,7 +24,11 @@ class ToolCategory(object):
     vuln_scanner = 'vuln_scanner'
     smb_scanner = 'smb_scanner'
     dns_scanner = 'dns_scanner'
+    pop_scanner = 'pop_scanner'
+    imap_scanner = 'imap_scanner'
+    smtp_scanner = 'smtp_scanner'
     etc_hosts = 'hosts'
+    docs = 'docs'
 
 
 def tool_category_priority(category: str) -> int:
@@ -50,8 +54,16 @@ def tool_category_priority(category: str) -> int:
             return 500
         case ToolCategory.smb_scanner:
             return 650
+        case ToolCategory.smtp_scanner:
+            return 630
+        case ToolCategory.pop_scanner:
+            return 620
+        case ToolCategory.imap_scanner:
+            return 610
+        case ToolCategory.docs:
+            return 150
         case _:
-            return 10000
+            return 100
 
 
 class ToolAvailable(Fact):

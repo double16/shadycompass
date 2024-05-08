@@ -86,7 +86,10 @@ class NmapXmlFactReader(FactReader):
             service_name = ''
             os_type = None
             secure = False
+            script_output: dict[str, str] = {}
             for port_detail_el in port_el:
+                if port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) is not None:
+                    script_output[port_detail_el.attrib.get('id')] = port_detail_el.attrib.get('output', '')
                 if not os_type:
                     if port_detail_el.tag == 'service':
                         os_type = os_type or normalize_os_type(
@@ -174,6 +177,9 @@ class NmapXmlFactReader(FactReader):
                         else:
                             if addr != url.hostname:
                                 result.append(HostnameIPv6Resolution(hostname=url.hostname, addr=addr, implied=True))
+
+            if 'pop3-capabilities' in script_output or 'pop3-ntlm-info' in script_output:
+                result.extend(spread_addrs(ScanPresent, addrs, port=port, category=ToolCategory.pop_scanner, name=NmapRules.nmap_tool_name))
 
             if state == 'open':
                 if os_type:

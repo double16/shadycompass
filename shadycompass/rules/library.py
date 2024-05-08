@@ -17,3 +17,7 @@ METHOD_NETWORK = [
 METHOD_SMB = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smb',
 ]
+
+METHOD_POP = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop',
+]

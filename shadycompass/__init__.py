@@ -212,17 +212,20 @@ class ShadyCompassOps(object):
 
     def tool_info(self, command: list[str]):
         recommends = self._find_tool_recommended()
-        tools = {}
+        tools: dict[str, list[ToolAvailable]] = {}
         for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
-            tools[fact.get('name')] = fact
+            tool_name = fact.get_name()
+            if tool_name not in tools:
+                tools[tool_name] = list()
+            tools[tool_name].append(fact)
         for arg in command[1:]:
             tr: Union[ToolRecommended, None] = None
-            ta: Union[ToolAvailable, None]
+            ta: list[ToolAvailable]
             try:
                 i = int(arg) - 1
                 if 0 <= i < len(recommends):
                     tr = recommends[i]
-                    ta = tools.get(tr.get_name(), None)
+                    ta = tools.get(tr.get_name(), [])
                 else:
                     print(f'[-] invalid number, expecting 1-{len(recommends)}', file=self.fd_out)
                     continue
@@ -232,14 +235,14 @@ class ShadyCompassOps(object):
                 else:
                     print(f'[-] unknown tool: {arg}', file=self.fd_out)
                     continue
-            if ta:
-                print(f'\n# {ta.get_name()}', file=self.fd_out)
-                if ta.get_tool_links():
+            for tool in ta:
+                print(f'\n# {tool.get_name()}', file=self.fd_out)
+                if tool.get_tool_links():
                     print('\n## tool links')
-                    print('\n'.join(ta.get_tool_links()), file=self.fd_out)
-                if ta.get_methodology_links():
+                    print('\n'.join(tool.get_tool_links()), file=self.fd_out)
+                if tool.get_methodology_links():
                     print('\n## methodology')
-                    print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
+                    print('\n'.join(tool.get_methodology_links()), file=self.fd_out)
             if tr:
                 print('\n## example command\n```shell')
                 print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)

@@ -1,7 +1,7 @@
 from shadycompass import ToolRecommended
 from shadycompass.config import ToolCategory, PreferredTool, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT, \
     OPTION_PRODUCTION
-from shadycompass.facts import ScanNeeded, TargetIPv4Address
+from shadycompass.facts import ScanNeeded, TargetIPv4Address, ScanPresent, PopService
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.rules.base import RulesBase
 from tests.tests import assertFactIn, assertFactNotIn
@@ -175,4 +175,42 @@ class NmapTest(RulesBase):
             category=ToolCategory.port_scanner,
             name=NmapRules.rustscan_tool_name,
             command_line=['--top', '10.1.1.1', '--', '-sV', '-sC', '-oN', 'nmap-10.1.1.1-tcp-1000.txt', '-oX', 'nmap-10.1.1.1-tcp-1000.xml'],
+        ), self.engine)
+
+
+class NmapPopScannerNeededTest(RulesBase):
+    def __init__(self, methodName: str = ...):
+        super().__init__(['tests/fixtures/nmap/open-ports.xml'], methodName)
+
+    def test_nmap_pop_scanner_recommended(self):
+        self.engine.declare(PopService(addr='10.129.229.189', port=110))
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.pop_scanner, addr='10.129.229.189', port=110), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.pop_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=110,
+            command_line=[
+                '--script', 'pop3-capabilities or pop3-ntlm-info', '-sV',
+                '-p110',
+                '-oN', 'nmap-10.129.229.189-pop.txt',
+                '-oX', 'nmap-10.129.229.189-pop.xml',
+                '10.129.229.189'
+            ],
+        ), self.engine)
+
+
+class NmapPopScannerNotNeededTest(RulesBase):
+    def __init__(self, methodName: str = ...):
+        super().__init__(['tests/fixtures/nmap/open-ports.xml', 'tests/fixtures/nmap_pop/nmap-pop.xml'], methodName)
+
+    def test_nmap_pop_scanner_not_recommended(self):
+        assertFactIn(ScanPresent(category=ToolCategory.pop_scanner, name=NmapRules.nmap_tool_name,
+                                 addr='10.129.229.189', port=110), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.pop_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=110,
         ), self.engine)
