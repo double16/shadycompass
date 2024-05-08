@@ -222,7 +222,7 @@ class ShadyCompassOps(object):
                 i = int(arg) - 1
                 if 0 <= i < len(recommends):
                     tr = recommends[i]
-                    ta = tools[tr.get_name()]
+                    ta = tools.get(tr.get_name(), None)
                 else:
                     print(f'[-] invalid number, expecting 1-{len(recommends)}', file=self.fd_out)
                     continue
@@ -232,13 +232,14 @@ class ShadyCompassOps(object):
                 else:
                     print(f'[-] unknown tool: {arg}', file=self.fd_out)
                     continue
-            print(f'\n# {ta.get_name()}', file=self.fd_out)
-            if ta.get_tool_links():
-                print('\n## tool links')
-                print('\n'.join(ta.get_tool_links()), file=self.fd_out)
-            if ta.get_methodology_links():
-                print('\n## methodology')
-                print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
+            if ta:
+                print(f'\n# {ta.get_name()}', file=self.fd_out)
+                if ta.get_tool_links():
+                    print('\n## tool links')
+                    print('\n'.join(ta.get_tool_links()), file=self.fd_out)
+                if ta.get_methodology_links():
+                    print('\n## methodology')
+                    print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
             if tr:
                 print('\n## example command\n```shell')
                 print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
@@ -416,7 +417,7 @@ Press enter/return at the prompt to refresh data.
             tool_list = tools_by_category[tool.get_category()]
             tool_list.append(tool)
         categories = list(tools_by_category.keys())
-        categories.sort()
+        categories.sort(key=lambda e: tool_category_priority(e), reverse=True)
         for category in categories:
             print(f'\n# {category}', file=self.fd_out)
             tools_by_category[category].sort(key=lambda ta: ta.get_name())
@@ -458,7 +459,11 @@ Press enter/return at the prompt to refresh data.
         for hostname in hostname_targets:
             print(f' - {hostname}', file=self.fd_out)
         for domain in domains:
-            print(f' - *.{domain}', file=self.fd_out)
+            if '.' in domain:
+                wildcard = '*.'
+            else:
+                wildcard = ''
+            print(f' - {wildcard}{domain}', file=self.fd_out)
 
     def show_services(self, command: list[str]):
 

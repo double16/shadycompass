@@ -123,7 +123,8 @@ class MiscRules(IRules, ABC):
         NOT(TargetDomain(domain=MATCH.target_domain))
     )
     def windows_domain_target_domain(self, target_domain: str):
-        self.declare(TargetDomain(domain=target_domain))
+        if target_domain:
+            self.declare(TargetDomain(domain=target_domain))
 
     @Rule(
         AS.f1 << TlsCertificate()

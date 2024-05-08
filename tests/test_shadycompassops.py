@@ -182,6 +182,11 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('dirb' in self.fd_out.output)
         self.assertTrue('feroxbuster' in self.fd_out.output)
 
+    def test_tool_info4(self):
+        self.ops.engine.declare(ToolRecommended(addr='10.1.1.1', category=ToolCategory.etc_hosts, name=f'add `10.1.1.1 shadycompass.test` to /etc/hosts'))
+        self.ops.tool_info(['info', '1'])
+        self.assertTrue('/etc/hosts' in self.fd_out.output)
+
     def test_tool_info_NAN(self):
         self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
         self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
@@ -217,7 +222,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(TargetIPv6Address(addr='::2'))
         self.ops.engine.declare(TargetHostname(hostname='localhost'))
         self.ops.engine.declare(TargetHostname(hostname='localhost.localdomain'))
-        self.ops.engine.declare(TargetDomain(domain='localdomain'))
+        self.ops.engine.declare(TargetDomain(domain='localdomain.local'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='::1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost3', addr='::3'))
@@ -227,7 +232,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- 127.0.0.2' in self.fd_out.output)
         self.assertTrue('- ::2' in self.fd_out.output)
         self.assertTrue('- localhost.localdomain' in self.fd_out.output)
-        self.assertTrue('- *.localdomain' in self.fd_out.output)
+        self.assertTrue('- *.localdomain.local' in self.fd_out.output)
         self.assertFalse('- ::3 localhost3' in self.fd_out.output)
 
     def test_show_services(self):

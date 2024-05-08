@@ -1,13 +1,34 @@
 #!/usr/bin/env python3
 import sys
 import shlex
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import NestedCompleter
+from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
-
-from shadycompass import ShadyCompassOps, get_local_config_path, get_global_config_path
+from shadycompass import ShadyCompassOps, get_local_config_path, get_global_config_path, ToolAvailable
 
 
 def shadycompass_cli(args: list[str]) -> int:
+    # history = FileHistory(os.path.join(os.path.dirname(get_global_config_path()), 'history.txt'))
+    history = InMemoryHistory()
     ops = ShadyCompassOps(args)
+    commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
+                'services', 'products', 'urls']
+    tools = set(map(lambda e: e.get_name(), filter(lambda e: isinstance(e, ToolAvailable), ops.engine.facts.values())))
+    completer = NestedCompleter.from_nested_dict({
+        **{command:None for command in commands},
+        'use': {
+            'global': tools,
+            **{tool:None for tool in tools},
+        },
+        'option': {
+            'global': tools,
+            **{tool:None for tool in tools},
+        },
+        'info': tools,
+    })
+
     try:
         ops.print_banner()
         while True:
@@ -21,7 +42,17 @@ def shadycompass_cli(args: list[str]) -> int:
             ops.handle_tool_recommended()
 
             while True:
-                user_command = shlex.split(input(f"\n{ops.base_dir} shadycompass > "))
+                prompt_text = f"\n{ops.base_dir} shadycompass > "
+                if sys.stdout.isatty():
+                    user_input = prompt(prompt_text,
+                                       history=history,
+                                       auto_suggest=AutoSuggestFromHistory(),
+                                       completer=completer,
+                                        )
+                else:
+                    user_input = input(prompt_text)
+
+                user_command = shlex.split(user_input)
 
                 if len(user_command) == 0:
                     break
