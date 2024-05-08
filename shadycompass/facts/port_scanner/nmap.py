@@ -181,6 +181,10 @@ class NmapXmlFactReader(FactReader):
             if 'pop3-capabilities' in script_output or 'pop3-ntlm-info' in script_output:
                 result.extend(spread_addrs(ScanPresent, addrs, port=port, category=ToolCategory.pop_scanner, name=NmapRules.nmap_tool_name))
 
+            if 'imap-capabilities' in script_output or 'imap-ntlm-info' in script_output:
+                result.extend(spread_addrs(ScanPresent, addrs, port=port, category=ToolCategory.imap_scanner,
+                                           name=NmapRules.nmap_tool_name))
+
             if state == 'open':
                 if os_type:
                     result.extend(spread_addrs(OperatingSystem, addrs, port=port, os_type=os_type))

@@ -183,7 +183,8 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('feroxbuster' in self.fd_out.output)
 
     def test_tool_info4(self):
-        self.ops.engine.declare(ToolRecommended(addr='10.1.1.1', category=ToolCategory.etc_hosts, name=f'add `10.1.1.1 shadycompass.test` to /etc/hosts'))
+        self.ops.engine.declare(ToolRecommended(addr='10.1.1.1', category=ToolCategory.etc_hosts,
+                                                name='add `10.1.1.1 shadycompass.test` to /etc/hosts'))
         self.ops.tool_info(['info', '1'])
         self.assertTrue('/etc/hosts' in self.fd_out.output)
 
@@ -207,7 +208,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
 
     def test_tool_info_name_nmap(self):
         self.ops.tool_info(['info', 'nmap'])
-        self.assertEqual(2, self.fd_out.output.count('# nmap'))
+        self.assertEqual(3, self.fd_out.output.count('# nmap'))
 
     def test_gtnw(self):
         self.ops.global_thermo_nuclear_war()

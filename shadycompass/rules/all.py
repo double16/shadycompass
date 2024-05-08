@@ -5,11 +5,12 @@ import shadycompass.rules.vuln_scanner.all as vuln_scanner
 from shadycompass.config import ConfigRules
 from shadycompass.rules.etc_hosts import EtcHostsRules
 from shadycompass.rules.httpbusting import HttpBusting
+from shadycompass.rules.imapscanner import ImapScan
 from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules, PublicAddrRules, MiscRules
-from shadycompass.rules.vulnscanner import VulnScan
+from shadycompass.rules.popscanner import PopScan
 from shadycompass.rules.portscanner import PortScan
 from shadycompass.rules.smbscanner import SmbScan
-from shadycompass.rules.popscanner import PopScan
+from shadycompass.rules.vulnscanner import VulnScan
 
 
 class AllRules(
@@ -22,6 +23,7 @@ class AllRules(
     VulnScan,
     SmbScan,
     PopScan,
+    ImapScan,
     ConfigRules,
     EtcHostsRules,
     ProductionTargetRules,

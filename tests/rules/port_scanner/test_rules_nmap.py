@@ -1,7 +1,7 @@
 from shadycompass import ToolRecommended
 from shadycompass.config import ToolCategory, PreferredTool, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT, \
     OPTION_PRODUCTION
-from shadycompass.facts import ScanNeeded, TargetIPv4Address, ScanPresent, PopService
+from shadycompass.facts import ScanNeeded, TargetIPv4Address, ScanPresent, PopService, ImapService
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.rules.base import RulesBase
 from tests.tests import assertFactIn, assertFactNotIn
@@ -183,7 +183,7 @@ class NmapPopScannerNeededTest(RulesBase):
         super().__init__(['tests/fixtures/nmap/open-ports.xml'], methodName)
 
     def test_nmap_pop_scanner_recommended(self):
-        self.engine.declare(PopService(addr='10.129.229.189', port=110))
+        self.engine.declare(PopService(addr='10.129.229.189', port=110, secure=False))
         self.engine.run()
         assertFactIn(ScanNeeded(category=ToolCategory.pop_scanner, addr='10.129.229.189', port=110), self.engine)
         assertFactIn(ToolRecommended(
@@ -192,12 +192,27 @@ class NmapPopScannerNeededTest(RulesBase):
             addr='10.129.229.189',
             port=110,
             command_line=[
-                '--script', 'pop3-capabilities or pop3-ntlm-info', '-sV',
+                '--script', 'pop3-capabilities,pop3-ntlm-info', '-sV',
                 '-p110',
                 '-oN', 'nmap-10.129.229.189-pop.txt',
                 '-oX', 'nmap-10.129.229.189-pop.xml',
                 '10.129.229.189'
             ],
+        ), self.engine)
+
+    def test_nmap_pop_scanner_retract(self):
+        self.engine.declare(PopService(addr='10.129.229.189', port=110, secure=False))
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.pop_scanner, addr='10.129.229.189', port=110), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.pop_scanner, name=NmapRules.nmap_tool_name,
+                                        addr='10.129.229.189', port=110))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.pop_scanner, addr='10.129.229.189', port=110), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.pop_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=110,
         ), self.engine)
 
 
@@ -213,4 +228,95 @@ class NmapPopScannerNotNeededTest(RulesBase):
             name=NmapRules.nmap_tool_name,
             addr='10.129.229.189',
             port=110,
+        ), self.engine)
+
+
+class NmapImapScannerNeededTest(RulesBase):
+    def __init__(self, methodName: str = ...):
+        super().__init__(['tests/fixtures/nmap/open-ports.xml'], methodName)
+
+    def test_nmap_imap_scanner_recommended(self):
+        self.engine.declare(ImapService(addr='10.129.229.189', port=143, secure=False))
+        self.engine.declare(ImapService(addr='10.129.229.189', port=993, secure=True))
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.129.229.189', port=143, secure=False),
+                     self.engine)
+        assertFactIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.129.229.189', port=993, secure=True),
+                     self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.imap_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=143,
+            command_line=[
+                '--script', 'imap-capabilities,imap-ntlm-info', '-sV',
+                '-p143',
+                '-oN', 'nmap-10.129.229.189-imap.txt',
+                '-oX', 'nmap-10.129.229.189-imap.xml',
+                '10.129.229.189'
+            ],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.imap_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=993,
+            command_line=[
+                '--script', 'imap-capabilities,imap-ntlm-info', '-sV',
+                '-p993',
+                '-oN', 'nmap-10.129.229.189-imap.txt',
+                '-oX', 'nmap-10.129.229.189-imap.xml',
+                '10.129.229.189'
+            ],
+        ), self.engine)
+
+    def test_nmap_imap_scanner_retract(self):
+        self.engine.declare(ImapService(addr='10.129.229.189', port=143, secure=False))
+        self.engine.declare(ImapService(addr='10.129.229.189', port=993, secure=True))
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.129.229.189', port=143, secure=False),
+                     self.engine)
+        assertFactIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.129.229.189', port=993, secure=True),
+                     self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.imap_scanner, name=NmapRules.nmap_tool_name,
+                                        addr='10.129.229.189', port=143))
+        self.engine.declare(ScanPresent(category=ToolCategory.imap_scanner, name=NmapRules.nmap_tool_name,
+                                        addr='10.129.229.189', port=993))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.129.229.189', port=143), self.engine)
+        assertFactNotIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.129.229.189', port=993), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.imap_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=143,
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.imap_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=993,
+        ), self.engine)
+
+
+class NmapImapScannerNotNeededTest(RulesBase):
+    def __init__(self, methodName: str = ...):
+        super().__init__(['tests/fixtures/nmap/open-ports.xml', 'tests/fixtures/nmap_imap/nmap-imap.xml'], methodName)
+
+    def test_nmap_imap_scanner_not_recommended(self):
+        assertFactIn(ScanPresent(category=ToolCategory.imap_scanner, name=NmapRules.nmap_tool_name,
+                                 addr='10.129.229.189', port=143), self.engine)
+        assertFactIn(ScanPresent(category=ToolCategory.imap_scanner, name=NmapRules.nmap_tool_name,
+                                 addr='10.129.229.189', port=993), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.imap_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=143,
+        ), self.engine)
+        assertFactNotIn(ToolRecommended(
+            category=ToolCategory.imap_scanner,
+            name=NmapRules.nmap_tool_name,
+            addr='10.129.229.189',
+            port=993,
         ), self.engine)

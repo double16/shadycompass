@@ -6,6 +6,8 @@ from urllib.parse import urlparse
 
 from experta import Fact, Field
 
+from shadycompass.rules.library import METHOD_POP, METHOD_IMAP
+
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
 
@@ -140,7 +142,7 @@ class UdpIpService(HasIpService):
 
 
 class HasTLS(Fact):
-    secure = Field(bool, mandatory=False, default=False)
+    secure = Field(bool, mandatory=True, default=False)
 
     def is_secure(self) -> bool:
         return bool(self.get('secure'))
@@ -239,9 +241,7 @@ class Kerberos4UdpService(UdpIpService):
 
 
 class PopService(TcpIpService, HasTLS):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop'
-    ]
+    methodology_links = METHOD_POP
     version = Field(int, mandatory=False, default=3)
 
 
@@ -299,9 +299,7 @@ class SmbService(TcpIpService):
 
 
 class ImapService(TcpIpService, HasTLS):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap'
-    ]
+    methodology_links = METHOD_IMAP
     version = Field(int, mandatory=False, default=4)
 
 

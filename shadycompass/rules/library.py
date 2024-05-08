@@ -21,3 +21,7 @@ METHOD_SMB = [
 METHOD_POP = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop',
 ]
+
+METHOD_IMAP = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap',
+]

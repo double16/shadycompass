@@ -2,7 +2,7 @@ from abc import ABC
 
 from experta import Rule, NOT, OR, MATCH, AS
 
-from shadycompass.config import ToolCategory
+from shadycompass.config import ToolCategory, ToolRecommended
 from shadycompass.facts import ScanNeeded, ScanPresent, SmbService, \
     NetbiosNameService, NetbiosDatagramService, NetbiosSessionService
 from shadycompass.rules.irules import IRules
@@ -27,4 +27,11 @@ class SmbScan(IRules, ABC):
         ScanPresent(category=ToolCategory.smb_scanner, addr=MATCH.addr),
     )
     def do_not_need_smb_scan(self, f1: ScanNeeded):
+        self.retract(f1)
+
+    @Rule(
+        AS.f1 << ToolRecommended(category=ToolCategory.smb_scanner, addr=MATCH.addr),
+        ScanPresent(category=ToolCategory.smb_scanner, addr=MATCH.addr),
+    )
+    def retract_smb(self, f1: ToolRecommended):
         self.retract(f1)
