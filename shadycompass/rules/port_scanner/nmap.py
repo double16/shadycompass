@@ -6,7 +6,7 @@ from shadycompass.config import ToolAvailable, ToolCategory, PreferredTool, OPTI
     ConfigFact, SECTION_OPTIONS
 from shadycompass.facts import ScanNeeded, RateLimitEnable
 from shadycompass.rules.irules import IRules
-from shadycompass.rules.library import METHOD_NETWORK, METHOD_POP, METHOD_IMAP
+from shadycompass.rules.library import METHOD_NETWORK, METHOD_POP, METHOD_IMAP, METHOD_SMTP
 
 
 class NmapRules(IRules, ABC):
@@ -49,6 +49,15 @@ class NmapRules(IRules, ABC):
                 'https://www.kali.org/tools/nmap/',
             ],
             methodology_links=METHOD_IMAP,
+        )
+        yield ToolAvailable(
+            category=ToolCategory.smtp_scanner,
+            name=self.nmap_tool_name,
+            tool_links=[
+                'https://nmap.org/',
+                'https://www.kali.org/tools/nmap/',
+            ],
+            methodology_links=METHOD_SMTP,
         )
 
     def _declare_nmap_as_port_scanner(self, f1: ScanNeeded, ratelimit: RateLimitEnable = None):
@@ -195,12 +204,12 @@ class NmapRules(IRules, ABC):
     )
     def run_nmap_as_pop_scanner(self, f1: ScanNeeded):
         addr = f1.get_addr()
-        addr_file_name_part = f'-{addr}'
+        addr_file_name_part = f'-{addr}-{f1.get_port()}'
 
         command_line = self.resolve_command_line(
             self.nmap_tool_name,
             [
-                '--script', 'pop3-capabilities,pop3-ntlm-info', '-sV',
+                '--script', 'pop3-capabilities or pop3-ntlm-info', '-sV',
                 f'-p{f1.get_port()}',
                 '-oN', f'nmap{addr_file_name_part}-pop.txt',
                 '-oX', f'nmap{addr_file_name_part}-pop.xml'
@@ -228,12 +237,12 @@ class NmapRules(IRules, ABC):
     )
     def run_nmap_as_imap_scanner(self, f1: ScanNeeded):
         addr = f1.get_addr()
-        addr_file_name_part = f'-{addr}'
+        addr_file_name_part = f'-{addr}-{f1.get_port()}'
 
         command_line = self.resolve_command_line(
             self.nmap_tool_name,
             [
-                '--script', 'imap-capabilities,imap-ntlm-info', '-sV',
+                '--script', 'imap-capabilities or imap-ntlm-info', '-sV',
                 f'-p{f1.get_port()}',
                 '-oN', f'nmap{addr_file_name_part}-imap.txt',
                 '-oX', f'nmap{addr_file_name_part}-imap.xml'
@@ -242,6 +251,39 @@ class NmapRules(IRules, ABC):
         command_line.append(addr)
         self.recommend_tool(
             category=ToolCategory.imap_scanner,
+            name=self.nmap_tool_name,
+            variant=None,
+            command_line=command_line,
+            addr=f1.get_addr(),
+            port=f1.get_port(),
+        )
+
+    @Rule(
+        AS.f1 << ScanNeeded(category=ToolCategory.smtp_scanner, addr=MATCH.addr),
+        OR(
+            PreferredTool(category=ToolCategory.smtp_scanner, name=nmap_tool_name),
+            PreferredTool(category=ToolCategory.smtp_scanner, name=OPTION_VALUE_ALL),
+            NOT(PreferredTool(category=ToolCategory.smtp_scanner)),
+        ),
+        OR(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name),
+           NOT(ConfigFact(section=SECTION_OPTIONS, option=nmap_tool_name))),
+    )
+    def run_nmap_as_smtp_scanner(self, f1: ScanNeeded):
+        addr = f1.get_addr()
+        addr_file_name_part = f'-{addr}-{f1.get_port()}'
+
+        command_line = self.resolve_command_line(
+            self.nmap_tool_name,
+            [
+                '--script', 'smtp* not brute', '-sV',
+                f'-p{f1.get_port()}',
+                '-oN', f'nmap{addr_file_name_part}-smtp.txt',
+                '-oX', f'nmap{addr_file_name_part}-smtp.xml'
+            ]
+        )
+        command_line.append(addr)
+        self.recommend_tool(
+            category=ToolCategory.smtp_scanner,
             name=self.nmap_tool_name,
             variant=None,
             command_line=command_line,

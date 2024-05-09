@@ -208,7 +208,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
 
     def test_tool_info_name_nmap(self):
         self.ops.tool_info(['info', 'nmap'])
-        self.assertEqual(3, self.fd_out.output.count('# nmap'))
+        self.assertEqual(4, self.fd_out.output.count('# nmap'))
 
     def test_gtnw(self):
         self.ops.global_thermo_nuclear_war()

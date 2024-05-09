@@ -15,18 +15,27 @@ def shadycompass_cli(args: list[str]) -> int:
     ops = ShadyCompassOps(args)
     commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
                 'services', 'products', 'urls']
+    config_names = {'ratelimit', 'production'}
     tools = set(map(lambda e: e.get_name(), filter(lambda e: isinstance(e, ToolAvailable), ops.engine.facts.values())))
     completer = NestedCompleter.from_nested_dict({
         **{command:None for command in commands},
         'use': {
             'global': tools,
-            **{tool:None for tool in tools},
+            **{tool: None for tool in tools},
         },
         'option': {
             'global': tools,
-            **{tool:None for tool in tools},
+            **{tool: None for tool in tools},
         },
         'info': tools,
+        'set': {
+            'global': config_names,
+            **{name: None for name in config_names},
+        },
+        'unset': {
+            'global': config_names,
+            **{name: None for name in config_names},
+        },
     })
 
     try:

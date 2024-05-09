@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from experta import Fact, Field
 
-from shadycompass.rules.library import METHOD_POP, METHOD_IMAP
+from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
@@ -189,9 +189,7 @@ class TelnetService(TcpIpService, HasTLS):
 
 
 class SmtpService(TcpIpService, HasTLS):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp'
-    ]
+    methodology_links = METHOD_SMTP
 
 
 class WhoisService(TcpIpService):
@@ -898,3 +896,28 @@ class TlsCertificate(Fact):
         subs: list[str] = list(self.get('subjects'))
         subs.sort(key=lambda e: e.count('.'), reverse=True)
         return subs[0]
+
+
+class EmailAddress(Fact):
+    email = Field(str, mandatory=True)
+
+
+class Username(Fact):
+    username = Field(str, mandatory=True)
+
+
+class Password(Fact):
+    password = Field(str, mandatory=True)
+
+
+class PasswordHash(Fact):
+    hash = Field(str, mandatory=True)
+    type = Field(str, mandatory=False)
+
+
+class UsernamePassword(Username, Password):
+    pass
+
+
+class UsernamePasswordHash(Username, PasswordHash):
+    pass

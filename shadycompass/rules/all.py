@@ -10,6 +10,7 @@ from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules, Publi
 from shadycompass.rules.popscanner import PopScan
 from shadycompass.rules.portscanner import PortScan
 from shadycompass.rules.smbscanner import SmbScan
+from shadycompass.rules.smtpscanner import SmtpScan
 from shadycompass.rules.vulnscanner import VulnScan
 
 
@@ -24,6 +25,7 @@ class AllRules(
     SmbScan,
     PopScan,
     ImapScan,
+    SmtpScan,
     ConfigRules,
     EtcHostsRules,
     ProductionTargetRules,
