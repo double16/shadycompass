@@ -193,7 +193,7 @@ class NmapXmlFactReader(FactReader):
                 # first entry is the SMTP command used
                 if len(smtp_enum_users) > 1 and len(smtp_enum_users[0]) == 4:
                     for user in smtp_enum_users[1:]:
-                        result.append(Username(username=user))
+                        result.extend(spread_addrs(Username, addrs, hostnames, username=user))
 
             if state == 'open':
                 if os_type:

@@ -14,7 +14,7 @@ def shadycompass_cli(args: list[str]) -> int:
     history = InMemoryHistory()
     ops = ShadyCompassOps(args)
     commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
-                'services', 'products', 'urls']
+                'services', 'products', 'urls', 'users', 'emails']
     config_names = {'ratelimit', 'production'}
     tools = set(map(lambda e: e.get_name(), filter(lambda e: isinstance(e, ToolAvailable), ops.engine.facts.values())))
     completer = NestedCompleter.from_nested_dict({
@@ -104,6 +104,10 @@ def shadycompass_cli(args: list[str]) -> int:
                     ops.show_products(user_command)
                 elif user_command[0] == 'urls':
                     ops.show_urls(user_command)
+                elif user_command[0] == 'users':
+                    ops.show_users(user_command)
+                elif user_command[0] == 'emails':
+                    ops.show_emails(user_command)
 
                 else:
                     print(f'''
@@ -140,6 +144,10 @@ products
     displays the products that have been found
 urls
     displays the urls that have been found
+users
+    displays the users that have been found
+emails
+    displays the emails that have been found
 facts
     show current facts (useful for debugging)
 ''')

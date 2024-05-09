@@ -229,8 +229,12 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
             result.extend(spread_addrs(UdpIpService, addrs, port=port))
 
 
-def spread_addrs(fact_type, addrs: Iterable[str], **kwargs) -> list[Fact]:
+def spread_addrs(fact_type, addrs: Iterable[str], hostnames: Iterable[str] = None, **kwargs) -> list[Fact]:
     result = []
     for addr in addrs:
-        result.append(fact_type(addr=addr, **kwargs))
+        if hostnames:
+            for hostname in hostnames:
+                result.append(fact_type(addr=addr, hostname=hostname, **kwargs))
+        else:
+            result.append(fact_type(addr=addr, **kwargs))
     return result

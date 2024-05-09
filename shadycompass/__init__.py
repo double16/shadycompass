@@ -14,7 +14,8 @@ from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
     set_local_config_path, SECTION_OPTIONS, combine_command_options, tool_category_priority
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
-    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain
+    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain, \
+    Username, EmailAddress
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -523,3 +524,13 @@ Press enter/return at the prompt to refresh data.
         print('', file=self.fd_out)
         for fact in filter(lambda f: isinstance(f, HttpUrl), self.engine.facts.values()):
             print(f'- {fact.get_url()}', file=self.fd_out)
+
+    def show_users(self, command: list[str]):
+        print('', file=self.fd_out)
+        for fact in filter(lambda f: isinstance(f, Username), self.engine.facts.values()):
+            print(f'- {fact.get_full()}', file=self.fd_out)
+
+    def show_emails(self, command: list[str]):
+        print('', file=self.fd_out)
+        for fact in filter(lambda f: isinstance(f, EmailAddress), self.engine.facts.values()):
+            print(f'- {fact.get_email()}', file=self.fd_out)

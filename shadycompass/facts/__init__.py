@@ -688,6 +688,7 @@ class ScanNeeded(Fact):
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     url = Field(str, mandatory=False)
+    secure = Field(bool, mandatory=False, default=False)
 
     def get_category(self) -> str:
         return self.get('category')
@@ -901,18 +902,44 @@ class TlsCertificate(Fact):
 class EmailAddress(Fact):
     email = Field(str, mandatory=True)
 
+    def get_email(self) -> str:
+        return self.get('email')
+
 
 class Username(Fact):
     username = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+    def get_full(self) -> str:
+        username = self.get('username')
+        if '@' in username:
+            username = f'"{username}"'
+        if self.get('hostname'):
+            return f'{username}@{self.get('hostname')}'
+        elif self.get('addr'):
+            return f'{username}@{self.get('addr')}'
+        else:
+            return username
 
 
 class Password(Fact):
     password = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
 
 
 class PasswordHash(Fact):
     hash = Field(str, mandatory=True)
     type = Field(str, mandatory=False)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+
+class NtlmHash(Fact):
+    hash = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
 
 
 class UsernamePassword(Username, Password):
@@ -920,4 +947,8 @@ class UsernamePassword(Username, Password):
 
 
 class UsernamePasswordHash(Username, PasswordHash):
+    pass
+
+
+class UsernameNtlmHash(Username, NtlmHash):
     pass

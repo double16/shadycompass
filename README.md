@@ -114,7 +114,10 @@ products
     displays the products that have been found
 urls
     displays the urls that have been foundfacts
-    show current facts (useful for debugging)
+users
+    displays the users that have been found
+emails
+    displays the emails that have been found
 ```
 
 ### info 
@@ -287,6 +290,14 @@ Displays the products that have been found.
 ### urls
 
 Displays the URLs that have been found.
+
+### users
+
+Displays the users that have been found.
+
+### emails
+
+Displays the emails that have been found.
 
 ### facts
 
