@@ -33,7 +33,7 @@ class SmtpUserEnumReader(FactReader):
                         if target.get('hostname'):
                             addrs['hostname'] = target.get('hostname')
                             if '@' not in username:
-                                emails.add(EmailAddress(email=f'{username}@{target.get('hostname')}'))
+                                emails.add(EmailAddress(email=f"{username}@{target.get('hostname')}"))
                     username_fact = Username(username=username, **addrs)
                     result.append(username_fact)
                     if '@' in username:

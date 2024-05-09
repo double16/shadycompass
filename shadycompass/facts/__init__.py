@@ -916,9 +916,9 @@ class Username(Fact):
         if '@' in username:
             username = f'"{username}"'
         if self.get('hostname'):
-            return f'{username}@{self.get('hostname')}'
+            return f"{username}@{self.get('hostname')}"
         elif self.get('addr'):
-            return f'{username}@{self.get('addr')}'
+            return f"{username}@{self.get('addr')}"
         else:
             return username
 

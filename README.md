@@ -275,29 +275,146 @@ Removes all configurations, global and local to the current target directory. Yo
 
 Displays the available tools.
 
+```
+tests/fixtures shadycompass > tools
+
+# port_scanner
+ - nmap
+ - rustscan
+
+# vuln_scanner
+ - nuclei
+
+# smb_scanner
+ - enum4linux-ng
+
+# smtp_scanner
+ - nmap
+ - smtp-user-enum
+
+# pop_scanner
+ - nmap
+
+# imap_scanner
+ - nmap
+
+# http_buster
+ - dirb
+ - feroxbuster
+ - gobuster
+ - wfuzz
+```
+
 ### targets
 
 Displays the targets that have been found.
+
+```
+tests/fixtures shadycompass > targets
+
+ - 10.129.229.189 shadycompass.test
+ - 10.129.229.189 webmail.shadycompass.test
+ - 10.0.0.1
+ - 10.0.0.2
+ - *.shadycompass.test
+```
 
 ### services
 
 Displays the services that have been found.
 
+```
+tests/fixtures shadycompass > services
+
+# 10.129.229.189
+- 22/tcp ssh, https://book.hacktricks.xyz/network-services-pentesting/pentesting-ssh
+- 22/tcp ssh, https://book.hacktricks.xyz/network-services-pentesting/pentesting-ssh
+- 25/tcp smtp, https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp, https://pentestmonkey.net/category/tools/user-enumeration
+- 53/tcp domain tcp ip, https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns
+- 80/tcp http, https://book.hacktricks.xyz/network-services-pentesting/pentesting-web
+- 88/tcp kerberos5 sec tcp, https://book.hacktricks.xyz/network-services-pentesting/pentesting-kerberos-88
+- 110/tcp pop, https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop
+- 135/tcp microsoft rpc, https://book.hacktricks.xyz/network-services-pentesting/135-pentesting-msrpc
+- 139/tcp netbios session, https://book.hacktricks.xyz/network-services-pentesting/137-138-139-pentesting-netbios
+- 143/tcp imap, https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap
+- 389/tcp ldap/ssl, https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap
+
+...
+```
+
 ### products
 
 Displays the products that have been found.
+
+```
+tests/fixtures shadycompass > products
+
+# 10.129.229.189:143
+ - hmailserver imapd
+# 10.129.229.189:993
+ - hmailserver imapd
+# 10.129.229.189:110
+ - hmailserver pop3d
+# 10.129.229.189:443
+ - php/8.0.28
+ - openssl/1.1.1t
+ - apache httpd/2.4.56
+ - apache/2.4.56
+
+...
+```
 
 ### urls
 
 Displays the URLs that have been found.
 
+```
+tests/fixtures shadycompass > urls
+
+- https://shadycompass.test:443/index.php
+- https://shadycompass.test:443/favicon.ico
+- https://shadycompass.test:443/.
+
+...
+```
+
 ### users
 
 Displays the users that have been found.
 
+```
+tests/fixtures shadycompass > users
+
+- root@10.0.0.1
+- bin@10.0.0.1
+- daemon@10.0.0.1
+- lp@10.0.0.1
+- adm@10.0.0.1
+- uucp@10.0.0.1
+- postmaster@10.0.0.1
+- nobody@10.0.0.1
+- ftp@10.0.0.1
+- root@10.0.0.2
+- bin@10.0.0.2
+- root@shadycompass.test
+- bin@shadycompass.test
+- "root@shadycompass.test"@10.0.0.1
+- "bin@shadycompass.test"@10.0.0.1
+- root@shadycompass.test
+- user1@shadycompass.test
+- user2@shadycompass.test
+```
+
 ### emails
 
 Displays the emails that have been found.
+
+```
+tests/fixtures shadycompass > emails
+
+- root@shadycompass.test
+- bin@shadycompass.test
+```
 
 ### facts
 
