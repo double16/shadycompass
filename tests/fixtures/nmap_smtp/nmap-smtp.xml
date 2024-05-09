@@ -35,25 +35,25 @@
             </port>
             <port protocol="tcp" portid="465">
                 <state state="open" reason="syn-ack" reason_ttl="0"/>
-                <service name="smtp" product="hMailServer smtpd" hostname="mailing.htb" ostype="Windows" tunnel="ssl"
+                <service name="smtp" product="hMailServer smtpd" hostname="shadycompass.test" ostype="Windows" tunnel="ssl"
                          method="probed" conf="10">
                     <cpe>cpe:/o:microsoft:windows</cpe>
                 </service>
                 <script id="ssl-cert"
-                        output="Subject: commonName=mailing.htb/organizationName=Mailing Ltd/stateOrProvinceName=EU\Spain/countryName=EU&#xa;Not valid before: 2024-02-27T18:24:10&#xa;Not valid after:  2029-10-06T18:24:10">
+                        output="Subject: commonName=shadycompass.test/organizationName=Mailing Ltd/stateOrProvinceName=EU\Spain/countryName=EU&#xa;Not valid before: 2024-02-27T18:24:10&#xa;Not valid after:  2029-10-06T18:24:10">
                     <table key="subject">
-                        <elem key="commonName">mailing.htb</elem>
+                        <elem key="commonName">shadycompass.test</elem>
                         <elem key="countryName">EU</elem>
-                        <elem key="emailAddress">ruy@mailing.htb</elem>
+                        <elem key="emailAddress">ruy@shadycompass.test</elem>
                         <elem key="localityName">Madrid</elem>
                         <elem key="organizationName">Mailing Ltd</elem>
                         <elem key="organizationalUnitName">MAILING</elem>
                         <elem key="stateOrProvinceName">EU\Spain</elem>
                     </table>
                     <table key="issuer">
-                        <elem key="commonName">mailing.htb</elem>
+                        <elem key="commonName">shadycompass.test</elem>
                         <elem key="countryName">EU</elem>
-                        <elem key="emailAddress">ruy@mailing.htb</elem>
+                        <elem key="emailAddress">ruy@shadycompass.test</elem>
                         <elem key="localityName">Madrid</elem>
                         <elem key="organizationName">Mailing Ltd</elem>
                         <elem key="organizationalUnitName">MAILING</elem>
@@ -79,30 +79,30 @@
                     </elem>
                 </script>
                 <script id="smtp-commands"
-                        output="mailing.htb, SIZE 20480000, AUTH LOGIN PLAIN, HELP&#xa; 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY"/>
+                        output="shadycompass.test, SIZE 20480000, AUTH LOGIN PLAIN, HELP&#xa; 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY"/>
                 <script id="ssl-date" output="TLS randomness does not represent time"></script>
             </port>
             <port protocol="tcp" portid="587">
                 <state state="open" reason="syn-ack" reason_ttl="0"/>
-                <service name="smtp" product="hMailServer smtpd" hostname="mailing.htb" ostype="Windows" method="probed"
+                <service name="smtp" product="hMailServer smtpd" hostname="shadycompass.test" ostype="Windows" method="probed"
                          conf="10">
                     <cpe>cpe:/o:microsoft:windows</cpe>
                 </service>
                 <script id="ssl-cert"
-                        output="Subject: commonName=mailing.htb/organizationName=Mailing Ltd/stateOrProvinceName=EU\Spain/countryName=EU&#xa;Not valid before: 2024-02-27T18:24:10&#xa;Not valid after:  2029-10-06T18:24:10">
+                        output="Subject: commonName=shadycompass.test/organizationName=Mailing Ltd/stateOrProvinceName=EU\Spain/countryName=EU&#xa;Not valid before: 2024-02-27T18:24:10&#xa;Not valid after:  2029-10-06T18:24:10">
                     <table key="subject">
-                        <elem key="commonName">mailing.htb</elem>
+                        <elem key="commonName">shadycompass.test</elem>
                         <elem key="countryName">EU</elem>
-                        <elem key="emailAddress">ruy@mailing.htb</elem>
+                        <elem key="emailAddress">ruy@shadycompass.test</elem>
                         <elem key="localityName">Madrid</elem>
                         <elem key="organizationName">Mailing Ltd</elem>
                         <elem key="organizationalUnitName">MAILING</elem>
                         <elem key="stateOrProvinceName">EU\Spain</elem>
                     </table>
                     <table key="issuer">
-                        <elem key="commonName">mailing.htb</elem>
+                        <elem key="commonName">shadycompass.test</elem>
                         <elem key="countryName">EU</elem>
-                        <elem key="emailAddress">ruy@mailing.htb</elem>
+                        <elem key="emailAddress">ruy@shadycompass.test</elem>
                         <elem key="localityName">Madrid</elem>
                         <elem key="organizationName">Mailing Ltd</elem>
                         <elem key="organizationalUnitName">MAILING</elem>
@@ -129,7 +129,7 @@
                 </script>
                 <script id="ssl-date" output="TLS randomness does not represent time"></script>
                 <script id="smtp-commands"
-                        output="mailing.htb, SIZE 20480000, STARTTLS, AUTH LOGIN PLAIN, HELP&#xa; 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY"/>
+                        output="shadycompass.test, SIZE 20480000, STARTTLS, AUTH LOGIN PLAIN, HELP&#xa; 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY"/>
             </port>
         </ports>
         <times srtt="56999" rttvar="44824" to="236295"/>
