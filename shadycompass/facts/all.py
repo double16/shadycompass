@@ -1,3 +1,7 @@
+import shadycompass.facts.dns_scanner.dig  # noqa: F401
+import shadycompass.facts.dns_scanner.dnsenum  # noqa: F401
+import shadycompass.facts.dns_scanner.dnsrecon  # noqa: F401
+import shadycompass.facts.dns_scanner.fierce  # noqa: F401
 import shadycompass.facts.etc_hosts  # noqa: F401
 import shadycompass.facts.http_buster.dirb  # noqa: F401
 import shadycompass.facts.http_buster.feroxbuster  # noqa: F401

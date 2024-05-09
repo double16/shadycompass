@@ -21,5 +21,5 @@ class EtcHostsReaderTest(unittest.TestCase):
                       facts)
 
     def test_ignore_not_hosts(self):
-        facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.txt')
+        facts = self.reader.read_facts('tests/fixtures/nmap/all/open-ports.txt')
         self.assertEqual(0, len(facts))

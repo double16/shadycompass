@@ -1,0 +1,5 @@
+NS: dc.shadycompass.test.
+SOA: dc.shadycompass.test. (10.129.229.189)
+Zone: failure
+Wildcard: failure
+Found: dc.shadycompass.test. (10.129.229.189)

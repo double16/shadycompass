@@ -11,7 +11,7 @@ class FileMetadataCacheTest(unittest.TestCase):
     def __init__(self, methodName: str = ...):
         super().__init__(methodName)
         self.tempdir = tempfile.mkdtemp()
-        shutil.copytree('tests/fixtures/nmap', self.tempdir, dirs_exist_ok=True)
+        shutil.copytree('tests/fixtures/nmap/all', self.tempdir, dirs_exist_ok=True)
         shutil.copytree('tests/fixtures/etchosts', self.tempdir, dirs_exist_ok=True)
         file_path = os.path.join(self.tempdir, 'hosts2')
         with open(file_path, 'wt') as fd:

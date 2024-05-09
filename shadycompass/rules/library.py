@@ -30,3 +30,7 @@ METHOD_SMTP = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp',
     'https://pentestmonkey.net/category/tools/user-enumeration',
 ]
+
+METHOD_DNS = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns',
+]

@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from experta import Fact, Field
 
-from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP
+from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, METHOD_DNS
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
@@ -155,13 +155,11 @@ class HttpService(TcpIpService, HasTLS):
 
 
 class DomainTcpIpService(TcpIpService):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns'
-    ]
+    methodology_links = METHOD_DNS
 
 
 class DomainUdpIpService(UdpIpService):
-    methodology_links = DomainTcpIpService.methodology_links
+    methodology_links = METHOD_DNS
 
 
 class SshService(TcpIpService):

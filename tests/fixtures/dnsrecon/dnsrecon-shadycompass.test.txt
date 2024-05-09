@@ -1,0 +1,46 @@
+[*] std: Performing General Enumeration against: shadycompass.test...
+[-] DNSSEC is not configured for shadycompass.test
+[*] 	 SOA dc.shadycompass.test 192.168.5.1
+[*] 	 SOA dc.shadycompass.test 10.129.229.189
+[*] 	 SOA dc.shadycompass.test dead:beef::de00:630b:3893:7608
+[*] 	 NS dc.shadycompass.test 192.168.5.1
+[*] 	 NS dc.shadycompass.test 10.129.229.189
+[*] 	 NS dc.shadycompass.test dead:beef::de00:630b:3893:7608
+[*] 	 A shadycompass.test 192.168.5.1
+[*] 	 A shadycompass.test 10.129.229.189
+[*] 	 AAAA shadycompass.test dead:beef::de00:630b:3893:7608
+[*] Enumerating SRV Records
+[+] 	 SRV _kerberos._udp.shadycompass.test dc.shadycompass.test 192.168.5.1 88
+[+] 	 SRV _kerberos._udp.shadycompass.test dc.shadycompass.test 10.129.229.189 88
+[+] 	 SRV _kerberos._udp.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 88
+[+] 	 SRV _gc._tcp.shadycompass.test dc.shadycompass.test 10.129.229.189 3268
+[+] 	 SRV _gc._tcp.shadycompass.test dc.shadycompass.test 192.168.5.1 3268
+[+] 	 SRV _gc._tcp.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 3268
+[+] 	 SRV _kerberos._tcp.shadycompass.test dc.shadycompass.test 192.168.5.1 88
+[+] 	 SRV _kerberos._tcp.shadycompass.test dc.shadycompass.test 10.129.229.189 88
+[+] 	 SRV _kerberos._tcp.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 88
+[+] 	 SRV _ldap._tcp.shadycompass.test dc.shadycompass.test 10.129.229.189 389
+[+] 	 SRV _ldap._tcp.shadycompass.test dc.shadycompass.test 192.168.5.1 389
+[+] 	 SRV _ldap._tcp.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 389
+[+] 	 SRV _ldap._tcp.ForestDNSZones.shadycompass.test dc.shadycompass.test 192.168.5.1 389
+[+] 	 SRV _ldap._tcp.ForestDNSZones.shadycompass.test dc.shadycompass.test 10.129.229.189 389
+[+] 	 SRV _ldap._tcp.ForestDNSZones.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 389
+[+] 	 SRV _ldap._tcp.gc._msdcs.shadycompass.test dc.shadycompass.test 10.129.229.189 3268
+[+] 	 SRV _ldap._tcp.gc._msdcs.shadycompass.test dc.shadycompass.test 192.168.5.1 3268
+[+] 	 SRV _ldap._tcp.gc._msdcs.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 3268
+[+] 	 SRV _ldap._tcp.pdc._msdcs.shadycompass.test dc.shadycompass.test 10.129.229.189 389
+[+] 	 SRV _ldap._tcp.pdc._msdcs.shadycompass.test dc.shadycompass.test 192.168.5.1 389
+[+] 	 SRV _ldap._tcp.pdc._msdcs.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 389
+[+] 	 SRV _kpasswd._tcp.shadycompass.test dc.shadycompass.test 192.168.5.1 464
+[+] 	 SRV _kpasswd._tcp.shadycompass.test dc.shadycompass.test 10.129.229.189 464
+[+] 	 SRV _kpasswd._tcp.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 464
+[+] 	 SRV _kpasswd._udp.shadycompass.test dc.shadycompass.test 10.129.229.189 464
+[+] 	 SRV _kpasswd._udp.shadycompass.test dc.shadycompass.test 192.168.5.1 464
+[+] 	 SRV _kpasswd._udp.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 464
+[+] 	 SRV _kerberos._tcp.dc._msdcs.shadycompass.test dc.shadycompass.test 192.168.5.1 88
+[+] 	 SRV _kerberos._tcp.dc._msdcs.shadycompass.test dc.shadycompass.test 10.129.229.189 88
+[+] 	 SRV _kerberos._tcp.dc._msdcs.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 88
+[+] 	 SRV _ldap._tcp.dc._msdcs.shadycompass.test dc.shadycompass.test 10.129.229.189 389
+[+] 	 SRV _ldap._tcp.dc._msdcs.shadycompass.test dc.shadycompass.test 192.168.5.1 389
+[+] 	 SRV _ldap._tcp.dc._msdcs.shadycompass.test dc.shadycompass.test dead:beef::de00:630b:3893:7608 389
+[+] 33 Records Found

@@ -1,0 +1,31 @@
+
+; <<>> DiG 9.19.21-1-Debian <<>> any shadycompass.test @shadycompass.test
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57379
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 8, AUTHORITY: 0, ADDITIONAL: 3
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4000
+;; QUESTION SECTION:
+;shadycompass.test.			IN	ANY
+
+;; ANSWER SECTION:
+shadycompass.test.		600	IN	A	10.129.229.189
+shadycompass.test.		600	IN	A	192.168.5.1
+shadycompass.test.		3600	IN	NS	dc.shadycompass.test.
+shadycompass.test.		3600	IN	SOA	dc.shadycompass.test. hostmaster.shadycompass.test. 494 900 600 86400 3600
+shadycompass.test.		600	IN	AAAA	dead:beef::8a13:3848:1b43:e9a
+shadycompass.test.		600	IN	AAAA	dead:beef::242
+shadycompass.test.		600	IN	AAAA	dead:beef::213
+shadycompass.test.		600	IN	AAAA	dead:beef::de00:630b:3893:7608
+
+;; ADDITIONAL SECTION:
+dc.shadycompass.test.	1200	IN	A	10.129.229.189
+dc.shadycompass.test.	1200	IN	AAAA	dead:beef::de00:630b:3893:7608
+
+;; Query time: 39 msec
+;; SERVER: 10.129.229.189#53(shadycompass.test) (TCP)
+;; WHEN: Thu May 09 10:46:48 CDT 2024
+;; MSG SIZE  rcvd: 293
+

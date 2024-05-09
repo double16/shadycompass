@@ -12,7 +12,7 @@ shadycompass - https://github.com/double16/shadycompass
 Press enter/return at the prompt to refresh data.
 
 [*] Reading hosts from tests/fixtures/etchosts/hosts
-[*] Reading nmap facts from tests/fixtures/nmap/open-ports.xml
+[*] Reading nmap facts from tests/fixtures/nmap/all/open-ports.xml
 [*] Reading hosts from /etc/hosts
 
 [$]  1. feroxbuster -u http://shadycompass.test:8080 -o feroxbuster-8080-shadycompass.test.txt --scan-limit 4 --insecure
