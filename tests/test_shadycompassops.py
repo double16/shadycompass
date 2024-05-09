@@ -8,7 +8,8 @@ from shadycompass import ShadyCompassOps, TargetIPv4Address, TargetIPv6Address, 
 from shadycompass.config import set_local_config_path, set_global_config_path, ConfigFact, SECTION_TOOLS, ToolCategory, \
     ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
-    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService, TargetDomain
+    NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService, TargetDomain, Username, \
+    EmailAddress
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn
 
@@ -182,6 +183,12 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('dirb' in self.fd_out.output)
         self.assertTrue('feroxbuster' in self.fd_out.output)
 
+    def test_tool_info4(self):
+        self.ops.engine.declare(ToolRecommended(addr='10.1.1.1', category=ToolCategory.etc_hosts,
+                                                name='add `10.1.1.1 shadycompass.test` to /etc/hosts'))
+        self.ops.tool_info(['info', '1'])
+        self.assertTrue('/etc/hosts' in self.fd_out.output)
+
     def test_tool_info_NAN(self):
         self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='dirb'))
         self.ops.engine.declare(ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster'))
@@ -200,6 +207,10 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.tool_info(['info', 'feroxbuster'])
         self.assertTrue('feroxbuster' in self.fd_out.output)
 
+    def test_tool_info_name_nmap(self):
+        self.ops.tool_info(['info', 'nmap'])
+        self.assertEqual(4, self.fd_out.output.count('# nmap'))
+
     def test_gtnw(self):
         self.ops.global_thermo_nuclear_war()
         self.assertTrue(len(self.fd_out.output) > 0)
@@ -217,7 +228,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(TargetIPv6Address(addr='::2'))
         self.ops.engine.declare(TargetHostname(hostname='localhost'))
         self.ops.engine.declare(TargetHostname(hostname='localhost.localdomain'))
-        self.ops.engine.declare(TargetDomain(domain='localdomain'))
+        self.ops.engine.declare(TargetDomain(domain='localdomain.local'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='::1'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost3', addr='::3'))
@@ -227,7 +238,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- 127.0.0.2' in self.fd_out.output)
         self.assertTrue('- ::2' in self.fd_out.output)
         self.assertTrue('- localhost.localdomain' in self.fd_out.output)
-        self.assertTrue('- *.localdomain' in self.fd_out.output)
+        self.assertTrue('- *.localdomain.local' in self.fd_out.output)
         self.assertFalse('- ::3 localhost3' in self.fd_out.output)
 
     def test_show_services(self):
@@ -271,6 +282,22 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- https://shadycompass.test:443/examples' in self.fd_out.output)
         self.assertTrue('- https://shadycompass.test:443/favicon.ico' in self.fd_out.output)
         self.assertTrue('- https://shadycompass.test:443/index.php' in self.fd_out.output)
+
+    def test_show_users(self):
+        self.ops.engine.declare(Username(username='root', addr='10.0.0.1'))
+        self.ops.engine.declare(Username(username='admin', hostname='shadycompass.test'))
+        self.ops.engine.declare(Username(username='jack'))
+        self.ops.show_users([])
+        self.assertTrue('- root@10.0.0.1' in self.fd_out.output)
+        self.assertTrue('- admin@shadycompass.test' in self.fd_out.output)
+        self.assertTrue('- jack' in self.fd_out.output)
+
+    def test_show_emails(self):
+        self.ops.engine.declare(EmailAddress(email='admin@shadycompass.test'))
+        self.ops.engine.declare(EmailAddress(email='jack@shadycompass.test'))
+        self.ops.show_emails([])
+        self.assertTrue('- admin@shadycompass.test' in self.fd_out.output)
+        self.assertTrue('- jack@shadycompass.test' in self.fd_out.output)
 
     def test_tool_option_local(self):
         self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-files.txt'])

@@ -6,6 +6,8 @@ from urllib.parse import urlparse
 
 from experta import Fact, Field
 
+from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP
+
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
 
@@ -187,9 +189,7 @@ class TelnetService(TcpIpService, HasTLS):
 
 
 class SmtpService(TcpIpService, HasTLS):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp'
-    ]
+    methodology_links = METHOD_SMTP
 
 
 class WhoisService(TcpIpService):
@@ -239,9 +239,7 @@ class Kerberos4UdpService(UdpIpService):
 
 
 class PopService(TcpIpService, HasTLS):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop'
-    ]
+    methodology_links = METHOD_POP
     version = Field(int, mandatory=False, default=3)
 
 
@@ -299,9 +297,7 @@ class SmbService(TcpIpService):
 
 
 class ImapService(TcpIpService, HasTLS):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap'
-    ]
+    methodology_links = METHOD_IMAP
     version = Field(int, mandatory=False, default=4)
 
 
@@ -692,6 +688,7 @@ class ScanNeeded(Fact):
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     url = Field(str, mandatory=False)
+    secure = Field(bool, mandatory=False, default=False)
 
     def get_category(self) -> str:
         return self.get('category')
@@ -900,3 +897,58 @@ class TlsCertificate(Fact):
         subs: list[str] = list(self.get('subjects'))
         subs.sort(key=lambda e: e.count('.'), reverse=True)
         return subs[0]
+
+
+class EmailAddress(Fact):
+    email = Field(str, mandatory=True)
+
+    def get_email(self) -> str:
+        return self.get('email')
+
+
+class Username(Fact):
+    username = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+    def get_full(self) -> str:
+        username = self.get('username')
+        if '@' in username:
+            username = f'"{username}"'
+        if self.get('hostname'):
+            return f'{username}@{self.get('hostname')}'
+        elif self.get('addr'):
+            return f'{username}@{self.get('addr')}'
+        else:
+            return username
+
+
+class Password(Fact):
+    password = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+
+class PasswordHash(Fact):
+    hash = Field(str, mandatory=True)
+    type = Field(str, mandatory=False)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+
+class NtlmHash(Fact):
+    hash = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+
+class UsernamePassword(Username, Password):
+    pass
+
+
+class UsernamePasswordHash(Username, PasswordHash):
+    pass
+
+
+class UsernameNtlmHash(Username, NtlmHash):
+    pass

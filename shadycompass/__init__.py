@@ -12,9 +12,10 @@ from experta import KnowledgeEngine, Fact
 import shadycompass.facts.all  # noqa: F401
 from shadycompass.config import ConfigFact, get_local_config_path, \
     get_global_config_path, ToolChoiceNeeded, SECTION_TOOLS, OPTION_VALUE_ALL, ToolRecommended, ToolAvailable, \
-    set_local_config_path, SECTION_OPTIONS, combine_command_options
+    set_local_config_path, SECTION_OPTIONS, combine_command_options, tool_category_priority
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
-    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain
+    HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain, \
+    Username, EmailAddress
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -200,24 +201,32 @@ class ShadyCompassOps(object):
     def _command_line(self, args: list[str]) -> str:
         return shlex.join(args)
 
+    def _find_tool_recommended(self) -> list[ToolRecommended]:
+        facts = list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))
+        facts.sort(key=lambda e: [-tool_category_priority(e.get('category')), e.get('name')])
+        return facts
+
     def handle_tool_recommended(self):
-        for idx, tool in enumerate(list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))):
+        for idx, tool in enumerate(self._find_tool_recommended()):
             print(f"[$] {str(idx + 1).rjust(2, ' ')}. {tool.get_name()} {self._command_line(tool.get_command_line())}",
                   file=self.fd_out)
 
     def tool_info(self, command: list[str]):
-        recommends = list(filter(lambda f: isinstance(f, ToolRecommended), self.engine.facts.values()))
-        tools = {}
+        recommends = self._find_tool_recommended()
+        tools: dict[str, list[ToolAvailable]] = {}
         for fact in filter(lambda f: isinstance(f, ToolAvailable), self.engine.facts.values()):
-            tools[fact.get('name')] = fact
+            tool_name = fact.get_name()
+            if tool_name not in tools:
+                tools[tool_name] = list()
+            tools[tool_name].append(fact)
         for arg in command[1:]:
             tr: Union[ToolRecommended, None] = None
-            ta: Union[ToolAvailable, None]
+            ta: list[ToolAvailable]
             try:
                 i = int(arg) - 1
                 if 0 <= i < len(recommends):
                     tr = recommends[i]
-                    ta = tools[tr.get_name()]
+                    ta = tools.get(tr.get_name(), [])
                 else:
                     print(f'[-] invalid number, expecting 1-{len(recommends)}', file=self.fd_out)
                     continue
@@ -227,13 +236,14 @@ class ShadyCompassOps(object):
                 else:
                     print(f'[-] unknown tool: {arg}', file=self.fd_out)
                     continue
-            print(f'\n# {ta.get_name()}', file=self.fd_out)
-            if ta.get_tool_links():
-                print('\n## tool links')
-                print('\n'.join(ta.get_tool_links()), file=self.fd_out)
-            if ta.get_methodology_links():
-                print('\n## methodology')
-                print('\n'.join(ta.get_methodology_links()), file=self.fd_out)
+            for tool in ta:
+                print(f'\n# {tool.get_name()}', file=self.fd_out)
+                if tool.get_tool_links():
+                    print('\n## tool links')
+                    print('\n'.join(tool.get_tool_links()), file=self.fd_out)
+                if tool.get_methodology_links():
+                    print('\n## methodology')
+                    print('\n'.join(tool.get_methodology_links()), file=self.fd_out)
             if tr:
                 print('\n## example command\n```shell')
                 print(tr.get_name() + ' ' + self._command_line(tr.get_command_line()), file=self.fd_out)
@@ -411,7 +421,7 @@ Press enter/return at the prompt to refresh data.
             tool_list = tools_by_category[tool.get_category()]
             tool_list.append(tool)
         categories = list(tools_by_category.keys())
-        categories.sort()
+        categories.sort(key=lambda e: tool_category_priority(e), reverse=True)
         for category in categories:
             print(f'\n# {category}', file=self.fd_out)
             tools_by_category[category].sort(key=lambda ta: ta.get_name())
@@ -453,7 +463,11 @@ Press enter/return at the prompt to refresh data.
         for hostname in hostname_targets:
             print(f' - {hostname}', file=self.fd_out)
         for domain in domains:
-            print(f' - *.{domain}', file=self.fd_out)
+            if '.' in domain:
+                wildcard = '*.'
+            else:
+                wildcard = ''
+            print(f' - {wildcard}{domain}', file=self.fd_out)
 
     def show_services(self, command: list[str]):
 
@@ -510,3 +524,13 @@ Press enter/return at the prompt to refresh data.
         print('', file=self.fd_out)
         for fact in filter(lambda f: isinstance(f, HttpUrl), self.engine.facts.values()):
             print(f'- {fact.get_url()}', file=self.fd_out)
+
+    def show_users(self, command: list[str]):
+        print('', file=self.fd_out)
+        for fact in filter(lambda f: isinstance(f, Username), self.engine.facts.values()):
+            print(f'- {fact.get_full()}', file=self.fd_out)
+
+    def show_emails(self, command: list[str]):
+        print('', file=self.fd_out)
+        for fact in filter(lambda f: isinstance(f, EmailAddress), self.engine.facts.values()):
+            print(f'- {fact.get_email()}', file=self.fd_out)

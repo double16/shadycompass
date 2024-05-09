@@ -1,0 +1,29 @@
+# Nmap 7.94SVN scan initiated Mon May  6 06:12:01 2024 as: nmap -p25 --script "smtp* and not brute" -oN nmap-smtp.txt -oX nmap-smtp.xml shadycompass.test
+Nmap scan report for shadycompass.test (10.129.229.189)
+Host is up (0.057s latency).
+
+PORT   STATE SERVICE
+25/tcp open  smtp
+| smtp-enum-users: 
+|_  Couldn't perform user enumeration, authentication needed
+|_smtp-open-relay: Server isn't an open relay, authentication needed
+| smtp-commands: shadycompass.test, SIZE 20480000, AUTH LOGIN PLAIN, HELP
+|_ 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY
+| smtp-vuln-cve2010-4344: 
+|_  The SMTP server is not Exim: NOT VULNERABLE
+465/tcp   open  ssl/smtp      hMailServer smtpd
+| ssl-cert: Subject: commonName=shadycompass.test/organizationName=Mailing Ltd/stateOrProvinceName=EU\Spain/countryName=EU
+| Not valid before: 2024-02-27T18:24:10
+|_Not valid after:  2029-10-06T18:24:10
+| smtp-commands: shadycompass.test, SIZE 20480000, AUTH LOGIN PLAIN, HELP
+|_ 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY
+|_ssl-date: TLS randomness does not represent time
+587/tcp   open  smtp          hMailServer smtpd
+| ssl-cert: Subject: commonName=shadycompass.test/organizationName=Mailing Ltd/stateOrProvinceName=EU\Spain/countryName=EU
+| Not valid before: 2024-02-27T18:24:10
+|_Not valid after:  2029-10-06T18:24:10
+|_ssl-date: TLS randomness does not represent time
+| smtp-commands: shadycompass.test, SIZE 20480000, STARTTLS, AUTH LOGIN PLAIN, HELP
+|_ 211 DATA HELO EHLO MAIL NOOP QUIT RCPT RSET SAML TURN VRFY
+
+# Nmap done at Mon May  6 06:12:02 2024 -- 1 IP address (1 host up) scanned in 1.56 seconds

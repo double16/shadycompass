@@ -5,7 +5,7 @@ from shadycompass.facts import ScanNeeded, ScanPresent, SmbService, NetbiosNameS
 from tests.tests import assertFactIn, assertFactNotIn
 
 
-class SmbcanTest(RulesBase):
+class SmbScanTest(RulesBase):
     def __init__(self, methodName: str = ...):
         super().__init__(['/dev/null'], methodName)
 

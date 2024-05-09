@@ -17,3 +17,16 @@ METHOD_NETWORK = [
 METHOD_SMB = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smb',
 ]
+
+METHOD_POP = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-pop',
+]
+
+METHOD_IMAP = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-imap',
+]
+
+METHOD_SMTP = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp',
+    'https://pentestmonkey.net/category/tools/user-enumeration',
+]

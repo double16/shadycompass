@@ -1,0 +1,35 @@
+Starting smtp-user-enum v1.0 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+  ----------------------------------------------------------
+ |                   Scan Information                       |
+  ----------------------------------------------------------
+
+ Mode ..................... VRFY
+ Worker Processes ......... 5
+ Usernames file ........... users.txt
+ Target count ............. 1
+ Username count ........... 47
+ Target TCP port .......... 25
+ Query timeout ............ 5 secs
+ Relay Server ............. Not used
+
+ ######## Scan started at Sun Jan 21 18:01:50 2007 #########
+ root@10.0.0.1: Exists
+ bin@10.0.0.1: Exists
+ daemon@10.0.0.1: Exists
+ lp@10.0.0.1: Exists
+ adm@10.0.0.1: Exists
+ uucp@10.0.0.1: Exists
+ postmaster@10.0.0.1: Exists
+ nobody@10.0.0.1: Exists
+ ftp@10.0.0.1: Exists
+ root@10.0.0.2: Exists
+ bin@10.0.0.2: Exists
+ root@shadycompass.test: Exists
+ bin@shadycompass.test: Exists
+ root@shadycompass.test@10.0.0.1: Exists
+ bin@shadycompass.test@10.0.0.1: Exists
+ ######## Scan completed at Sun Jan 21 18:01:50 2007 #########
+ 9 results.
+
+ 47 queries in 1 seconds (47.0 queries / sec)

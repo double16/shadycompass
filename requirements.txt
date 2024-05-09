@@ -1,1 +1,2 @@
 git+https://github.com/openmotics/om-experta@d35d53708a46482e1ee4e3a4bc1a36bc03492913#egg=om-experta
+prompt_toolkit==3.0.43

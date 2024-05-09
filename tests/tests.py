@@ -11,6 +11,10 @@ def _is_match(fact: Fact, f1: Fact) -> bool:
     return True
 
 
+def _get_facts_by_type(fact: Fact, engine: KnowledgeEngine) -> list[Fact]:
+    return list(filter(lambda e: isinstance(e, type(fact)), engine.facts.values()))
+
+
 def assertFactIn(fact: Fact, engine: KnowledgeEngine, times: int = 1):
     assert times > 0
     count = 0
@@ -18,9 +22,10 @@ def assertFactIn(fact: Fact, engine: KnowledgeEngine, times: int = 1):
         if _is_match(fact, f1):
             count += 1
     if count == 0:
-        raise AssertionError(f"{repr(fact)} not found in {engine.facts.values()}")
+        raise AssertionError(f"{repr(fact)} not found in {_get_facts_by_type(fact, engine)}")
     elif times != count:
-        raise AssertionError(f"{repr(fact)} found {count} times (expected {times}) in {engine.facts.values()}")
+        raise AssertionError(
+            f"{repr(fact)} found {count} times (expected {times}) in {_get_facts_by_type(fact, engine)}")
 
 
 def assertFactNotIn(fact: Fact, engine: KnowledgeEngine):
