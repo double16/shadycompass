@@ -1,10 +1,11 @@
 from abc import ABC
 
-from experta import DefFacts, Rule, AS, OR, NOT, MATCH
+from experta import DefFacts, Rule, AS, MATCH
 
 from shadycompass import ToolAvailable
-from shadycompass.config import ToolCategory, PreferredTool, ConfigFact, SECTION_OPTIONS, OPTION_VALUE_ALL
+from shadycompass.config import ToolCategory
 from shadycompass.facts import ScanNeeded, TargetDomain
+from shadycompass.rules.conditions import TOOL_PREF, TOOL_CONF
 from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_DNS
 
@@ -37,7 +38,7 @@ class DigRules(IRules, ABC):
         self.recommend_tool(
             category=ToolCategory.dns_scanner,
             name=self.dig_tool_name,
-            variant='any',
+            variant=f'{domain.get_domain()}-any',
             command_line=command_line,
             addr=f1.get_addr(),
             port=f1.get_port(),
@@ -57,7 +58,7 @@ class DigRules(IRules, ABC):
         self.recommend_tool(
             category=ToolCategory.dns_scanner,
             name=self.dig_tool_name,
-            variant='axfr',
+            variant=f'{domain.get_domain()}-axfr',
             command_line=command_line,
             addr=f1.get_addr(),
             port=f1.get_port(),
@@ -66,14 +67,9 @@ class DigRules(IRules, ABC):
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
         AS.domain << TargetDomain(),
-        OR(
-            PreferredTool(category=ToolCategory.dns_scanner, name=dig_tool_name),
-            PreferredTool(category=ToolCategory.dns_scanner, name=OPTION_VALUE_ALL),
-            NOT(PreferredTool(category=ToolCategory.dns_scanner)),
-        ),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=dig_tool_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=dig_tool_name))),
-        )
+        TOOL_PREF(ToolCategory.dns_scanner, dig_tool_name),
+        TOOL_CONF(ToolCategory.dns_scanner, dig_tool_name),
+    )
     def run_dig(self, f1: ScanNeeded, domain: TargetDomain):
         self._declare_dig_any(f1, domain)
         self._declare_dig_axfr(f1, domain)
