@@ -12,6 +12,8 @@ _DNS_LINE_PATTERN = re.compile(r'\s(A|[A-Z]{2,})\s+(\S+)\s+([0-9a-fA-F:./]+)', r
 _SRV_LINE_PATTERN = re.compile(r'\sSRV\s+(\S+)\s+(\S+)\s+([0-9a-fA-F:./]+)\s+(\d+)', re.MULTILINE)
 
 
+# TODO: parse json
+
 class DnsReconReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not check_file_signature(file_path, _DOMAIN_PATTERN, _DNS_LINE_PATTERN):
