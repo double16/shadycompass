@@ -24,9 +24,9 @@ class FactReader(abc.ABC):
 fact_reader_registry: list[FactReader] = list()
 
 
-def check_file_signature(file_path: str, signature) -> bool:
+def check_file_signature(file_path: str, *signatures) -> bool:
     try:
-        if isinstance(signature, bytes):
+        if isinstance(signatures[0], bytes):
             open_flags = 'rb'
         else:
             open_flags = 'rt'
@@ -34,10 +34,15 @@ def check_file_signature(file_path: str, signature) -> bool:
         with open(file_path, open_flags) as f:
             content = f.read(4096)
 
-        if isinstance(signature, re.Pattern):
-            return signature.search(content) is not None
-        else:
-            return str(signature) in content
+        for sig in signatures:
+            if isinstance(sig, re.Pattern):
+                if sig.search(content) is None:
+                    return False
+            else:
+                if str(sig) not in content:
+                    return False
+
+        return True
     except UnicodeDecodeError:
         return False
 

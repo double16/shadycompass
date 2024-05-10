@@ -10,13 +10,13 @@ from shadycompass.rules.irules import IRules
 class DnsScan(IRules, ABC):
     @Rule(
         OR(
-            DomainTcpIpService(addr=MATCH.addr, port=MATCH.port, secure=MATCH.secure),
-            DomainUdpIpService(addr=MATCH.addr, port=MATCH.port, secure=MATCH.secure)),
+            DomainTcpIpService(addr=MATCH.addr, port=MATCH.port),
+            DomainUdpIpService(addr=MATCH.addr, port=MATCH.port)),
         NOT(ScanPresent(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=MATCH.port)),
         salience=100
     )
-    def need_dns_scan_addr(self, addr: str, port: int, secure: bool):
-        self.declare(ScanNeeded(category=ToolCategory.dns_scanner, addr=addr, port=port, secure=secure))
+    def need_dns_scan_addr(self, addr: str, port: int):
+        self.declare(ScanNeeded(category=ToolCategory.dns_scanner, addr=addr, port=port))
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=MATCH.port),

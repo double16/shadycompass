@@ -14,7 +14,7 @@ _SRV_LINE_PATTERN = re.compile(r'\sSRV\s+(\S+)\s+(\S+)\s+([0-9a-fA-F:./]+)\s+(\d
 
 class DnsReconReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
-        if not check_file_signature(file_path, _DNS_LINE_PATTERN):
+        if not check_file_signature(file_path, _DOMAIN_PATTERN, _DNS_LINE_PATTERN):
             return []
         print(f"[*] Reading dnsrecon findings from {file_path}")
         targets = set()
