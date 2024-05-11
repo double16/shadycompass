@@ -4,7 +4,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, guess_target, ScanPresent, \
-    TargetHostname, TargetIPv4Address, HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution
+    TargetHostname
 
 _FIERCE_LINE_PATTERN = re.compile(r'^(\w+):\s+(\S+)[.]\s+\((\S+)\)$', re.MULTILINE)
 
@@ -33,12 +33,7 @@ class FierceReader(FactReader):
                     target = guess_target(addr)
                     targets.add(target)
                     targets.add(TargetHostname(hostname=hostname))
-                    if isinstance(target, TargetIPv4Address):
-                        resolutions.add(
-                            HostnameIPv4Resolution(hostname=hostname, addr=target.get_addr(), implied=False))
-                    elif isinstance(target, TargetIPv6Address):
-                        resolutions.add(
-                            HostnameIPv6Resolution(hostname=hostname, addr=target.get_addr(), implied=False))
+                    resolutions.add(target.get_resolution(hostname, False))
 
         result.extend(targets)
         result.extend(resolutions)

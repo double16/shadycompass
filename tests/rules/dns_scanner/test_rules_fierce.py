@@ -19,7 +19,7 @@ class FierceTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=FierceRules.fierce_tool_name,
             command_line=[
-                '--dns-servers', '10.129.229.189:53',
+                '--dns-servers', '10.129.229.189',
                 '--domain', 'shadycompass.test',
                 '>fierce-10.129.229.189-53-shadycompass.test.txt',
             ],
@@ -35,7 +35,7 @@ class FierceTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=FierceRules.fierce_tool_name,
             command_line=[
-                '--dns-servers', '10.129.229.189:53',
+                '--dns-servers', '10.129.229.189',
                 '--delay', '12',
                 '--domain', 'shadycompass.test',
                 '>fierce-10.129.229.189-53-shadycompass.test.txt',
@@ -51,7 +51,7 @@ class FierceTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=FierceRules.fierce_tool_name,
             command_line=[
-                '--dns-servers', '10.129.229.189:53',
+                '--dns-servers', '10.129.229.189',
                 '--domain', 'shadycompass.test',
                 '>fierce-10.129.229.189-53-shadycompass.test.txt',
             ],
@@ -60,7 +60,7 @@ class FierceTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=FierceRules.fierce_tool_name,
             command_line=[
-                '--dns-servers', '10.129.229.189:53',
+                '--dns-servers', '10.129.229.189',
                 '--domain', 'shadycompass2.test',
                 '>fierce-10.129.229.189-53-shadycompass2.test.txt',
             ],
@@ -74,7 +74,7 @@ class FierceTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=FierceRules.fierce_tool_name,
             command_line=[
-                '--dns-servers', '10.129.229.189:53',
+                '--dns-servers', '10.129.229.189',
                 '--wide',
                 '--domain', 'shadycompass.test',
                 '>fierce-10.129.229.189-53-shadycompass.test.txt',
@@ -89,7 +89,7 @@ class FierceTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=FierceRules.fierce_tool_name,
             command_line=[
-                '--dns-servers', '10.129.229.189:53',
+                '--dns-servers', '10.129.229.189',
                 '--wide',
                 '--domain', 'shadycompass.test',
                 '>fierce-10.129.229.189-53-shadycompass.test.txt',

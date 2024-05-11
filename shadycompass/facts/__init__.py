@@ -62,41 +62,6 @@ class TargetIPv6Network(Fact):
     network = Field(str, mandatory=True)
 
 
-class TargetHostname(Fact):
-    hostname = Field(str, mandatory=True)
-
-    def get_hostname(self) -> str:
-        return self.get('hostname')
-
-
-class TargetIPv4Address(Fact):
-    addr = Field(str, mandatory=True)
-
-    def get_addr(self) -> str:
-        return self.get('addr')
-
-    def is_private_ip(self):
-        try:
-            ip_obj = ipaddress.ip_address(self.get_addr())
-            return ip_obj.is_private
-        except ValueError:
-            return False  # Invalid IP address
-
-
-class TargetIPv6Address(Fact):
-    addr = Field(str, mandatory=True)
-
-    def get_addr(self) -> str:
-        return self.get('addr')
-
-    def is_private_ip(self):
-        try:
-            ip_obj = ipaddress.ip_address(self.get_addr())
-            return ip_obj.is_private
-        except ValueError:
-            return False  # Invalid IP address
-
-
 class HostnameIPv4Resolution(Fact):
     hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=True)
@@ -125,6 +90,50 @@ class HostnameIPv6Resolution(Fact):
 
     def is_implied(self) -> bool:
         return self.get('implied')
+
+
+class TargetHostname(Fact):
+    hostname = Field(str, mandatory=True)
+
+    def get_hostname(self) -> str:
+        return self.get('hostname')
+
+    def get_resolution(self, hostname: str, implied: bool) -> None:
+        return None
+
+
+class TargetIPv4Address(Fact):
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self) -> str:
+        return self.get('addr')
+
+    def is_private_ip(self):
+        try:
+            ip_obj = ipaddress.ip_address(self.get_addr())
+            return ip_obj.is_private
+        except ValueError:
+            return False  # Invalid IP address
+
+    def get_resolution(self, hostname: str, implied: bool) -> HostnameIPv4Resolution:
+        return HostnameIPv4Resolution(hostname=hostname, addr=self.get_addr(), implied=implied)
+
+
+class TargetIPv6Address(Fact):
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self) -> str:
+        return self.get('addr')
+
+    def is_private_ip(self):
+        try:
+            ip_obj = ipaddress.ip_address(self.get_addr())
+            return ip_obj.is_private
+        except ValueError:
+            return False  # Invalid IP address
+
+    def get_resolution(self, hostname: str, implied: bool) -> HostnameIPv6Resolution:
+        return HostnameIPv6Resolution(hostname=hostname, addr=self.get_addr(), implied=implied)
 
 
 class HasIpService(Fact):

@@ -33,13 +33,13 @@ class FierceRules(IRules, ABC):
         more_options = []
         if ratelimit:
             more_options.append(['--delay', str(floor(60 / ratelimit.get_request_per_second()))])
-
         command_line = self.resolve_command_line(
             self.fierce_tool_name,
             [
-                '--dns-servers', f'{f1.get_addr()}:{f1.get_port()}',
+                '--dns-servers', f1.get_addr(),
             ], *more_options
         )
+
         command_line.extend([
             '--domain', domain.get_domain(),
             f'>fierce{addr_file_name_part}-{domain.get_domain()}.txt'
@@ -54,7 +54,7 @@ class FierceRules(IRules, ABC):
         )
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         TOOL_PREF(ToolCategory.dns_scanner, fierce_tool_name),
         TOOL_CONF(ToolCategory.dns_scanner, fierce_tool_name),
@@ -64,7 +64,7 @@ class FierceRules(IRules, ABC):
         self._declare_fierce(f1, domain)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
         TOOL_PREF(ToolCategory.dns_scanner, fierce_tool_name),

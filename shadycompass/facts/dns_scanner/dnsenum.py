@@ -5,7 +5,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, guess_target, TargetHostname, \
-    TargetIPv4Address, HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution, ScanPresent
+    ScanPresent
 
 DNSENUM_FILENAME_PATTERN = re.compile(r'dnsenum(?:-subdomains)?-([^/\\]+[.][a-z]{2,6})(?:-[\w-]+?)?[.]\w{3,5}$')
 
@@ -30,10 +30,7 @@ class DnsEnumReader(FactReader):
                 target = guess_target(addr)
                 targets.add(target)
                 targets.add(TargetHostname(hostname=hostname))
-                if isinstance(target, TargetIPv4Address):
-                    resolutions.add(HostnameIPv4Resolution(hostname=hostname, addr=target.get_addr(), implied=False))
-                elif isinstance(target, TargetIPv6Address):
-                    resolutions.add(HostnameIPv6Resolution(hostname=hostname, addr=target.get_addr(), implied=False))
+                resolutions.add(target.get_resolution(hostname, False))
 
         result.extend(targets)
         result.extend(resolutions)

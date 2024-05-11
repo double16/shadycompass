@@ -1,0 +1,355 @@
+[
+    {
+        "arguments": "/usr/bin/dnsrecon -n 10.129.229.189 -D /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -j dnsrecon-10.129.229.189-53-shadycompass.test.json -d shadycompass.test",
+        "date": "2024-05-11 04:32:27.725215",
+        "type": "ScanInfo"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "mname": "dc.shadycompass.test",
+        "type": "SOA"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "mname": "dc.shadycompass.test",
+        "type": "SOA"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "mname": "dc.shadycompass.test",
+        "type": "SOA"
+    },
+    {
+        "Version": "",
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "recursive": "False",
+        "target": "dc.shadycompass.test",
+        "type": "NS"
+    },
+    {
+        "Version": "",
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "recursive": "False",
+        "target": "dc.shadycompass.test",
+        "type": "NS"
+    },
+    {
+        "Version": "",
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "recursive": "False",
+        "target": "dc.shadycompass.test",
+        "type": "NS"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "A"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "A"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "AAAA"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "AAAA"
+    },
+    {
+        "address": "dead:beef::213",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "AAAA"
+    },
+    {
+        "address": "dead:beef::242",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "AAAA"
+    },
+    {
+        "address": "dead:beef::8a13:3848:1b43:e9a",
+        "domain": "shadycompass.test",
+        "name": "shadycompass.test",
+        "type": "AAAA"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._tcp.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._tcp.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._tcp.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_gc._tcp.shadycompass.test",
+        "port": "3268",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_gc._tcp.shadycompass.test",
+        "port": "3268",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_gc._tcp.shadycompass.test",
+        "port": "3268",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._udp.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._udp.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._udp.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.ForestDNSZones.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.ForestDNSZones.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.ForestDNSZones.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.pdc._msdcs.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.pdc._msdcs.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.pdc._msdcs.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.dc._msdcs.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.dc._msdcs.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.dc._msdcs.shadycompass.test",
+        "port": "389",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.gc._msdcs.shadycompass.test",
+        "port": "3268",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.gc._msdcs.shadycompass.test",
+        "port": "3268",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_ldap._tcp.gc._msdcs.shadycompass.test",
+        "port": "3268",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._tcp.dc._msdcs.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._tcp.dc._msdcs.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_kerberos._tcp.dc._msdcs.shadycompass.test",
+        "port": "88",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_kpasswd._udp.shadycompass.test",
+        "port": "464",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_kpasswd._udp.shadycompass.test",
+        "port": "464",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_kpasswd._udp.shadycompass.test",
+        "port": "464",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "10.129.229.189",
+        "domain": "shadycompass.test",
+        "name": "_kpasswd._tcp.shadycompass.test",
+        "port": "464",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::1a5",
+        "domain": "shadycompass.test",
+        "name": "_kpasswd._tcp.shadycompass.test",
+        "port": "464",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    },
+    {
+        "address": "dead:beef::de00:630b:3893:7608",
+        "domain": "shadycompass.test",
+        "name": "_kpasswd._tcp.shadycompass.test",
+        "port": "464",
+        "target": "dc.shadycompass.test",
+        "type": "SRV"
+    }
+]

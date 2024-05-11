@@ -4,7 +4,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, guess_target, TargetHostname, \
-    HostnameIPv4Resolution, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, ScanPresent
+    ScanPresent
 
 _DNS_LINE_PATTERN = re.compile(r'^(\S+)[.]\s+\d+\s+IN\s+A+\s+(\S+)$', re.MULTILINE)
 _SERVER_PATTERN = re.compile(r'SERVER:\s+(\S+)#(\d+)\((\S+)\)\s+\(([A-Z]+)\)')
@@ -39,12 +39,7 @@ class DigReader(FactReader):
                     targets.add(target)
                     hostname = m.group(1).rstrip('.')
                     targets.add(TargetHostname(hostname=hostname))
-                    if isinstance(target, TargetIPv4Address):
-                        resolutions.add(
-                            HostnameIPv4Resolution(hostname=hostname, addr=target.get_addr(), implied=False))
-                    elif isinstance(target, TargetIPv6Address):
-                        resolutions.add(
-                            HostnameIPv6Resolution(hostname=hostname, addr=target.get_addr(), implied=False))
+                    resolutions.add(target.get_resolution(hostname, False))
 
         result.extend(targets)
         result.extend(resolutions)

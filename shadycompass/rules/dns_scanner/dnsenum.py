@@ -42,7 +42,7 @@ class DnsEnumRules(IRules, ABC):
         command_line = self.resolve_command_line(
             self.dnsenum_tool_name,
             [
-                '--dnsserver', f'{f1.get_addr()}:{f1.get_port()}',
+                '--dnsserver', f1.get_addr(),
                 *enum_options,
                 '-o', f'dnsenum{addr_file_name_part}-subdomains-{domain.get_domain()}.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt'
@@ -59,7 +59,7 @@ class DnsEnumRules(IRules, ABC):
         )
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         TOOL_PREF(ToolCategory.dns_scanner, dnsenum_tool_name),
         TOOL_CONF(ToolCategory.dns_scanner, dnsenum_tool_name),
@@ -70,7 +70,7 @@ class DnsEnumRules(IRules, ABC):
         self._declare_dnsenum(f1, domain)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.public << PublicTarget(addr=MATCH.addr),
         TOOL_PREF(ToolCategory.dns_scanner, dnsenum_tool_name),
@@ -81,7 +81,7 @@ class DnsEnumRules(IRules, ABC):
         self._declare_dnsenum(f1, domain, public=public)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
         TOOL_PREF(ToolCategory.dns_scanner, dnsenum_tool_name),
@@ -92,7 +92,7 @@ class DnsEnumRules(IRules, ABC):
         self._declare_dnsenum(f1, domain, ratelimit=ratelimit)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
         AS.public << PublicTarget(addr=MATCH.addr),

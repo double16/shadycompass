@@ -19,7 +19,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '10.129.229.189:53',
+                '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass.test',
@@ -36,7 +36,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '10.129.229.189:53',
+                '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
@@ -56,7 +56,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '8.8.8.8:53',
+                '--dnsserver', '8.8.8.8',
                 '--enum',
                 '-o', 'dnsenum-8.8.8.8-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass.test',
@@ -75,7 +75,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '8.8.8.8:53',
+                '--dnsserver', '8.8.8.8',
                 '--enum',
                 '-o', 'dnsenum-8.8.8.8-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
@@ -93,7 +93,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '10.129.229.189:53',
+                '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass.test',
@@ -103,7 +103,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '10.129.229.189:53',
+                '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass2.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass2.test',
@@ -118,7 +118,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '10.129.229.189:53',
+                '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
@@ -135,7 +135,7 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
             command_line=[
-                '--dnsserver', '10.129.229.189:53',
+                '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
                 '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',

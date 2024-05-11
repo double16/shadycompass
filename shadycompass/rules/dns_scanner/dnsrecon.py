@@ -42,7 +42,7 @@ class DnsReconRules(IRules, ABC):
         command_line = self.resolve_command_line(
             self.dnsrecon_tool_name,
             [
-                '-n', f'{f1.get_addr()}:{f1.get_port()}',
+                '-n', f1.get_addr(),
                 *enum_options,
                 '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', f'dnsrecon{addr_file_name_part}-{domain.get_domain()}.json',
@@ -59,7 +59,7 @@ class DnsReconRules(IRules, ABC):
         )
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         TOOL_PREF(ToolCategory.dns_scanner, dnsrecon_tool_name),
         TOOL_CONF(ToolCategory.dns_scanner, dnsrecon_tool_name),
@@ -70,7 +70,7 @@ class DnsReconRules(IRules, ABC):
         self._declare_dnsrecon(f1, domain)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.public << PublicTarget(addr=MATCH.addr),
         TOOL_PREF(ToolCategory.dns_scanner, dnsrecon_tool_name),
@@ -81,7 +81,7 @@ class DnsReconRules(IRules, ABC):
         self._declare_dnsrecon(f1, domain, public=public)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
         TOOL_PREF(ToolCategory.dns_scanner, dnsrecon_tool_name),
@@ -92,7 +92,7 @@ class DnsReconRules(IRules, ABC):
         self._declare_dnsrecon(f1, domain, ratelimit=ratelimit)
 
     @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr),
+        AS.f1 << ScanNeeded(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=53),
         AS.domain << TargetDomain(),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
         AS.public << PublicTarget(addr=MATCH.addr),

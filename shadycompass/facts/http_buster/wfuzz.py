@@ -17,7 +17,7 @@ class WfuzzReader(FactReader):
             return self._read_json(file_path)
         return []
 
-    def _read_txt(self, file_path: str):
+    def _read_txt(self, file_path: str) -> list[Fact]:
         print(f"[*] Reading wfuzz findings from {file_path}")
         result = []
         target = None
@@ -35,13 +35,16 @@ class WfuzzReader(FactReader):
         result.extend(http_url_targets(result))
         return result
 
-    def _read_json(self, file_path: str):
+    def _read_json(self, file_path: str) -> list[Fact]:
         result = []
-        print(f"[*] Reading wfuzz findings from {file_path}")
-        with open(file_path, 'rt') as f:
-            data = json.load(f)
+        try:
+            with open(file_path, 'rt') as f:
+                data = json.load(f)
+        except ValueError:
+            return result
         if not isinstance(data, list):
             return result
+        print(f"[*] Reading wfuzz findings from {file_path}")
         for record in data:
             url = record.get('url', None)
             if url:
