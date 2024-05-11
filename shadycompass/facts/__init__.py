@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 from experta import Fact, Field
 
-from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP
+from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, METHOD_DNS
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
@@ -24,9 +24,9 @@ class FactReader(abc.ABC):
 fact_reader_registry: list[FactReader] = list()
 
 
-def check_file_signature(file_path: str, signature) -> bool:
+def check_file_signature(file_path: str, *signatures) -> bool:
     try:
-        if isinstance(signature, bytes):
+        if isinstance(signatures[0], bytes):
             open_flags = 'rb'
         else:
             open_flags = 'rt'
@@ -34,10 +34,15 @@ def check_file_signature(file_path: str, signature) -> bool:
         with open(file_path, open_flags) as f:
             content = f.read(4096)
 
-        if isinstance(signature, re.Pattern):
-            return signature.search(content) is not None
-        else:
-            return str(signature) in content
+        for sig in signatures:
+            if isinstance(sig, re.Pattern):
+                if sig.search(content) is None:
+                    return False
+            else:
+                if str(sig) not in content:
+                    return False
+
+        return True
     except UnicodeDecodeError:
         return False
 
@@ -55,41 +60,6 @@ class TargetIPv4Network(Fact):
 
 class TargetIPv6Network(Fact):
     network = Field(str, mandatory=True)
-
-
-class TargetHostname(Fact):
-    hostname = Field(str, mandatory=True)
-
-    def get_hostname(self) -> str:
-        return self.get('hostname')
-
-
-class TargetIPv4Address(Fact):
-    addr = Field(str, mandatory=True)
-
-    def get_addr(self) -> str:
-        return self.get('addr')
-
-    def is_private_ip(self):
-        try:
-            ip_obj = ipaddress.ip_address(self.get_addr())
-            return ip_obj.is_private
-        except ValueError:
-            return False  # Invalid IP address
-
-
-class TargetIPv6Address(Fact):
-    addr = Field(str, mandatory=True)
-
-    def get_addr(self) -> str:
-        return self.get('addr')
-
-    def is_private_ip(self):
-        try:
-            ip_obj = ipaddress.ip_address(self.get_addr())
-            return ip_obj.is_private
-        except ValueError:
-            return False  # Invalid IP address
 
 
 class HostnameIPv4Resolution(Fact):
@@ -120,6 +90,50 @@ class HostnameIPv6Resolution(Fact):
 
     def is_implied(self) -> bool:
         return self.get('implied')
+
+
+class TargetHostname(Fact):
+    hostname = Field(str, mandatory=True)
+
+    def get_hostname(self) -> str:
+        return self.get('hostname')
+
+    def get_resolution(self, hostname: str, implied: bool) -> None:
+        return None
+
+
+class TargetIPv4Address(Fact):
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self) -> str:
+        return self.get('addr')
+
+    def is_private_ip(self):
+        try:
+            ip_obj = ipaddress.ip_address(self.get_addr())
+            return ip_obj.is_private
+        except ValueError:
+            return False  # Invalid IP address
+
+    def get_resolution(self, hostname: str, implied: bool) -> HostnameIPv4Resolution:
+        return HostnameIPv4Resolution(hostname=hostname, addr=self.get_addr(), implied=implied)
+
+
+class TargetIPv6Address(Fact):
+    addr = Field(str, mandatory=True)
+
+    def get_addr(self) -> str:
+        return self.get('addr')
+
+    def is_private_ip(self):
+        try:
+            ip_obj = ipaddress.ip_address(self.get_addr())
+            return ip_obj.is_private
+        except ValueError:
+            return False  # Invalid IP address
+
+    def get_resolution(self, hostname: str, implied: bool) -> HostnameIPv6Resolution:
+        return HostnameIPv6Resolution(hostname=hostname, addr=self.get_addr(), implied=implied)
 
 
 class HasIpService(Fact):
@@ -155,13 +169,11 @@ class HttpService(TcpIpService, HasTLS):
 
 
 class DomainTcpIpService(TcpIpService):
-    methodology_links = [
-        'https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns'
-    ]
+    methodology_links = METHOD_DNS
 
 
 class DomainUdpIpService(UdpIpService):
-    methodology_links = DomainTcpIpService.methodology_links
+    methodology_links = METHOD_DNS
 
 
 class SshService(TcpIpService):

@@ -14,11 +14,14 @@ class NucleiJsonFactReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not check_file_signature(file_path, '"matcher-name"'):
             return []
-        print(f"[*] Reading nuclei findings from {file_path}")
-        with open(file_path, 'rt') as f:
-            data = json.load(f)
+        try:
+            with open(file_path, 'rt') as f:
+                data = json.load(f)
+        except ValueError:
+            return []
         if not isinstance(data, list):
             return []
+        print(f"[*] Reading nuclei findings from {file_path}")
         result = set()
         for record in data:
             record_type: str = record.get('type', None)

@@ -37,10 +37,20 @@ class ShadyCompassEngine(
         for file_path in self.file_metadata.find_changes():
             if os.path.exists(file_path):
                 for fact_reader in fact_reader_registry:
-                    the_facts = fact_reader.read_facts(file_path)
-                    for the_fact in the_facts:
-                        the_fact.update({'file_path': file_path})
-                        self.declare(the_fact)
+                    try:
+                        the_facts = fact_reader.read_facts(file_path)
+                        for the_fact in the_facts:
+                            if the_fact is None:
+                                print(
+                                    f'[!] returned fact is None from {file_path}, {type(fact_reader)}, implementation error, file report at https://github.com/double16/shadycompass/issues',
+                                    file=sys.stderr)
+                            else:
+                                the_fact.update({'file_path': file_path})
+                                self.declare(the_fact)
+                    except BaseException as e:
+                        print(
+                            f'[!] error parsing {file_path}, {type(fact_reader)}, implementation error, file report at https://github.com/double16/shadycompass/issues',
+                            file=sys.stderr)
             else:
                 # retract facts for files that have been removed
                 for fact in self.facts.values():

@@ -11,13 +11,16 @@ class Enum4LinuxNGReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
         if not check_file_signature(file_path, '"smb_domain_info"'):
             return []
-        print(f"[*] Reading enum4linux-ng findings from {file_path}")
         result = []
-        with open(file_path, 'rt') as f:
-            data = json.load(f)
+        try:
+            with open(file_path, 'rt') as f:
+                data = json.load(f)
+        except ValueError:
+            return result
         if not isinstance(data, dict):
             return result
 
+        print(f"[*] Reading enum4linux-ng findings from {file_path}")
         target_host = data.get('target', {}).get('host', '')
         if not target_host:
             return result

@@ -181,7 +181,7 @@ class NmapTest(RulesBase):
 
 class NmapPopScannerNeededTest(RulesBase):
     def __init__(self, methodName: str = ...):
-        super().__init__(['tests/fixtures/nmap/open-ports.xml'], methodName)
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml'], methodName)
 
     def test_nmap_pop_scanner_recommended(self):
         self.engine.declare(PopService(addr='10.129.229.189', port=110, secure=False))
@@ -219,7 +219,7 @@ class NmapPopScannerNeededTest(RulesBase):
 
 class NmapPopScannerNotNeededTest(RulesBase):
     def __init__(self, methodName: str = ...):
-        super().__init__(['tests/fixtures/nmap/open-ports.xml', 'tests/fixtures/nmap_pop/nmap-pop.xml'], methodName)
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml', 'tests/fixtures/nmap/pop/nmap-pop.xml'], methodName)
 
     def test_nmap_pop_scanner_not_recommended(self):
         assertFactIn(ScanPresent(category=ToolCategory.pop_scanner, name=NmapRules.nmap_tool_name,
@@ -234,7 +234,7 @@ class NmapPopScannerNotNeededTest(RulesBase):
 
 class NmapImapScannerNeededTest(RulesBase):
     def __init__(self, methodName: str = ...):
-        super().__init__(['tests/fixtures/nmap/open-ports.xml'], methodName)
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml'], methodName)
 
     def test_nmap_imap_scanner_recommended(self):
         self.engine.declare(ImapService(addr='10.129.229.189', port=143, secure=False))
@@ -302,7 +302,8 @@ class NmapImapScannerNeededTest(RulesBase):
 
 class NmapImapScannerNotNeededTest(RulesBase):
     def __init__(self, methodName: str = ...):
-        super().__init__(['tests/fixtures/nmap/open-ports.xml', 'tests/fixtures/nmap_imap/nmap-imap.xml'], methodName)
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml', 'tests/fixtures/nmap/imap/nmap-imap.xml'],
+                         methodName)
 
     def test_nmap_imap_scanner_not_recommended(self):
         assertFactIn(ScanPresent(category=ToolCategory.imap_scanner, name=NmapRules.nmap_tool_name,
@@ -325,7 +326,7 @@ class NmapImapScannerNotNeededTest(RulesBase):
 
 class NmapSmtpScannerNeededTest(RulesBase):
     def __init__(self, methodName: str = ...):
-        super().__init__(['tests/fixtures/nmap/open-ports.xml'], methodName)
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml'], methodName)
 
     def test_nmap_smtp_scanner_recommended(self):
         self.engine.declare(SmtpService(addr='10.129.229.189', port=25, secure=False))
@@ -393,7 +394,8 @@ class NmapSmtpScannerNeededTest(RulesBase):
 
 class NmapSmtpScannerNotNeededTest(RulesBase):
     def __init__(self, methodName: str = ...):
-        super().__init__(['tests/fixtures/nmap/open-ports.xml', 'tests/fixtures/nmap_smtp/nmap-smtp.xml'], methodName)
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml', 'tests/fixtures/nmap/smtp/nmap-smtp.xml'],
+                         methodName)
 
     def test_nmap_smtp_scanner_not_recommended(self):
         assertFactIn(ScanPresent(category=ToolCategory.smtp_scanner, name=NmapRules.nmap_tool_name,

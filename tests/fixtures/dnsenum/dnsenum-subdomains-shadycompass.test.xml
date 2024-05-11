@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<magictree class="MtBranchObject">
+    <testdata class="MtBranchObject">
+        <host>192.168.5.1
+            <hostname>shadycompass.test</hostname>
+        </host>
+        <fqdn>shadycompass.test.</fqdn>
+        <host>10.129.229.189
+            <hostname>shadycompass.test</hostname>
+        </host>
+        <fqdn>shadycompass.test.</fqdn>
+        <host>10.129.229.189
+            <hostname>dc.shadycompass.test</hostname>
+        </host>
+        <fqdn>dc.shadycompass.test.</fqdn>
+        <host>10.129.229.189
+            <hostname>dc.shadycompass.test</hostname>
+        </host>
+        <fqdn>dc.shadycompass.test.</fqdn>
+        <host>192.168.5.1
+            <hostname>gc._msdcs.shadycompass.test</hostname>
+        </host>
+        <fqdn>gc._msdcs.shadycompass.test.</fqdn>
+        <host>10.129.229.189
+            <hostname>gc._msdcs.shadycompass.test</hostname>
+        </host>
+        <fqdn>gc._msdcs.shadycompass.test.</fqdn>
+        <host>192.168.5.1
+            <hostname>domaindnszones.shadycompass.test</hostname>
+        </host>
+        <fqdn>domaindnszones.shadycompass.test.</fqdn>
+        <host>10.129.229.189
+            <hostname>domaindnszones.shadycompass.test</hostname>
+        </host>
+        <fqdn>domaindnszones.shadycompass.test.</fqdn>
+        <host>192.168.5.1
+            <hostname>forestdnszones.shadycompass.test</hostname>
+        </host>
+        <fqdn>forestdnszones.shadycompass.test.</fqdn>
+        <host>10.129.229.189
+            <hostname>forestdnszones.shadycompass.test</hostname>
+        </host>
+        <fqdn>forestdnszones.shadycompass.test.</fqdn>
+    </testdata>
+</magictree>

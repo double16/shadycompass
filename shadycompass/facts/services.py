@@ -60,7 +60,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         elif protocol == 'udp':
             result.extend(
                 spread_addrs(TftpUdpService, addrs, port=port, secure=secure or service_name.endswith('s')))
-    elif service_name in ['kerberos-sec', 'kpasswd5']:
+    elif service_name in ['kerberos-sec', 'kpasswd', 'kpasswd5'] or (service_name == 'kerberos' and port == 88):
         if protocol == 'tcp':
             result.extend(spread_addrs(Kerberos5SecTcpService, addrs, port=port))
         elif protocol == 'udp':
@@ -103,10 +103,10 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(SnmpService, addrs, port=port))
     elif service_name.startswith('irc'):
         result.extend(spread_addrs(IrcService, addrs, port=port, secure=secure or service_name.endswith('s')))
-    elif service_name.startswith('ldap') or service_name == 'globalcatLDAPssl':
+    elif service_name.startswith('ldap') or service_name in ['globalcatLDAPssl', 'gc']:
         result.extend(spread_addrs(
             LdapService, addrs, port=port,
-            secure=secure or service_name.endswith('s') or service_name.endswith('ssl')))
+            secure=secure or service_name.endswith('s') or service_name.endswith('ssl') or service_name == 'gc'))
     elif service_name.startswith('ldap-admin'):
         result.extend(spread_addrs(LdapAdminService, addrs, port=port, secure=secure))
     elif service_name == 'isakmp':

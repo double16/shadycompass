@@ -17,7 +17,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         self.reader = NmapXmlFactReader()
 
     def test_read_xml(self):
-        facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.xml')
+        facts = self.reader.read_facts('tests/fixtures/nmap/all/open-ports.xml')
         self.assertEqual(89, len(facts))
         self.assertIn(ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
@@ -90,5 +90,5 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         ), facts)
 
     def test_ignore_not_xml(self):
-        facts = self.reader.read_facts('tests/fixtures/nmap/open-ports.txt')
+        facts = self.reader.read_facts('tests/fixtures/nmap/all/open-ports.txt')
         self.assertEqual(0, len(facts))

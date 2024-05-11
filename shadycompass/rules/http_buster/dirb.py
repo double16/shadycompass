@@ -1,11 +1,11 @@
 from abc import ABC
 from math import floor
 
-from experta import Rule, DefFacts, AS, OR, MATCH, NOT
+from experta import Rule, DefFacts, AS, MATCH, NOT
 
-from shadycompass.config import ToolCategory, ToolAvailable, OPTION_VALUE_ALL, PreferredTool, ConfigFact, \
-    SECTION_OPTIONS
+from shadycompass.config import ToolCategory, ToolAvailable
 from shadycompass.facts import HttpBustingNeeded, RateLimitEnable
+from shadycompass.rules.conditions import TOOL_PREF, TOOL_CONF
 from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_HTTP_BRUTE_FORCE
 
@@ -44,10 +44,8 @@ class DirbRules(IRules, ABC):
 
     @Rule(
         AS.f1 << HttpBustingNeeded(addr=MATCH.addr),
-        OR(PreferredTool(category=ToolCategory.http_buster, name=dirb_tool_name),
-           PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL)),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=dirb_tool_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=dirb_tool_name))),
+        TOOL_PREF(ToolCategory.http_buster, dirb_tool_name),
+        TOOL_CONF(ToolCategory.http_buster, dirb_tool_name),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
     def run_dirb(self, f1: HttpBustingNeeded):
@@ -56,10 +54,8 @@ class DirbRules(IRules, ABC):
     @Rule(
         AS.f1 << HttpBustingNeeded(addr=MATCH.addr),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
-        OR(PreferredTool(category=ToolCategory.http_buster, name=dirb_tool_name),
-           PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL)),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=dirb_tool_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=dirb_tool_name))),
+        TOOL_PREF(ToolCategory.http_buster, dirb_tool_name),
+        TOOL_CONF(ToolCategory.http_buster, dirb_tool_name),
     )
     def run_dirb_ratelimit(self, f1: HttpBustingNeeded, ratelimit: RateLimitEnable):
         self._declare_dirb(f1, ratelimit=ratelimit)
