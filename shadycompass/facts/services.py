@@ -18,7 +18,7 @@ from shadycompass.facts import HttpService, DomainTcpIpService, DomainUdpIpServi
     ZeroconfService, PostgresqlService, AmqpService, VncHttpService, VncService, CouchdbService, X11Service, \
     RedisService, ApacheJServService, BitcoinService, PDLDataStreamingService, NetworkDataManagementProtocol, \
     MemcacheService, MemcacheDbService, MongoDbService, EtherNetIPService, BacnetService, MsmqService, \
-    OSTYPE_WINDOWS, DotNetMessageFramingService, MicrosoftRpcHttpService, SshService
+    OSTYPE_WINDOWS, DotNetMessageFramingService, MicrosoftRpcHttpService, SshService, WindowsUpdateDeliveryOptimization
 
 
 def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, secure, service_name):
@@ -217,6 +217,8 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         result.extend(spread_addrs(BacnetService, addrs, port=port))
     elif service_name == 'msmq':
         result.extend(spread_addrs(MsmqService, addrs, port=port))
+    elif service_name == 'wudo':
+        result.extend(spread_addrs(WindowsUpdateDeliveryOptimization, addrs, port=port))
     elif service_name == 'mc-nmf':
         result.extend(spread_addrs(DotNetMessageFramingService, addrs, port=port))
     else:

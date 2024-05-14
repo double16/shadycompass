@@ -2,7 +2,7 @@ from shadycompass import ToolRecommended
 from shadycompass.config import ToolCategory, PreferredTool, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT, \
     OPTION_PRODUCTION
 from shadycompass.facts import ScanNeeded, TargetIPv4Address, ScanPresent, PopService, ImapService, SmtpService, \
-    Username
+    Username, WindowsUpdateDeliveryOptimization
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.rules.base import RulesBase
 from tests.tests import assertFactIn, assertFactNotIn
@@ -434,3 +434,14 @@ class NmapSmtpScannerNotNeededTest(RulesBase):
         assertFactIn(Username(username='user1'), self.engine)
         assertFactIn(Username(username='user2'), self.engine)
         assertFactIn(Username(), self.engine, times=3)
+
+
+class NmapWudoScannerNotNeededTest(RulesBase):
+    """ Test recognition of Windows Update Delivery Optimization """
+
+    def __init__(self, methodName: str = ...):
+        super().__init__(['tests/fixtures/nmap/all/open-ports.xml', 'tests/fixtures/nmap/wudo/nmap-tcp-wudo.xml'],
+                         methodName)
+
+    def test_nmap_wudo(self):
+        assertFactIn(WindowsUpdateDeliveryOptimization(addr='10.129.229.189', port=7680), self.engine)

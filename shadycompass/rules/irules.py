@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Union, Iterable
 
 from experta import Fact
 
@@ -26,4 +26,8 @@ class IRules(ABC):
                        addr: Union[str, None] = None,
                        hostname: Union[str, None] = None,
                        port: Union[int, None] = None):
+        pass
+
+    @abstractmethod
+    def get_facts(self) -> Iterable[Fact]:
         pass

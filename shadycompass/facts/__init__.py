@@ -627,6 +627,13 @@ class MsmqService(TcpIpService):
     ]
 
 
+class WindowsUpdateDeliveryOptimization(TcpIpService):
+    methodology_links = [
+        'https://www.thewindowsclub.com/windows-update-delivery-optimization-or-wudo-in-windows-10',
+        'https://www.speedguide.net/port.php?port=7680',
+    ]
+
+
 class HttpUrl(Fact):
     addr = Field(str, mandatory=False)
     port = Field(int, mandatory=True)

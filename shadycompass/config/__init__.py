@@ -257,7 +257,7 @@ class ToolRecommended(Fact):
 class ConfigRules(IRules, ABC):
     def _get_tools(self, category: str) -> list[ToolAvailable]:
         tools = []
-        for fact in self.facts.values():
+        for fact in self.get_facts():
             if isinstance(fact, ToolAvailable) and fact.get('category') == category:
                 tools.append(fact)
         return tools
@@ -266,7 +266,7 @@ class ConfigRules(IRules, ABC):
         retract_queue = []
         for fact in filter(
                 lambda f: isinstance(f, PreferredTool) and f.get('category') == category and f.get('name') != tool_name,
-                           self.facts.values()):
+                self.get_facts()):
             retract_queue.append(fact)
         for fact in retract_queue:
             self.retract(fact)

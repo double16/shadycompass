@@ -115,10 +115,13 @@ class NmapXmlFactReader(FactReader):
                     state = port_detail_el.attrib.get('state', 'unknown')
                 elif port_detail_el.tag == 'service':
                     service_name = port_detail_el.attrib.get('name', None)
+                    confidence = int(port_detail_el.attrib.get('conf', '0'))  # 0-10
                     hostname = port_detail_el.attrib.get('hostname', None)
                     extra_info = port_detail_el.attrib.get('extrainfo', None)
                     if port_detail_el.attrib.get('tunnel', None) in ['ssl', 'tls']:
                         secure = True
+                    if service_name == 'pando-pub' and confidence < 8:
+                        service_name = 'wudo'
 
                     product = port_detail_el.attrib.get('product', None)
                     product_version = port_detail_el.attrib.get('version', None)

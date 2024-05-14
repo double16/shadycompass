@@ -5,7 +5,7 @@ import re
 import shlex
 import sys
 from configparser import ConfigParser
-from typing import Union
+from typing import Union, Iterable
 
 from experta import KnowledgeEngine, Fact
 
@@ -31,6 +31,9 @@ class ShadyCompassEngine(
         for fact_reader in fact_reader_registry:
             paths.extend(fact_reader.files())
         self.file_metadata = FileMetadataCache(paths)
+
+    def get_facts(self) -> Iterable[Fact]:
+        return self.facts.values()
 
     def update_facts(self):
         retract_queue = []
