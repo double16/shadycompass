@@ -29,6 +29,10 @@ class NucleiTest(RulesBase):
         self.engine.run()
         assertFactIn(ScanNeeded(category=ToolCategory.vuln_scanner), self.engine)
         assertFactIn(self.nuclei_fact_any, self.engine)
+        self.engine.declare(
+            ScanPresent(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name, addr='10.1.1.1'))
+        self.engine.run()
+        assertFactNotIn(self.nuclei_fact_any, self.engine)
 
     def test_found_scan_recommend_nuclei(self):
         self.engine.declare(PreferredTool(category=ToolCategory.vuln_scanner, name=NucleiRules.nuclei_tool_name))

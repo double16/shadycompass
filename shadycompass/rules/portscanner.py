@@ -42,5 +42,12 @@ class PortScan(IRules, ABC):
         AS.f1 << ToolRecommended(category=ToolCategory.port_scanner, addr=MATCH.addr),
         ScanPresent(category=ToolCategory.port_scanner, addr=MATCH.addr),
         )
-    def retract_nmap(self, f1: ToolRecommended):
+    def retract_port_scan(self, f1: ToolRecommended):
+        self.retract(f1)
+
+    @Rule(
+        AS.f1 << ToolRecommended(category=ToolCategory.port_scanner, addr=ScanNeeded.ANY),
+        ScanPresent(category=ToolCategory.port_scanner),
+    )
+    def retract_port_scan_any(self, f1: ToolRecommended):
         self.retract(f1)

@@ -922,6 +922,7 @@ class Username(Fact):
     username = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
 
     def get_full(self) -> str:
         username = self.get('username')
@@ -931,6 +932,8 @@ class Username(Fact):
             return f"{username}@{self.get('hostname')}"
         elif self.get('addr'):
             return f"{username}@{self.get('addr')}"
+        elif self.get('domain'):
+            return f"{username}\\{self.get('domain')}"
         else:
             return username
 
@@ -939,6 +942,7 @@ class Password(Fact):
     password = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
 
 
 class PasswordHash(Fact):
@@ -946,12 +950,14 @@ class PasswordHash(Fact):
     type = Field(str, mandatory=False)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
 
 
 class NtlmHash(Fact):
     hash = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
 
 
 class UsernamePassword(Username, Password):

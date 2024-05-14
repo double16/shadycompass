@@ -34,3 +34,11 @@ METHOD_SMTP = [
 METHOD_DNS = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-dns',
 ]
+
+METHOD_ACTIVE_DIRECTORY = [
+    'https://book.hacktricks.xyz/windows-hardening/active-directory-methodology',
+]
+
+METHOD_ASREP_ROASTING = [
+    'https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/asreproast',
+]

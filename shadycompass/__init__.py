@@ -47,7 +47,7 @@ class ShadyCompassEngine(
                             else:
                                 the_fact.update({'file_path': file_path})
                                 self.declare(the_fact)
-                    except BaseException as e:
+                    except BaseException:
                         print(
                             f'[!] error parsing {file_path}, {type(fact_reader)}, implementation error, file report at https://github.com/double16/shadycompass/issues',
                             file=sys.stderr)

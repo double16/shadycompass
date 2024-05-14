@@ -39,6 +39,13 @@ class NmapTest(RulesBase):
         assertFactIn(self.nmap_top_fact, self.engine)
         assertFactIn(self.rustscan_all_fact, self.engine)
         assertFactIn(self.rustscan_top_fact, self.engine)
+        self.engine.declare(
+            ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr='10.1.1.1'))
+        self.engine.run()
+        assertFactNotIn(self.nmap_all_fact, self.engine)
+        assertFactNotIn(self.nmap_top_fact, self.engine)
+        assertFactNotIn(self.rustscan_all_fact, self.engine)
+        assertFactNotIn(self.rustscan_top_fact, self.engine)
 
     def test_no_services_recommend_nmap(self):
         self.engine.declare(PreferredTool(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name))

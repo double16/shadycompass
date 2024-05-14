@@ -28,6 +28,10 @@ class ToolCategory(object):
     pop_scanner = 'pop_scanner'
     imap_scanner = 'imap_scanner'
     smtp_scanner = 'smtp_scanner'
+    ldap_scanner = 'ldap_scanner'
+    asrep_roaster = 'asrep_roaster'
+    kerberoaster = 'kerberoaster'
+    timeroaster = 'timeroaster'
     etc_hosts = 'hosts'
     docs = 'docs'
 
@@ -55,6 +59,8 @@ def tool_category_priority(category: str) -> int:
             return 601
         case ToolCategory.http_buster:
             return 500
+        case ToolCategory.asrep_roaster, ToolCategory.kerberoaster, ToolCategory.timeroaster:
+            return 650
         case ToolCategory.smb_scanner:
             return 650
         case ToolCategory.smtp_scanner:

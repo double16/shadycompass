@@ -1,0 +1,6 @@
+2024/05/13 03:13:06 >  Using KDC(s):
+2024/05/13 03:13:06 >   dc.shadycompass.test:88
+2024/05/13 03:13:06 >  [+] VALID USERNAME:  tom@shadycompass.test
+2024/05/13 03:13:06 >  [+] VALID USERNAME:  jerry@shadycompass.test
+2024/05/13 03:13:06 >  [+] VALID USERNAME:  Administrator@shadycompass.test
+2024/05/13 03:13:06 >  Done! Tested 3 usernames (3 valid) in 0.042 seconds
