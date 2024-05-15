@@ -1,8 +1,8 @@
-from shadycompass.rules.kerberos.kerbrute import KerbruteRules
+from shadycompass.rules.ldap_scanner.ldapsearch import LdapSearchRules
 
 
 class AllRules(
-    KerbruteRules,
+    LdapSearchRules,
 ):
     """
     Convenience class to collect all the rules.

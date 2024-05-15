@@ -1,6 +1,6 @@
 from shadycompass import SECTION_TOOLS
 from shadycompass.config import ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT
-from shadycompass.facts import ScanNeeded, WindowsDomain, TargetIPv4Address, Kerberos5SecTcpService
+from shadycompass.facts import ScanNeeded, WindowsDomain, TargetIPv4Address, Kerberos5SecTcpService, ScanPresent
 from shadycompass.rules.kerberos.kerbrute import KerbruteRules
 from tests.rules.base import RulesBase
 from tests.tests import assertFactIn, assertFactNotIn
@@ -23,7 +23,14 @@ class KerbruteRulesTest(RulesBase):
                 '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
+            addr='10.129.229.189',
         ), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.asrep_roaster, addr='10.129.229.189',
+                                        name=KerbruteRules.kerbrute_tool_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.asrep_roaster, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.asrep_roaster, name=KerbruteRules.kerbrute_tool_name),
+                        self.engine)
 
     def test_asrep_roaster_options_local(self):
         self.engine.config_set(SECTION_TOOLS, ToolCategory.asrep_roaster, KerbruteRules.kerbrute_tool_name, False)

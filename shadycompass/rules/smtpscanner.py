@@ -27,5 +27,5 @@ class SmtpScan(IRules, ABC):
         AS.f1 << ToolRecommended(category=ToolCategory.smtp_scanner, addr=MATCH.addr, port=MATCH.port),
         ScanPresent(category=ToolCategory.smtp_scanner, addr=MATCH.addr, port=MATCH.port),
     )
-    def retract_smtp(self, f1: ToolRecommended):
+    def retract_smtp_tool(self, f1: ToolRecommended):
         self.retract(f1)

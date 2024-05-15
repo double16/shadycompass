@@ -30,5 +30,5 @@ class AsRepRoaster(IRules, ABC):
         AS.f1 << ToolRecommended(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
         ScanPresent(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
     )
-    def retract_smb(self, f1: ToolRecommended):
+    def retract_asrep_roaster(self, f1: ToolRecommended):
         self.retract(f1)

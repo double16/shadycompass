@@ -1,6 +1,7 @@
 import shadycompass.rules.dns_scanner.all as dns_scanner
 import shadycompass.rules.http_buster.all as http_buster
 import shadycompass.rules.kerberos.all as kerberoaster
+import shadycompass.rules.ldap_scanner.all as ldap_scanner
 import shadycompass.rules.port_scanner.all as port_scanner
 import shadycompass.rules.smb_scanner.all as smb_scanner
 import shadycompass.rules.smtp_scanner.all as smtp_scanner
@@ -11,6 +12,7 @@ from shadycompass.rules.dnsscanner import DnsScan
 from shadycompass.rules.etc_hosts import EtcHostsRules
 from shadycompass.rules.httpbusting import HttpBusting
 from shadycompass.rules.imapscanner import ImapScan
+from shadycompass.rules.ldapscanner import LdapScan
 from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules, PublicAddrRules, MiscRules
 from shadycompass.rules.popscanner import PopScan
 from shadycompass.rules.portscanner import PortScan
@@ -27,6 +29,7 @@ class AllRules(
     smtp_scanner.AllRules,
     dns_scanner.AllRules,
     kerberoaster.AllRules,
+    ldap_scanner.AllRules,
     HttpBusting,
     PortScan,
     VulnScan,
@@ -36,6 +39,7 @@ class AllRules(
     SmtpScan,
     DnsScan,
     AsRepRoaster,
+    LdapScan,
     ConfigRules,
     EtcHostsRules,
     ProductionTargetRules,

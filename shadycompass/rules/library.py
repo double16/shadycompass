@@ -42,3 +42,7 @@ METHOD_ACTIVE_DIRECTORY = [
 METHOD_ASREP_ROASTING = [
     'https://book.hacktricks.xyz/windows-hardening/active-directory-methodology/asreproast',
 ]
+
+METHOD_LDAP = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap',
+]

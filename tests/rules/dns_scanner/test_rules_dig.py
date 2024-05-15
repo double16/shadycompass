@@ -28,6 +28,11 @@ class DigTest(RulesBase):
                 'axfr', '@10.129.229.189', '-p', '53', 'shadycompass.test', '>dig-axfr-10.129.229.189-53.txt',
             ],
         ), self.engine)
+        self.engine.declare(
+            ScanPresent(category=ToolCategory.dns_scanner, addr='10.129.229.189', port=53, name=DigRules.dig_tool_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.dns_scanner, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.dns_scanner, name=DigRules.dig_tool_name), self.engine)
 
     def test_dig_two_domains(self):
         self.engine.config_set(SECTION_TOOLS, ToolCategory.dns_scanner, DigRules.dig_tool_name, True)
