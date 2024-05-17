@@ -78,7 +78,11 @@ def shadycompass_cli(args: list[str]) -> int:
                     return 0
 
                 elif user_command[0] == 'facts':
-                    print(ops.engine.facts)
+                    if len(user_command) > 1:
+                        facts = list(filter(lambda e: user_command[1] in str(type(e)), ops.engine.facts.values()))
+                    else:
+                        facts = ops.engine.facts.values()
+                    print('\n'.join(map(repr, facts)))
                 elif user_command[0] == 'save':
                     ops.save_config()
                 elif user_command[0] == 'use':

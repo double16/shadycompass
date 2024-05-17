@@ -8,7 +8,8 @@ from experta import Fact
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username
+    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username, \
+    resolve_unescaped_encoding
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -101,14 +102,16 @@ class NmapXmlFactReader(FactReader):
                     cert = self._parse_table_to_dict(port_detail_el)
                     if cert.get('subject', {}).get('commonName'):
                         secure = True
-                        issuer = cert.get('issuer', {}).get('commonName', '')
-                        subjects = [cert.get('subject', {}).get('commonName')]
+                        issuer = resolve_unescaped_encoding(cert.get('issuer', {}).get('commonName', '').strip())
+                        subjects = [resolve_unescaped_encoding(cert.get('subject', {}).get('commonName').strip())]
                         for ext in cert.get('extensions', []):
                             if 'Alternative' in ext.get('name', ''):
-                                for match in _X509v3_SUBJECT_ALT_MATCH.finditer(ext.get('value', '')):
+                                for match in _X509v3_SUBJECT_ALT_MATCH.finditer(resolve_unescaped_encoding(ext.get('value', ''))):
                                     if match.group(1) not in subjects:
                                         subjects.append(match.group(1))
-                        result.append(TlsCertificate(subjects=subjects, issuer=issuer))
+                        subjects = list(filter(lambda e: '.' in e, subjects))
+                        if len(subjects) > 0:
+                            result.append(TlsCertificate(subjects=subjects, issuer=issuer))
 
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':

@@ -4,7 +4,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, guess_target, ScanPresent, \
-    TargetHostname
+    TargetHostname, remove_terminal_escapes
 
 _FIERCE_LINE_PATTERN = re.compile(r'^(\w+):\s+(\S+)[.]\s+\((\S+)\)$', re.MULTILINE)
 
@@ -19,7 +19,7 @@ class FierceReader(FactReader):
         result = []
         targets = set()
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 m = _FIERCE_LINE_PATTERN.search(line)
                 if not m:
                     continue

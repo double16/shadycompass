@@ -66,6 +66,27 @@ def extract_from_file_path(file_path: str) -> dict:
     return result
 
 
+def resolve_unescaped_encoding(escaped_string: str) -> str:
+    if '\\x' not in escaped_string:
+        return escaped_string
+    bytes_object = escaped_string.encode('latin1')
+    decoded_bytes = bytes_object.decode('unicode_escape').encode('latin1')
+    try:
+        if escaped_string.startswith('\\x00'):
+            return decoded_bytes.decode('utf-16be')
+        return decoded_bytes.decode('utf-8')
+    except UnicodeDecodeError:
+        return escaped_string
+
+
+terminal_escape_sequence_pattern = re.compile(r'\x1B\[[0-9;]*[A-~]')
+
+def remove_terminal_escapes(input_generator):
+    for string in input_generator:
+        cleaned_string = terminal_escape_sequence_pattern.sub('', string)
+        yield cleaned_string
+
+
 class TargetDomain(Fact):
     domain = Field(str, mandatory=True)
 

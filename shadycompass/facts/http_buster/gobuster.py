@@ -2,7 +2,8 @@ import re
 
 from experta import Fact
 
-from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry
+from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry, \
+    remove_terminal_escapes
 
 GOBUSTER_FILENAME_PATTERN = re.compile(r'gobuster-(\d+)-([^/\\]+[.][a-z]{2,6})(?:-[\w-]+?)?[.]\w{3,5}$')
 GOBUSTER_DIR_PATTERN = re.compile(r'(/\S+)\s+.*Status:\s+\d+.*Size:\s+\d+')
@@ -25,7 +26,7 @@ class GobusterReader(FactReader):
         target = f"{protocol}://{vhost}:{port}"
         result = []
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 m = GOBUSTER_DIR_PATTERN.search(line)
                 if m:
                     result.append(http_url(target+m.group(1)))

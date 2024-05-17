@@ -4,7 +4,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, Username, fact_reader_registry, guess_target, \
-    ScanPresent, EmailAddress
+    ScanPresent, EmailAddress, remove_terminal_escapes
 
 _SMTP_USER_ENUM_PATTERN = re.compile(r'(\S+)@([^@]+?):\s+Exists')
 _SMTP_USER_ENUM_PORT_PATTERN = re.compile(r'Target TCP port[.\s]+(\d+)')
@@ -20,7 +20,7 @@ class SmtpUserEnumReader(FactReader):
         emails = set()
         port = 25
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 m = _SMTP_USER_ENUM_PATTERN.search(line)
                 if m:
                     username = m.group(1)

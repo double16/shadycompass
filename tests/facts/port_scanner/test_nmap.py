@@ -8,6 +8,7 @@ from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, Target
     TlsCertificate
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 from shadycompass.rules.port_scanner.nmap import NmapRules
+from tests.tests import assertFactIn
 
 
 class NmapXmlFactReaderTest(unittest.TestCase):
@@ -18,7 +19,6 @@ class NmapXmlFactReaderTest(unittest.TestCase):
 
     def test_read_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/all/open-ports.xml')
-        self.assertEqual(89, len(facts))
         self.assertIn(ScanPresent(category=ToolCategory.port_scanner, name=NmapRules.nmap_tool_name, addr='10.129.229.189'), facts)
         self.assertIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         self.assertIn(TargetHostname(hostname='shadycompass.test'), facts)
@@ -85,10 +85,19 @@ class NmapXmlFactReaderTest(unittest.TestCase):
             addr='10.129.229.189'
         ), facts)
         self.assertIn(TlsCertificate(
-            subjects=['DC', 'DC.shadycompass.test'],
+            subjects=['DC.shadycompass.test'],
             issuer='DC',
         ), facts)
+        self.assertEqual(88, len(facts))
 
     def test_ignore_not_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/all/open-ports.txt')
         self.assertEqual(0, len(facts))
+
+    def test_ssl_certs_unusual(self):
+        facts = self.reader.read_facts('tests/fixtures/nmap/ssl_cert_unusual/nmap-ssl-certs.xml')
+        assertFactIn(TlsCertificate(
+            subjects=['dc01.shadycompass.test'],
+            issuer='shadycompass-DC01-CA',
+        ), facts, times=4)
+        assertFactIn(TlsCertificate(), facts, times=4)

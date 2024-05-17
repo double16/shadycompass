@@ -4,7 +4,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, TargetHostname, Username, \
-    UsernamePassword, TargetDomain, ScanPresent
+    UsernamePassword, TargetDomain, ScanPresent, remove_terminal_escapes
 
 _KDCS_SIGNATURE = re.compile(r'>\s\sUsing KDC\(s\):')
 _KDC_SERVER = re.compile(r'\b(\S+):(\d+)\b')
@@ -24,7 +24,7 @@ class KerbruteReader(FactReader):
         scan_present = None
         with open(file_path, 'rt') as file:
             reading_kdcs = True
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 if ' > ' in line:
                     # remove timestamp
                     line = line.split('>', 1)[1]
