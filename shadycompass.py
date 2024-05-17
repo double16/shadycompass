@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import sys
 import shlex
 from prompt_toolkit import prompt
@@ -10,9 +11,16 @@ from shadycompass import ShadyCompassOps, get_local_config_path, get_global_conf
 
 
 def shadycompass_cli(args: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog='shadycompass',
+        description='Tool to help ethical hackers cover enumeration steps.')
+    parser.add_argument('directories', metavar='D', type=str, nargs='+',
+                        help='directory to search for tool output')
+    parsed = parser.parse_args(args)
+
     # history = FileHistory(os.path.join(os.path.dirname(get_global_config_path()), 'history.txt'))
     history = InMemoryHistory()
-    ops = ShadyCompassOps(args)
+    ops = ShadyCompassOps(parsed.directories)
     commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
                 'services', 'products', 'urls', 'users', 'emails']
     config_names = {'ratelimit', 'production'}

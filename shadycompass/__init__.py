@@ -19,6 +19,19 @@ from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIP
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
+BANNER="""
+             N
+        .--^-.
+       / . . . \\
+      / .     . \\
+ W --+    +    +-- E
+      \\ .     . /
+       \\ . . . /
+        `--v--'
+             S
+
+shadycompass - https://github.com/double16/shadycompass
+"""
 
 class ShadyCompassEngine(
     KnowledgeEngine,
@@ -268,18 +281,7 @@ class ShadyCompassOps(object):
                 print('```')
 
     def print_banner(self):
-        print("""
-             N
-        .--^-.
-       / . . . \\
-      / .     . \\
- W --+    +    +-- E
-      \\ .     . /
-       \\ . . . /
-        `--v--'
-             S
-
-shadycompass - https://github.com/double16/shadycompass
+        print(f"""{BANNER}
 Press enter/return at the prompt to refresh data.
 """, file=self.fd_out)
 
