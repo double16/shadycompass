@@ -25,6 +25,11 @@ class DirbTest(RulesBase):
         ), self.engine)
 
     def test_dirb_options_local(self):
+        # let's make sure we are replacing existing recommendations
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+        ), self.engine, times=4)
         self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, DirbRules.dirb_tool_name, False)
         self.engine.config_set(SECTION_OPTIONS, DirbRules.dirb_tool_name, '-r', False)
         self.engine.run()
@@ -40,6 +45,11 @@ class DirbTest(RulesBase):
         ), self.engine)
 
     def test_dirb_options_global(self):
+        # let's make sure we are replacing existing recommendations
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+        ), self.engine, times=4)
         self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, DirbRules.dirb_tool_name, True)
         self.engine.config_set(SECTION_OPTIONS, DirbRules.dirb_tool_name, '-r', True)
         self.engine.run()

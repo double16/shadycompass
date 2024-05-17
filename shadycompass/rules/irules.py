@@ -25,7 +25,8 @@ class IRules(ABC):
                        command_line: list[str],
                        addr: Union[str, None] = None,
                        hostname: Union[str, None] = None,
-                       port: Union[int, None] = None):
+                       port: Union[int, None] = None,
+                       domain: Union[str, None] = None):
         pass
 
     @abstractmethod

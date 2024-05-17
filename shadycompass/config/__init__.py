@@ -220,13 +220,14 @@ class ToolRecommended(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
     """ The name of the tool as run from the command line. """
-    variation = Field(str, mandatory=False)
+    variant = Field(str, mandatory=False)
     """ If a tool is recommended multiple times, provide a variant to identify it. Not shown to the user."""
     command_line = Field(list[str], mandatory=False)
     """ Command line to run without the tool name. """
     addr = Field(str, mandatory=False)
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
 
     def get_category(self) -> str:
         return self.get('category')
@@ -234,8 +235,8 @@ class ToolRecommended(Fact):
     def get_name(self) -> str:
         return self.get('name')
 
-    def get_variation(self) -> str:
-        return self.get('variation')
+    def get_variant(self) -> str:
+        return self.get('variant')
 
     def get_command_line(self) -> list[str]:
         if 'command_line' in self:

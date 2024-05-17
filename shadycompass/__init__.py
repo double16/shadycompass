@@ -143,7 +143,10 @@ class ShadyCompassEngine(
                        command_line: list[str],
                        addr: Union[str, None] = None,
                        hostname: Union[str, None] = None,
-                       port: Union[int, None] = None):
+                       port: Union[int, None] = None,
+                       domain: Union[int, None] = None):
+        assert category
+        assert name
         query = {'category': category, 'name': name}
         if variant is not None:
             query['variant'] = variant
@@ -153,6 +156,8 @@ class ShadyCompassEngine(
             query['port'] = port
         if hostname is not None:
             query['hostname'] = hostname
+        if domain is not None:
+            query['domain'] = domain
         existing = self.get_matches(ToolRecommended(**query))
         if existing:
             for fact in existing:
@@ -264,6 +269,16 @@ class ShadyCompassOps(object):
 
     def print_banner(self):
         print("""
+             N
+        .--^-.
+       / . . . \\
+      / .     . \\
+ W --+    +    +-- E
+      \\ .     . /
+       \\ . . . /
+        `--v--'
+             S
+
 shadycompass - https://github.com/double16/shadycompass
 Press enter/return at the prompt to refresh data.
 """, file=self.fd_out)

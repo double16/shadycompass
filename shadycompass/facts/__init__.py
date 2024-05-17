@@ -931,6 +931,9 @@ class Username(Fact):
     hostname = Field(str, mandatory=False)
     domain = Field(str, mandatory=False)
 
+    def get_username(self) -> str:
+        return self.get('username')
+
     def get_full(self) -> str:
         username = self.get('username')
         if '@' in username:
@@ -950,6 +953,9 @@ class Password(Fact):
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
     domain = Field(str, mandatory=False)
+
+    def get_password(self) -> str:
+        return self.get('password')
 
 
 class PasswordHash(Fact):

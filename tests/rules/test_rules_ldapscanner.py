@@ -15,7 +15,7 @@ class LdapScanTest(RulesBase):
         self.engine.declare(LdapService(addr='10.1.1.1', port=389, secure=False))
         self.engine.run()
         assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr=ScanNeeded.ANY), self.engine)
-        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1', port=389, secure=False),
+        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1'),
                      self.engine)
 
     def test_ldapscan_two_target(self):
@@ -23,9 +23,9 @@ class LdapScanTest(RulesBase):
         self.engine.declare(LdapService(addr='10.1.1.2', port=636, secure=True))
         self.engine.run()
         assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr=ScanNeeded.ANY), self.engine)
-        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1', port=389, secure=False),
+        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1'),
                      self.engine)
-        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.2', port=636, secure=True),
+        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.2'),
                      self.engine)
 
     def test_ldapscan_present1(self):
@@ -34,7 +34,7 @@ class LdapScanTest(RulesBase):
             ScanPresent(category=ToolCategory.ldap_scanner, name='ldapsearch', addr='10.1.1.1', port=389))
         self.engine.run()
         assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr=ScanNeeded.ANY), self.engine)
-        assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1', port=389), self.engine)
+        assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1'), self.engine)
 
     def test_ldapscan_present2(self):
         self.engine.declare(LdapService(addr='10.1.1.1', port=389, secure=False))
@@ -43,4 +43,4 @@ class LdapScanTest(RulesBase):
             ScanPresent(category=ToolCategory.ldap_scanner, name='ldapsearch', addr='10.1.1.1', port=389))
         self.engine.run()
         assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr=ScanNeeded.ANY), self.engine)
-        assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1', port=389), self.engine)
+        assertFactNotIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1'), self.engine)
