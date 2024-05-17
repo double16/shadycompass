@@ -119,6 +119,19 @@ class LdapSearchRulesTest(RulesBase):
         assertFactNotIn(ToolRecommended(category=ToolCategory.ldap_scanner, name=LdapSearchRules.ldapsearch_tool_name),
                         self.engine)
 
+    def test_ldap_scanner_two_users(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.ldap_scanner, LdapSearchRules.ldapsearch_tool_name, True)
+        self.engine.declare(UsernamePassword(domain='shadycompass.test', username='operator', password='12345'))
+        self.engine.declare(UsernamePassword(domain='shadycompass.test', username='user', password='12345'))
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.129.229.189'),
+                     self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.ldap_scanner,
+            name=LdapSearchRules.ldapsearch_tool_name,
+            addr='10.129.229.189',
+        ), self.engine, times=2)
+
     def test_ldap_scanner_two_domains(self):
         self.engine.config_set(SECTION_TOOLS, ToolCategory.ldap_scanner, LdapSearchRules.ldapsearch_tool_name, True)
         self.engine.declare(UsernamePassword(domain='shadycompass.test', username='operator', password='12345'))

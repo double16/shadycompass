@@ -1,5 +1,6 @@
 import abc
 import ipaddress
+import os.path
 import re
 from typing import Union
 from urllib.parse import urlparse
@@ -10,6 +11,9 @@ from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, MET
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
+IPV4_PATTERN = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+IPV6_PATTERN = re.compile(
+    r'(([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:)|([0-9A-Fa-f]{1,4}:){1,6}:([0-9A-Fa-f]{1,4}|:){1,5}|([0-9A-Fa-f]{1,4}:){1,5}(:[0-9A-Fa-f]{1,4}){1,2}|([0-9A-Fa-f]{1,4}:){1,4}(:[0-9A-Fa-f]{1,4}){1,3}|([0-9A-Fa-f]{1,4}:){1,3}(:[0-9A-Fa-f]{1,4}){1,4}|([0-9A-Fa-f]{1,4}:){1,2}(:[0-9A-Fa-f]{1,4}){1,5}|([0-9A-Fa-f]{1,4}:)((:[0-9A-Fa-f]{1,4}){1,6}|:)|:((:[0-9A-Fa-f]{1,4}){1,7}|:))')
 
 
 class FactReader(abc.ABC):
@@ -45,6 +49,21 @@ def check_file_signature(file_path: str, *signatures) -> bool:
         return True
     except UnicodeDecodeError:
         return False
+
+
+def extract_from_file_path(file_path: str) -> dict:
+    """
+    Extract various info from the file path.
+    """
+    result = {}
+    base_path = os.path.basename(file_path)
+    m = IPV4_PATTERN.search(base_path)
+    if m:
+        result['ipv4'] = m.group(0)
+    m = IPV6_PATTERN.search(base_path)
+    if m:
+        result['ipv6'] = m.group(0)
+    return result
 
 
 class TargetDomain(Fact):
@@ -882,6 +901,7 @@ class WindowsDomain(Fact):
     netbios_domain_name = Field(str, mandatory=False)
     dns_domain_name = Field(str, mandatory=False)
     dns_tree_name = Field(str, mandatory=False)
+    domain_controller_hostname = Field(str, mandatory=False)
 
     def get_netbios_domain_name(self) -> str:
         return self.get('netbios_domain_name')
@@ -891,6 +911,9 @@ class WindowsDomain(Fact):
 
     def get_dns_tree_name(self) -> str:
         return self.get('dns_tree_name')
+
+    def get_domain_controller_hostname(self) -> str:
+        return self.get('domain_controller_hostname')
 
 
 class WindowsDomainController(Fact):
