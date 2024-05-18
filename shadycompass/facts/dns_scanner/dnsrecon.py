@@ -5,7 +5,7 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, guess_target, TargetHostname, \
-    ScanPresent, TargetDomain
+    ScanPresent, TargetDomain, remove_terminal_escapes
 from shadycompass.facts.services import create_service_facts
 
 _DOMAIN_PATTERN = re.compile(r'\[\*]\s+(?:std|rvl|brt|srv|axfr|bing|yand|crt|snoop|tld|zonewalk):\s+.*:\s+(\S+)\.\.\.')
@@ -83,7 +83,7 @@ class DnsReconReader(FactReader):
         resolutions = set()
         result = []
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 m = _DOMAIN_PATTERN.search(line)
                 if m:
                     hostname_args = dict()

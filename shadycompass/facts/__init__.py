@@ -1,5 +1,6 @@
 import abc
 import ipaddress
+import os.path
 import re
 from typing import Union
 from urllib.parse import urlparse
@@ -10,6 +11,9 @@ from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, MET
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
 PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
+IPV4_PATTERN = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+IPV6_PATTERN = re.compile(
+    r'(([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:)|([0-9A-Fa-f]{1,4}:){1,6}:([0-9A-Fa-f]{1,4}|:){1,5}|([0-9A-Fa-f]{1,4}:){1,5}(:[0-9A-Fa-f]{1,4}){1,2}|([0-9A-Fa-f]{1,4}:){1,4}(:[0-9A-Fa-f]{1,4}){1,3}|([0-9A-Fa-f]{1,4}:){1,3}(:[0-9A-Fa-f]{1,4}){1,4}|([0-9A-Fa-f]{1,4}:){1,2}(:[0-9A-Fa-f]{1,4}){1,5}|([0-9A-Fa-f]{1,4}:)((:[0-9A-Fa-f]{1,4}){1,6}|:)|:((:[0-9A-Fa-f]{1,4}){1,7}|:))')
 
 
 class FactReader(abc.ABC):
@@ -47,8 +51,63 @@ def check_file_signature(file_path: str, *signatures) -> bool:
         return False
 
 
+def extract_from_file_path(file_path: str) -> dict:
+    """
+    Extract various info from the file path.
+    """
+    result = {}
+    base_path = os.path.basename(file_path)
+    m = IPV4_PATTERN.search(base_path)
+    if m:
+        result['ipv4'] = m.group(0)
+    m = IPV6_PATTERN.search(base_path)
+    if m:
+        result['ipv6'] = m.group(0)
+    return result
+
+
+def resolve_unescaped_encoding(escaped_string: str) -> str:
+    if '\\x' not in escaped_string:
+        return escaped_string
+    bytes_object = escaped_string.encode('latin1')
+    decoded_bytes = bytes_object.decode('unicode_escape').encode('latin1')
+    try:
+        if escaped_string.startswith('\\x00'):
+            return decoded_bytes.decode('utf-16be')
+        return decoded_bytes.decode('utf-8')
+    except UnicodeDecodeError:
+        return escaped_string
+
+
+terminal_escape_sequence_pattern = re.compile(r'\x1B\[[0-9;]*[A-~]')
+
+
+def remove_terminal_escapes(input_generator):
+    for string in input_generator:
+        cleaned_string = terminal_escape_sequence_pattern.sub('', string)
+        yield cleaned_string
+
+
+def lowercase_dict_values(input_dict: dict, *keys):
+    for key in keys:
+        if key in input_dict and isinstance(input_dict[key], str):
+            input_dict[key] = input_dict[key].lower()
+    return input_dict
+
+
+def uppercase_dict_values(input_dict: dict, *keys):
+    for key in keys:
+        if key in input_dict and isinstance(input_dict[key], str):
+            input_dict[key] = input_dict[key].upper()
+    return input_dict
+
+
 class TargetDomain(Fact):
     domain = Field(str, mandatory=True)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'domain')
+        super().__init__(*args, **kwargs)
 
     def get_domain(self) -> str:
         return self.get('domain')
@@ -61,11 +120,19 @@ class TargetIPv4Network(Fact):
 class TargetIPv6Network(Fact):
     network = Field(str, mandatory=True)
 
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'network')
+        super().__init__(*args, **kwargs)
+
 
 class HostnameIPv4Resolution(Fact):
     hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=True)
     implied = Field(bool, mandatory=False, default=True)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname')
+        super().__init__(*args, **kwargs)
 
     def get_hostname(self) -> str:
         return self.get('hostname')
@@ -82,6 +149,10 @@ class HostnameIPv6Resolution(Fact):
     addr = Field(str, mandatory=True)
     implied = Field(bool, mandatory=False, default=True)
 
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname', 'addr')
+        super().__init__(*args, **kwargs)
+
     def get_hostname(self) -> str:
         return self.get('hostname')
 
@@ -95,11 +166,12 @@ class HostnameIPv6Resolution(Fact):
 class TargetHostname(Fact):
     hostname = Field(str, mandatory=True)
 
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname')
+        super().__init__(*args, **kwargs)
+
     def get_hostname(self) -> str:
         return self.get('hostname')
-
-    def get_resolution(self, hostname: str, implied: bool) -> None:
-        return None
 
 
 class TargetIPv4Address(Fact):
@@ -121,6 +193,10 @@ class TargetIPv4Address(Fact):
 
 class TargetIPv6Address(Fact):
     addr = Field(str, mandatory=True)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr')
+        super().__init__(*args, **kwargs)
 
     def get_addr(self) -> str:
         return self.get('addr')
@@ -325,7 +401,7 @@ class IrcService(TcpIpService, HasTLS):
     ]
 
 
-class LdapService (TcpIpService, HasTLS):
+class LdapService(TcpIpService, HasTLS):
     methodology_links = [
         'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap'
     ]
@@ -627,11 +703,22 @@ class MsmqService(TcpIpService):
     ]
 
 
+class WindowsUpdateDeliveryOptimization(TcpIpService):
+    methodology_links = [
+        'https://www.thewindowsclub.com/windows-update-delivery-optimization-or-wudo-in-windows-10',
+        'https://www.speedguide.net/port.php?port=7680',
+    ]
+
+
 class HttpUrl(Fact):
     addr = Field(str, mandatory=False)
     port = Field(int, mandatory=True)
     vhost = Field(str, mandatory=True)
     url = Field(str, mandatory=True)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'vhost')
+        super().__init__(*args, **kwargs)
 
     def get_url(self) -> str:
         return self.get('url')
@@ -696,11 +783,15 @@ def guess_target(target: str) -> Union[Fact, None]:
 class ScanNeeded(Fact):
     ANY = ''
     category = Field(str, mandatory=True)
-    addr = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     url = Field(str, mandatory=False)
     secure = Field(bool, mandatory=False, default=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname', 'addr')
+        super().__init__(*args, **kwargs)
 
     def get_category(self) -> str:
         return self.get('category')
@@ -728,12 +819,20 @@ class ScanPresent(Fact):
     hostname = Field(str, mandatory=False)
     url = Field(str, mandatory=False)
 
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname', 'addr')
+        super().__init__(*args, **kwargs)
+
 
 class HttpBustingNeeded(Fact):
     secure = Field(bool, mandatory=True)
     addr = Field(str, mandatory=True)
     port = Field(int, mandatory=True)
     vhost = Field(str, mandatory=True)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'vhost')
+        super().__init__(*args, **kwargs)
 
     def get_protocol(self) -> str:
         if self.get('secure'):
@@ -761,6 +860,10 @@ class OperatingSystem(Fact):
     name = Field(str, mandatory=False)  # Windows, Ubuntu, ...
     version = Field(str, mandatory=False)  # 10 (Windows 10), 22.04 (Ubuntu)
     kernel_version = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname', 'addr')
+        super().__init__(*args, **kwargs)
 
 
 OSTYPE_WINDOWS = 'windows'
@@ -802,14 +905,8 @@ class Product(Fact):
     os_type = Field(str, mandatory=False)
 
     def __init__(self, *args, **kwargs):
-        kwargs_copy = kwargs.copy()
-        if 'product' in kwargs_copy:
-            kwargs_copy['product'] = kwargs_copy['product'].lower()
-        if 'version' in kwargs_copy:
-            kwargs_copy['version'] = kwargs_copy['version'].lower()
-        if 'os_type' in kwargs_copy:
-            kwargs_copy['os_type'] = kwargs_copy['os_type'].lower()
-        super().__init__(*args, **kwargs_copy)
+        lowercase_dict_values(kwargs, 'addr', 'hostname', 'product', 'version', 'os_type')
+        super().__init__(*args, **kwargs)
 
     def get_addr(self):
         return self.get('addr')
@@ -857,6 +954,10 @@ class ProductionTarget(Fact):
     """
     addr = Field(str, mandatory=True)
 
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr')
+        super().__init__(*args, **kwargs)
+
     def get_addr(self):
         return self.get('addr')
 
@@ -867,6 +968,10 @@ class PublicTarget(Fact):
     """
     addr = Field(str, mandatory=True)
 
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr')
+        super().__init__(*args, **kwargs)
+
     def get_addr(self):
         return self.get('addr')
 
@@ -875,6 +980,12 @@ class WindowsDomain(Fact):
     netbios_domain_name = Field(str, mandatory=False)
     dns_domain_name = Field(str, mandatory=False)
     dns_tree_name = Field(str, mandatory=False)
+    domain_controller_hostname = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'dns_domain_name', 'dns_tree_name', 'domain_controller_hostname')
+        uppercase_dict_values(kwargs, 'netbios_domain_name')
+        super().__init__(*args, **kwargs)
 
     def get_netbios_domain_name(self) -> str:
         return self.get('netbios_domain_name')
@@ -885,14 +996,24 @@ class WindowsDomain(Fact):
     def get_dns_tree_name(self) -> str:
         return self.get('dns_tree_name')
 
+    def get_domain_controller_hostname(self) -> str:
+        return self.get('domain_controller_hostname')
+
 
 class WindowsDomainController(Fact):
-    netbios_domain_name = Field(str, mandatory=True)
+    netbios_domain_name = Field(str, mandatory=False)
     netbios_computer_name = Field(str, mandatory=True)
     dns_domain_name = Field(str, mandatory=True)
     dns_tree_name = Field(str, mandatory=True)
     hostname = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'hostname', 'dns_domain_name', 'dns_tree_name')
+        uppercase_dict_values(kwargs, 'netbios_domain_name', 'netbios_computer_name')
+        if 'dns_tree_name' not in kwargs and 'dns_domain_name' in kwargs:
+            kwargs['dns_tree_name'] = kwargs['dns_domain_name']
+        super().__init__(*args, **kwargs)
 
 
 class TlsCertificate(Fact):
@@ -906,7 +1027,7 @@ class TlsCertificate(Fact):
         return fqdn.split('.', 1)[1]
 
     def get_fqdn(self) -> str:
-        subs: list[str] = list(self.get('subjects'))
+        subs: list[str] = list(filter(lambda e: '*' not in e, self.get('subjects')))
         subs.sort(key=lambda e: e.count('.'), reverse=True)
         return subs[0]
 
@@ -922,6 +1043,14 @@ class Username(Fact):
     username = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'hostname')
+        super().__init__(*args, **kwargs)
+
+    def get_username(self) -> str:
+        return self.get('username')
 
     def get_full(self) -> str:
         username = self.get('username')
@@ -931,6 +1060,8 @@ class Username(Fact):
             return f"{username}@{self.get('hostname')}"
         elif self.get('addr'):
             return f"{username}@{self.get('addr')}"
+        elif self.get('domain'):
+            return f"{username}\\{self.get('domain')}"
         else:
             return username
 
@@ -939,6 +1070,14 @@ class Password(Fact):
     password = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'hostname')
+        super().__init__(*args, **kwargs)
+
+    def get_password(self) -> str:
+        return self.get('password')
 
 
 class PasswordHash(Fact):
@@ -946,12 +1085,22 @@ class PasswordHash(Fact):
     type = Field(str, mandatory=False)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'hostname')
+        super().__init__(*args, **kwargs)
 
 
 class NtlmHash(Fact):
     hash = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'addr', 'hostname')
+        super().__init__(*args, **kwargs)
 
 
 class UsernamePassword(Username, Password):

@@ -24,6 +24,12 @@ class FierceTest(RulesBase):
                 '>fierce-10.129.229.189-53-shadycompass.test.txt',
             ],
         ), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.dns_scanner, addr='10.129.229.189', port=53,
+                                        name=FierceRules.fierce_tool_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.dns_scanner, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.dns_scanner, name=FierceRules.fierce_tool_name),
+                        self.engine)
 
     def test_fierce_ratelimit(self):
         self.engine.config_set(SECTION_TOOLS, ToolCategory.dns_scanner, FierceRules.fierce_tool_name, True)

@@ -41,5 +41,12 @@ class VulnScan(IRules, ABC):
         AS.f1 << ToolRecommended(category=ToolCategory.vuln_scanner, addr=MATCH.addr),
         ScanPresent(category=ToolCategory.vuln_scanner, addr=MATCH.addr),
         )
-    def retract_nmap(self, f1: ToolRecommended):
+    def retract_vuln_scan(self, f1: ToolRecommended):
+        self.retract(f1)
+
+    @Rule(
+        AS.f1 << ToolRecommended(category=ToolCategory.vuln_scanner, addr=ScanNeeded.ANY),
+        ScanPresent(category=ToolCategory.vuln_scanner),
+    )
+    def retract_vuln_scan_any(self, f1: ToolRecommended):
         self.retract(f1)

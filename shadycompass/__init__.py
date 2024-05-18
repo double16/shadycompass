@@ -5,7 +5,7 @@ import re
 import shlex
 import sys
 from configparser import ConfigParser
-from typing import Union
+from typing import Union, Iterable
 
 from experta import KnowledgeEngine, Fact
 
@@ -19,6 +19,19 @@ from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIP
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
+BANNER="""
+             N
+        .--^-.
+       / . . . \\
+      / .     . \\
+ W --+    +    +-- E
+      \\ .     . /
+       \\ . . . /
+        `--v--'
+             S
+
+shadycompass - https://github.com/double16/shadycompass
+"""
 
 class ShadyCompassEngine(
     KnowledgeEngine,
@@ -31,6 +44,9 @@ class ShadyCompassEngine(
         for fact_reader in fact_reader_registry:
             paths.extend(fact_reader.files())
         self.file_metadata = FileMetadataCache(paths)
+
+    def get_facts(self) -> Iterable[Fact]:
+        return self.facts.values()
 
     def update_facts(self):
         retract_queue = []
@@ -47,7 +63,7 @@ class ShadyCompassEngine(
                             else:
                                 the_fact.update({'file_path': file_path})
                                 self.declare(the_fact)
-                    except BaseException as e:
+                    except BaseException:
                         print(
                             f'[!] error parsing {file_path}, {type(fact_reader)}, implementation error, file report at https://github.com/double16/shadycompass/issues',
                             file=sys.stderr)
@@ -140,7 +156,10 @@ class ShadyCompassEngine(
                        command_line: list[str],
                        addr: Union[str, None] = None,
                        hostname: Union[str, None] = None,
-                       port: Union[int, None] = None):
+                       port: Union[int, None] = None,
+                       domain: Union[int, None] = None):
+        assert category
+        assert name
         query = {'category': category, 'name': name}
         if variant is not None:
             query['variant'] = variant
@@ -150,6 +169,8 @@ class ShadyCompassEngine(
             query['port'] = port
         if hostname is not None:
             query['hostname'] = hostname
+        if domain is not None:
+            query['domain'] = domain
         existing = self.get_matches(ToolRecommended(**query))
         if existing:
             for fact in existing:
@@ -260,8 +281,7 @@ class ShadyCompassOps(object):
                 print('```')
 
     def print_banner(self):
-        print("""
-shadycompass - https://github.com/double16/shadycompass
+        print(f"""{BANNER}
 Press enter/return at the prompt to refresh data.
 """, file=self.fd_out)
 

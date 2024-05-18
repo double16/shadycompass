@@ -28,6 +28,10 @@ class ToolCategory(object):
     pop_scanner = 'pop_scanner'
     imap_scanner = 'imap_scanner'
     smtp_scanner = 'smtp_scanner'
+    ldap_scanner = 'ldap_scanner'
+    asrep_roaster = 'asrep_roaster'
+    kerberoaster = 'kerberoaster'
+    timeroaster = 'timeroaster'
     etc_hosts = 'hosts'
     docs = 'docs'
 
@@ -55,6 +59,8 @@ def tool_category_priority(category: str) -> int:
             return 601
         case ToolCategory.http_buster:
             return 500
+        case ToolCategory.asrep_roaster, ToolCategory.kerberoaster, ToolCategory.timeroaster:
+            return 650
         case ToolCategory.smb_scanner:
             return 650
         case ToolCategory.smtp_scanner:
@@ -214,13 +220,14 @@ class ToolRecommended(Fact):
     category = Field(str, mandatory=True)
     name = Field(str, mandatory=True)
     """ The name of the tool as run from the command line. """
-    variation = Field(str, mandatory=False)
+    variant = Field(str, mandatory=False)
     """ If a tool is recommended multiple times, provide a variant to identify it. Not shown to the user."""
     command_line = Field(list[str], mandatory=False)
     """ Command line to run without the tool name. """
     addr = Field(str, mandatory=False)
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
+    domain = Field(str, mandatory=False)
 
     def get_category(self) -> str:
         return self.get('category')
@@ -228,8 +235,8 @@ class ToolRecommended(Fact):
     def get_name(self) -> str:
         return self.get('name')
 
-    def get_variation(self) -> str:
-        return self.get('variation')
+    def get_variant(self) -> str:
+        return self.get('variant')
 
     def get_command_line(self) -> list[str]:
         if 'command_line' in self:
@@ -251,7 +258,7 @@ class ToolRecommended(Fact):
 class ConfigRules(IRules, ABC):
     def _get_tools(self, category: str) -> list[ToolAvailable]:
         tools = []
-        for fact in self.facts.values():
+        for fact in self.get_facts():
             if isinstance(fact, ToolAvailable) and fact.get('category') == category:
                 tools.append(fact)
         return tools
@@ -260,7 +267,7 @@ class ConfigRules(IRules, ABC):
         retract_queue = []
         for fact in filter(
                 lambda f: isinstance(f, PreferredTool) and f.get('category') == category and f.get('name') != tool_name,
-                           self.facts.values()):
+                self.get_facts()):
             retract_queue.append(fact)
         for fact in retract_queue:
             self.retract(fact)

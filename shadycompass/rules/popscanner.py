@@ -27,5 +27,5 @@ class PopScan(IRules, ABC):
         AS.f1 << ToolRecommended(category=ToolCategory.pop_scanner, addr=MATCH.addr, port=MATCH.port),
         ScanPresent(category=ToolCategory.pop_scanner, addr=MATCH.addr, port=MATCH.port),
     )
-    def retract_pop(self, f1: ToolRecommended):
+    def retract_pop_scan_tool(self, f1: ToolRecommended):
         self.retract(f1)

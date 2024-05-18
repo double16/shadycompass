@@ -1,0 +1,9 @@
+Nmap scan report for 10.129.152.23
+Host is up (0.042s latency).
+Not shown: 65529 filtered tcp ports (no-response)
+PORT     STATE SERVICE       VERSION
+7680/tcp open  pando-pub?
+Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Mon May 13 04:59:18 2024 -- 1 IP address (1 host up) scanned in 211.75 seconds

@@ -3,7 +3,8 @@ import re
 
 from experta import Fact
 
-from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry
+from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry, \
+    remove_terminal_escapes
 
 WFUZZ_TARGET_PATTERN = re.compile(r'Target:\s+(.*)\s*')
 WFUZZ_TXT_PATTERN = re.compile(r'\D(\d\d\d)\s.*\s\d+ L\s.*\s\d+ W\s.*\s\d+\sC.*"(.*)"')
@@ -22,7 +23,7 @@ class WfuzzReader(FactReader):
         result = []
         target = None
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 m = WFUZZ_TARGET_PATTERN.search(line)
                 if m:
                     target = m.group(1)

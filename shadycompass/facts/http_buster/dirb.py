@@ -1,7 +1,7 @@
 from experta import Fact
 
 from shadycompass.facts import FactReader, check_file_signature, HTTP_PATTERN, http_url, http_url_targets, \
-    fact_reader_registry
+    fact_reader_registry, remove_terminal_escapes
 
 
 class DirbReader(FactReader):
@@ -11,7 +11,7 @@ class DirbReader(FactReader):
         print(f"[*] Reading dirb findings from {file_path}")
         result = []
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 if not line.startswith('+ '):
                     continue
                 m = HTTP_PATTERN.search(line)

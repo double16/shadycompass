@@ -8,7 +8,8 @@ from experta import Fact
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
-    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username
+    ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username, \
+    resolve_unescaped_encoding
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -26,7 +27,12 @@ class NmapXmlFactReader(FactReader):
             return []
         print(f"[*] Reading nmap findings from {file_path}")
         result = []
-        tree = ET.parse(file_path)
+        try:
+            tree = ET.parse(file_path)
+        except ET.ParseError:
+            print(f"[!] nmap findings corrupt, ignoring {file_path}")
+            return result
+
         for host_el in tree.findall('.//host'):
             result.extend(self._parse_host(host_el))
         return result
@@ -101,24 +107,29 @@ class NmapXmlFactReader(FactReader):
                     cert = self._parse_table_to_dict(port_detail_el)
                     if cert.get('subject', {}).get('commonName'):
                         secure = True
-                        issuer = cert.get('issuer', {}).get('commonName', '')
-                        subjects = [cert.get('subject', {}).get('commonName')]
+                        issuer = resolve_unescaped_encoding(cert.get('issuer', {}).get('commonName', '').strip())
+                        subjects = [resolve_unescaped_encoding(cert.get('subject', {}).get('commonName').strip())]
                         for ext in cert.get('extensions', []):
                             if 'Alternative' in ext.get('name', ''):
-                                for match in _X509v3_SUBJECT_ALT_MATCH.finditer(ext.get('value', '')):
+                                for match in _X509v3_SUBJECT_ALT_MATCH.finditer(resolve_unescaped_encoding(ext.get('value', ''))):
                                     if match.group(1) not in subjects:
                                         subjects.append(match.group(1))
-                        result.append(TlsCertificate(subjects=subjects, issuer=issuer))
+                        subjects = list(filter(lambda e: '.' in e, subjects))
+                        if len(subjects) > 0:
+                            result.append(TlsCertificate(subjects=subjects, issuer=issuer))
 
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
                     state = port_detail_el.attrib.get('state', 'unknown')
                 elif port_detail_el.tag == 'service':
                     service_name = port_detail_el.attrib.get('name', None)
+                    confidence = int(port_detail_el.attrib.get('conf', '0'))  # 0-10
                     hostname = port_detail_el.attrib.get('hostname', None)
                     extra_info = port_detail_el.attrib.get('extrainfo', None)
                     if port_detail_el.attrib.get('tunnel', None) in ['ssl', 'tls']:
                         secure = True
+                    if service_name == 'pando-pub' and confidence < 8:
+                        service_name = 'wudo'
 
                     product = port_detail_el.attrib.get('product', None)
                     product_version = port_detail_el.attrib.get('version', None)

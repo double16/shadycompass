@@ -2,7 +2,8 @@ import re
 
 from experta import Fact
 
-from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry
+from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry, \
+    remove_terminal_escapes
 
 FEROXBUSTER_PATTERN = re.compile(r'^\d\d\d\s+\w+\s+\d+l\s+\d+w\s+\d+c\s+(\w+://.+)$', re.MULTILINE)
 
@@ -14,7 +15,7 @@ class FeroxbusterReader(FactReader):
         print(f"[*] Reading feroxbuster findings from {file_path}")
         result = []
         with open(file_path, 'rt') as file:
-            for line in file.readlines():
+            for line in remove_terminal_escapes(file.readlines()):
                 m = FEROXBUSTER_PATTERN.search(line)
                 if m:
                     url_fact = http_url(m.group(1))

@@ -29,5 +29,5 @@ class DnsScan(IRules, ABC):
         AS.f1 << ToolRecommended(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=MATCH.port),
         ScanPresent(category=ToolCategory.dns_scanner, addr=MATCH.addr, port=MATCH.port),
     )
-    def retract_dns(self, f1: ToolRecommended):
+    def retract_dns_tool(self, f1: ToolRecommended):
         self.retract(f1)

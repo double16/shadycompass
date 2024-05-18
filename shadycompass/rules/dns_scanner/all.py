@@ -11,6 +11,6 @@ class AllRules(
     FierceRules,
 ):
     """
-    Convenience class to collect all http buster rules.
+    Convenience class to collect all the rules.
     """
     pass
