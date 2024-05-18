@@ -21,7 +21,11 @@ class DnsEnumReader(FactReader):
         result = []
         targets = set()
         resolutions = set()
-        tree = ET.parse(file_path)
+        try:
+            tree = ET.parse(file_path)
+        except ET.ParseError:
+            print(f"[!] dnsenum subdomain findings corrupt, ignoring {file_path}")
+            return result
         for host_el in tree.findall('.//host'):
             addr = host_el.text.strip()
             hostname_el = host_el.find('hostname')

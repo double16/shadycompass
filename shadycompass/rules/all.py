@@ -16,6 +16,7 @@ from shadycompass.rules.ldapscanner import LdapScan
 from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules, PublicAddrRules, MiscRules
 from shadycompass.rules.popscanner import PopScan
 from shadycompass.rules.portscanner import PortScan
+from shadycompass.rules.scanner import ScanRules
 from shadycompass.rules.smbscanner import SmbScan
 from shadycompass.rules.smtpscanner import SmtpScan
 from shadycompass.rules.vulnscanner import VulnScan
@@ -31,6 +32,7 @@ class AllRules(
     kerberoaster.AllRules,
     ldap_scanner.AllRules,
     HttpBusting,
+    ScanRules,
     PortScan,
     VulnScan,
     SmbScan,

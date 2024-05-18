@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import argparse
-import sys
 import shlex
+import sys
+
 from prompt_toolkit import prompt
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 from shadycompass import ShadyCompassOps, get_local_config_path, get_global_config_path, ToolAvailable
 
@@ -79,7 +80,8 @@ def shadycompass_cli(args: list[str]) -> int:
 
                 elif user_command[0] == 'facts':
                     if len(user_command) > 1:
-                        facts = list(filter(lambda e: user_command[1] in str(type(e)), ops.engine.facts.values()))
+                        facts = list(filter(lambda e: user_command[1].lower() in str(type(e)).lower(),
+                                            ops.engine.facts.values()))
                     else:
                         facts = ops.engine.facts.values()
                     print('\n'.join(map(repr, facts)))

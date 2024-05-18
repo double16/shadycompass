@@ -2,7 +2,7 @@ from abc import ABC
 
 from experta import DefFacts, Rule, MATCH, AS, NOT, OR
 
-from shadycompass.config import ToolCategory, ToolAvailable, ToolRecommended
+from shadycompass.config import ToolCategory, ToolAvailable
 from shadycompass.facts import ScanNeeded, TargetDomain, WindowsDomain, UsernamePassword
 from shadycompass.rules.conditions import TOOL_PREF, TOOL_CONF
 from shadycompass.rules.irules import IRules

@@ -27,7 +27,12 @@ class NmapXmlFactReader(FactReader):
             return []
         print(f"[*] Reading nmap findings from {file_path}")
         result = []
-        tree = ET.parse(file_path)
+        try:
+            tree = ET.parse(file_path)
+        except ET.ParseError:
+            print(f"[!] nmap findings corrupt, ignoring {file_path}")
+            return result
+
         for host_el in tree.findall('.//host'):
             result.extend(self._parse_host(host_el))
         return result

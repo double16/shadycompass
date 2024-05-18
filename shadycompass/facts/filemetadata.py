@@ -38,6 +38,9 @@ class FileMetadataCache:
             for root, _, files in os.walk(path, topdown=True):
                 for file in files:
                     file_path = os.path.join(root, file)
+                    if os.stat(file_path).st_size > 10 * 1024 * 1024:
+                        # we'll fill up memory with very large files
+                        continue
                     removed.discard(file_path)
                     changes.extend(self._check_file_change(file_path))
         changes.extend(removed)

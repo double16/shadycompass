@@ -7,7 +7,8 @@ from experta import Fact
 
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, Username, TargetHostname, \
-    TargetDomain, extract_from_file_path, ScanPresent, WindowsDomain, normalize_os_type, OperatingSystem
+    TargetDomain, extract_from_file_path, ScanPresent, WindowsDomain, normalize_os_type, OperatingSystem, \
+    WindowsDomainController
 
 
 def read_lines_with_single_space_continuation(file_path):
@@ -104,7 +105,8 @@ class LdapSearchReader(FactReader):
         domain = self._parse_domain(ldap_object)
         if 'computer' in objectclass:
             if 'cn' in ldap_object:
-                hostname = ldap_object.get('cn')[0] + '.' + domain
+                netbios_computer_name = ldap_object.get('cn')[0]
+                hostname = netbios_computer_name + '.' + domain
                 result = [TargetHostname(hostname=hostname)]
                 if 'operatingSystem' in ldap_object:
                     os_version: list[str] = ldap_object['operatingSystem'].copy()
@@ -113,6 +115,14 @@ class LdapSearchReader(FactReader):
                     os_version_str = ' '.join(os_version)
                     os_type = normalize_os_type(os_version_str)
                     result.append(OperatingSystem(hostname=hostname, os_type=os_type, version=os_version_str))
+                if 'OU=Domain Controllers' in ldap_object.get('dn')[0]:
+                    result.append(WindowsDomainController(
+                        hostname=hostname,
+                        netbios_domain_name=windows_domain,
+                        netbios_computer_name=netbios_computer_name,
+                        dns_domain_name=domain,
+                        dns_tree_name=domain,
+                    ))
                 return result
         elif 'user' in objectclass:
             if 'cn' in ldap_object:
@@ -148,7 +158,7 @@ class LdapSearchReader(FactReader):
         hostnames = list(map(lambda e: e.get('hostname'), filter(lambda e: isinstance(e, TargetHostname), facts)))
         for ldap_value in ldap_values:
             domain = self._parse_domain({'dn': [ldap_value]})
-            cns = set(map(lambda e: e[3:], filter(lambda e: e.startswith('CN='), ldap_value.split(','))))
+            cns = set(map(lambda e: e[3:].lower(), filter(lambda e: e.startswith('CN='), ldap_value.split(','))))
             for cn in cns:
                 hostname = f"{cn}.{domain}"
                 if hostname in hostnames:

@@ -212,7 +212,7 @@ class LdapSearchRulesTest(RulesBase):
             category=ToolCategory.ldap_scanner,
             name=LdapSearchRules.ldapsearch_tool_name,
             command_line=[
-                '-H', 'ldap://10.129.229.189', '-x', '-D', 'shadycompass2\\operator2', '-w', '67890',
+                '-H', 'ldap://10.129.229.189', '-x', '-D', 'SHADYCOMPASS2\\operator2', '-w', '67890',
                 '-b', 'DC=shadycompass2,DC=test',
                 '>ldapsearch-shadycompass2.test-base-10.129.229.189.txt'
             ],
