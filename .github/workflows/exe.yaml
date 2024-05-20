@@ -55,7 +55,7 @@ jobs:
             RELEASE_FILE_NAME: shadycompass.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Set up Python 3.12
         uses: actions/setup-python@v2
         with:
