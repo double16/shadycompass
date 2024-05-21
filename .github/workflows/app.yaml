@@ -142,7 +142,7 @@ jobs:
       - name: Upload Asset
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.RELEASE_FILE_NAME}}
+          name: exe-${{ matrix.RELEASE_FILE_NAME}}
           path: ./dist/${{ matrix.OUT_FILE_NAME}}
           if-no-files-found: error
 
@@ -155,9 +155,15 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           path: dist
+          pattern: exe-*
+          merge-multiple: true
+
       - uses: softprops/action-gh-release@v2
         with:
           name: "Development Build"
