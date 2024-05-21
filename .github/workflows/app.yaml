@@ -166,9 +166,10 @@ jobs:
 
       - name: debug
         run: |
-          pwd
           env
-          find -maxdepth 3 .
+          pwd
+          find . -maxdepth 3
+          find dist -maxdepth 3
 
       - uses: softprops/action-gh-release@v2
         with:
