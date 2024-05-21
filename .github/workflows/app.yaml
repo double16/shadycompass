@@ -164,6 +164,12 @@ jobs:
           pattern: exe-*
           merge-multiple: true
 
+      - name: debug
+        run: |
+          pwd
+          env
+          find -maxdepth 3 .
+
       - uses: softprops/action-gh-release@v2
         with:
           name: "Development Build"
@@ -172,6 +178,6 @@ jobs:
           fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
-            shadycompass/dist/shadycompass_linux_amd64
-            shadycompass/dist/shadycompass_macos
-            shadycompass/dist/shadycompass.exe
+            dist/shadycompass_linux_amd64
+            dist/shadycompass_macos
+            dist/shadycompass.exe
