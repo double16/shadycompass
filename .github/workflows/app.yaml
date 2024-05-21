@@ -112,35 +112,47 @@ jobs:
             TARGET: linux
             CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
             OUT_FILE_NAME: shadycompass
-            RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_linux_amd64
+            RELEASE_FILE_NAME: shadycompass_${{ steps.meta.outputs.tags[0] }}_linux_amd64
             ASSET_MIME: application/octet-stream
           - os: macos-latest
             TARGET: macos
             CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
             OUT_FILE_NAME: shadycompass
-            RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_macos
+            RELEASE_FILE_NAME: shadycompass_${{ steps.meta.outputs.tags[0] }}_macos
             ASSET_MIME: application/octet-stream
           - os: windows-latest
             TARGET: windows
             CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
             OUT_FILE_NAME: shadycompass.exe
-            RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}.exe
+            RELEASE_FILE_NAME: shadycompass_${{ steps.meta.outputs.tags[0] }}.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
       - uses: actions/checkout@v4
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
           cache: 'pip'
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
+
       - name: Build with pyinstaller for ${{matrix.TARGET}}
         run: |
           ${{matrix.CMD_BUILD}}
           mv ./dist/${{ matrix.OUT_FILE_NAME }} ./dist/${{ matrix.RELEASE_FILE_NAME }}
+
       - name: Upload Asset
         uses: actions/upload-artifact@v4
         with:
@@ -160,6 +172,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+
       - name: Download exe
         uses: actions/download-artifact@v4
         with:
@@ -176,9 +197,9 @@ jobs:
           fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
-            dist/shadycompass_${{github.ref_name}}_linux_amd64
-            dist/shadycompass_${{github.ref_name}}_macos
-            dist/shadycompass_${{github.ref_name}}.exe
+            dist/shadycompass_${{ steps.meta.outputs.tags[0] }}_linux_amd64
+            dist/shadycompass_${{ steps.meta.outputs.tags[0] }}_macos
+            dist/shadycompass_${{ steps.meta.outputs.tags[0] }}.exe
 
 
   release:
@@ -193,6 +214,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
       - name: Download exe
         uses: actions/download-artifact@v4
         with:
@@ -205,6 +234,6 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            dist/shadycompass_${{github.ref_name}}_linux_amd64
-            dist/shadycompass_${{github.ref_name}}_macos
-            dist/shadycompass_${{github.ref_name}}.exe
+            dist/shadycompass_${{ steps.meta.outputs.tags[0] }}_linux_amd64
+            dist/shadycompass_${{ steps.meta.outputs.tags[0] }}_macos
+            dist/shadycompass_${{ steps.meta.outputs.tags[0] }}.exe
