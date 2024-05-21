@@ -60,7 +60,7 @@ class ShadyCompassEngineFactsTest(unittest.TestCase):
 
     def test_retract_facts(self):
         file_path = os.path.join(self.tempdir, 'hosts')
-        fact = HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1', file_path=file_path)
+        fact = HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1')
         assertFactIn(fact, self.engine)
         os.remove(file_path)
         self.engine.update_facts()

@@ -19,7 +19,7 @@ from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIP
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
-BANNER="""
+BANNER = """
              N
         .--^-.
        / . . . \\
@@ -32,6 +32,9 @@ BANNER="""
 
 shadycompass - https://github.com/double16/shadycompass
 """
+
+FILE_PATH_ATTR = 'file_path'
+
 
 class ShadyCompassEngine(
     KnowledgeEngine,
@@ -61,7 +64,7 @@ class ShadyCompassEngine(
                                     f'[!] returned fact is None from {file_path}, {type(fact_reader)}, implementation error, file report at https://github.com/double16/shadycompass/issues',
                                     file=sys.stderr)
                             else:
-                                the_fact.update({'file_path': file_path})
+                                setattr(the_fact, FILE_PATH_ATTR, file_path)
                                 self.declare(the_fact)
                     except BaseException:
                         print(
@@ -70,7 +73,7 @@ class ShadyCompassEngine(
             else:
                 # retract facts for files that have been removed
                 for fact in self.facts.values():
-                    if fact.get('file_path') == file_path:
+                    if hasattr(fact, FILE_PATH_ATTR) and getattr(fact, FILE_PATH_ATTR) == file_path:
                         retract_queue.append(fact)
         for fact in retract_queue:
             self.retract(fact)
@@ -204,7 +207,7 @@ class ShadyCompassOps(object):
             while True:
                 print(f"\nChoose your preferred tool for {category}:", file=self.fd_out)
                 for idx, name in enumerate(names):
-                    print(f"{idx+1}. {name}")
+                    print(f"{idx + 1}. {name}")
                 print("0. no preference, consider all", file=self.fd_out)
                 try:
                     choice = int(input("? ").strip()) - 1
@@ -365,7 +368,7 @@ Press enter/return at the prompt to refresh data.
 
         with io.StringIO() as buffer:
             config.write(buffer)
-            config_string = '\n'+buffer.getvalue()
+            config_string = '\n' + buffer.getvalue()
 
         print(config_string, file=self.fd_out)
 
@@ -394,6 +397,12 @@ Press enter/return at the prompt to refresh data.
                 value = arg
             else:
                 raise ValueError(arg)
+        if option is None:
+            print('[!] option and value are required', file=self.fd_err)
+            return
+        if value is None:
+            print('[!] value is required', file=self.fd_err)
+            return
         self.engine.declare(ConfigFact(section=section, option=option, value=value, global0=global0))
         self.print_save_config_warning()
 

@@ -825,6 +825,7 @@ class ScanPresent(Fact):
 
 
 class HttpBustingNeeded(Fact):
+    # TODO: consider replacing with ScanNeeded/ScanPresent
     secure = Field(bool, mandatory=True)
     addr = Field(str, mandatory=True)
     port = Field(int, mandatory=True)
