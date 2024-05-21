@@ -137,13 +137,14 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
+          mv ./dist/${{ matrix.OUT_FILE_NAME }} ./dist/${{ matrix.RELEASE_FILE_NAME }}
       - name: Build with pyinstaller for ${{matrix.TARGET}}
         run: ${{matrix.CMD_BUILD}}
       - name: Upload Asset
         uses: actions/upload-artifact@v4
         with:
-          name: exe-${{ matrix.RELEASE_FILE_NAME}}
-          path: ./dist/${{ matrix.OUT_FILE_NAME}}
+          name: exe-${{ matrix.RELEASE_FILE_NAME }}
+          path: ./dist/${{ matrix.OUT_FILE_NAME }}
           if-no-files-found: error
 
   pre-release:
@@ -163,13 +164,6 @@ jobs:
           path: dist
           pattern: exe-*
           merge-multiple: true
-
-      - name: debug
-        run: |
-          env
-          pwd
-          find . -maxdepth 3
-          find dist -maxdepth 3
 
       - uses: softprops/action-gh-release@v2
         with:
