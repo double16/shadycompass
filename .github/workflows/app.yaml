@@ -170,7 +170,8 @@ jobs:
           tag_name: latest
           prerelease: true
           fail_on_unmatched_files: true
+          generate_release_notes: true
           files: |
-            dist/shadycompass_linux_amd64
-            dist/shadycompass_macos
-            dist/shadycompass.exe
+            shadycompass/dist/shadycompass_linux_amd64
+            shadycompass/dist/shadycompass_macos
+            shadycompass/dist/shadycompass.exe
