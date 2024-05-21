@@ -137,9 +137,10 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pyinstaller
-          mv ./dist/${{ matrix.OUT_FILE_NAME }} ./dist/${{ matrix.RELEASE_FILE_NAME }}
       - name: Build with pyinstaller for ${{matrix.TARGET}}
-        run: ${{matrix.CMD_BUILD}}
+        run: |
+          ${{matrix.CMD_BUILD}}
+          mv ./dist/${{ matrix.OUT_FILE_NAME }} ./dist/${{ matrix.RELEASE_FILE_NAME }}
       - name: Upload Asset
         uses: actions/upload-artifact@v4
         with:
