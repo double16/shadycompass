@@ -151,6 +151,8 @@ jobs:
     name: "Pre Release"
     runs-on: "ubuntu-latest"
     needs: [ test, build-exe ]
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/download-artifact@v4
@@ -162,12 +164,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: shadycompass.exe
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - uses: softprops/action-gh-release@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          name: "Development Build"
           prerelease: true
-          title: "Development Build"
+          fail_on_unmatched_files: true
           files: |
             shadycompass_linux_amd64
             shadycompass_macos
