@@ -157,13 +157,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: shadycompass_linux_amd64
-      - uses: actions/download-artifact@v4
-        with:
-          name: shadycompass_macos
-      - uses: actions/download-artifact@v4
-        with:
-          name: shadycompass.exe
+          path: dist
       - uses: softprops/action-gh-release@v2
         with:
           name: "Development Build"
@@ -171,6 +165,6 @@ jobs:
           prerelease: true
           fail_on_unmatched_files: true
           files: |
-            shadycompass_linux_amd64
-            shadycompass_macos
-            shadycompass.exe
+            dist/shadycompass_linux_amd64
+            dist/shadycompass_macos
+            dist/shadycompass.exe
