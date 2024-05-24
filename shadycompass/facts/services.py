@@ -18,13 +18,19 @@ from shadycompass.facts import HttpService, DomainTcpIpService, DomainUdpIpServi
     ZeroconfService, PostgresqlService, AmqpService, VncHttpService, VncService, CouchdbService, X11Service, \
     RedisService, ApacheJServService, BitcoinService, PDLDataStreamingService, NetworkDataManagementProtocol, \
     MemcacheService, MemcacheDbService, MongoDbService, EtherNetIPService, BacnetService, MsmqService, \
-    OSTYPE_WINDOWS, DotNetMessageFramingService, MicrosoftRpcHttpService, SshService, WindowsUpdateDeliveryOptimization
+    OSTYPE_WINDOWS, DotNetMessageFramingService, MicrosoftRpcHttpService, SshService, WindowsUpdateDeliveryOptimization, \
+    Product, DockerRegistryService
 
 
-def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, secure, service_name):
+def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, secure, service_name,
+                         products: list[Product] = None):
+    if products is None:
+        products = []
     service_name = ''.join((service_name or '').split()[0:1])
     if service_name == 'http':
-        if os_type == OSTYPE_WINDOWS and port == 5985:
+        if any(map(lambda e: 'docker registry' in e.get_product(), products)):
+            result.extend(spread_addrs(DockerRegistryService, addrs, port=port, secure=secure))
+        elif os_type == OSTYPE_WINDOWS and port == 5985:
             result.extend(spread_addrs(WinRMService, addrs, port=port, secure=secure))
         elif os_type == OSTYPE_WINDOWS and port == 5986:
             result.extend(spread_addrs(WinRMService, addrs, port=port, secure=True))

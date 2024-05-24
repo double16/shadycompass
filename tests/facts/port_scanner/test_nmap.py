@@ -5,7 +5,7 @@ from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, Target
     DomainTcpIpService, HttpService, WinRMService, Kerberos5SecTcpService, MicrosoftRpcService, NetbiosSessionService, \
     LdapService, SmbService, RdpService, MsmqService, Product, OSTYPE_WINDOWS, DotNetMessageFramingService, \
     MicrosoftRpcHttpService, SshService, ScanPresent, OperatingSystem, WindowsDomain, WindowsDomainController, \
-    TlsCertificate
+    TlsCertificate, DockerRegistryService
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn
@@ -101,3 +101,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
             issuer='shadycompass-DC01-CA',
         ), facts, times=4)
         assertFactIn(TlsCertificate(), facts, times=4)
+
+    def test_docker_registry(self):
+        facts = self.reader.read_facts('tests/fixtures/nmap/docker_registry/nmap-docker-registry.xml')
+        assertFactIn(DockerRegistryService(addr='10.129.175.32', port=5000, secure=True), facts)

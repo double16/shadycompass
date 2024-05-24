@@ -9,7 +9,7 @@ from shadycompass.config import set_local_config_path, set_global_config_path, C
     ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
     NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService, TargetDomain, Username, \
-    EmailAddress
+    EmailAddress, HostnameIPv6Resolution, VirtualHostname
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn
 
@@ -230,8 +230,9 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.engine.declare(TargetHostname(hostname='localhost.localdomain'))
         self.ops.engine.declare(TargetDomain(domain='localdomain.local'))
         self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='127.0.0.1'))
-        self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost', addr='::1'))
-        self.ops.engine.declare(HostnameIPv4Resolution(hostname='localhost3', addr='::3'))
+        self.ops.engine.declare(HostnameIPv6Resolution(hostname='localhost', addr='::1'))
+        self.ops.engine.declare(HostnameIPv6Resolution(hostname='localhost3', addr='::3'))
+        self.ops.engine.declare(VirtualHostname(hostname='blog.localdomain.local', port=80, secure=False))
         self.ops.show_targets([])
         self.assertTrue('- 127.0.0.1 localhost' in self.fd_out.output)
         self.assertTrue('- ::1 localhost' in self.fd_out.output)
@@ -239,6 +240,7 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- ::2' in self.fd_out.output)
         self.assertTrue('- localhost.localdomain' in self.fd_out.output)
         self.assertTrue('- *.localdomain.local' in self.fd_out.output)
+        self.assertTrue('- blog.localdomain.local' in self.fd_out.output)
         self.assertFalse('- ::3 localhost3' in self.fd_out.output)
 
     def test_show_services(self):

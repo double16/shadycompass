@@ -19,6 +19,7 @@ from shadycompass.rules.portscanner import PortScan
 from shadycompass.rules.scanner import ScanRules
 from shadycompass.rules.smbscanner import SmbScan
 from shadycompass.rules.smtpscanner import SmtpScan
+from shadycompass.rules.virtualhost_scanner import VirtualHostScan
 from shadycompass.rules.vulnscanner import VulnScan
 
 
@@ -42,6 +43,7 @@ class AllRules(
     DnsScan,
     AsRepRoaster,
     LdapScan,
+    VirtualHostScan,
     ConfigRules,
     EtcHostsRules,
     ProductionTargetRules,

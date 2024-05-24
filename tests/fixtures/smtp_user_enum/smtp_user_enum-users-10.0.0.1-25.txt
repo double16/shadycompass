@@ -1,0 +1,76 @@
+Starting smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+ ----------------------------------------------------------
+|                   Scan Information                       |
+ ----------------------------------------------------------
+
+Mode ..................... VRFY
+Worker Processes ......... 5
+Usernames file ........... /usr/share/seclists/Usernames/xato-net-10-million-usernames-dup.txt
+Target count ............. 1
+Username count ........... 624370
+Target TCP port .......... 25
+Query timeout ............ 30 secs
+Target domain ............ 
+
+######## Scan started at Wed May 22 08:19:31 2024 #########
+shadycompass.test: NULL <no such user>
+shadycompass.test: 2000 <no such user>
+shadycompass.test: admin <no such user>
+shadycompass.test: michael <no such user>
+shadycompass.test: info <no such user>
+shadycompass.test: john <no such user>
+shadycompass.test: david <no such user>
+shadycompass.test: robert <no such user>
+shadycompass.test: chris <no such user>
+shadycompass.test: mike <no such user>
+shadycompass.test: dave <no such user>
+shadycompass.test: richard <no such user>
+shadycompass.test: 123456 <no such user>
+shadycompass.test: thomas <no such user>
+shadycompass.test: steve <no such user>
+shadycompass.test: mark <no such user>
+shadycompass.test: andrew <no such user>
+shadycompass.test: daniel <no such user>
+shadycompass.test: george <no such user>
+shadycompass.test: paul <no such user>
+shadycompass.test: qwerty <no such user>
+shadycompass.test: charlie <no such user>
+shadycompass.test: dragon <no such user>
+shadycompass.test: james <no such user>
+shadycompass.test: martin <no such user>
+shadycompass.test: master <no such user>
+shadycompass.test: mail exists
+shadycompass.test: charles <no such user>
+shadycompass.test: bill <no such user>
+shadycompass.test: patrick <no such user>
+shadycompass.test: johnny <no such user>
+shadycompass.test: 1234 <no such user>
+shadycompass.test: peter <no such user>
+shadycompass.test: shadow <no such user>
+shadycompass.test: hunter <no such user>
+shadycompass.test: carlos <no such user>
+shadycompass.test: black <no such user>
+shadycompass.test: jason <no such user>
+shadycompass.test: alex exists
+shadycompass.test: steven <no such user>
+shadycompass.test: brian <no such user>
+shadycompass.test: scott <no such user>
+shadycompass.test: edward <no such user>
+shadycompass.test: joseph <no such user>
+shadycompass.test: 12345 <no such user>
+shadycompass.test: natasha <no such user>
+shadycompass.test: justin <no such user>
+shadycompass.test: matthew <no such user>
+shadycompass.test: hammer <no such user>
+shadycompass.test: harley <no such user>
+shadycompass.test: dallas <no such user>
+shadycompass.test: jack <no such user>
+shadycompass.test: anthony <no such user>
+shadycompass.test: webmaster <no such user>
+shadycompass.test: root exists
+shadycompass.test: fred <no such user>
+shadycompass.test: sparky <no such user>
+shadycompass.test: buster <no such user>
+shadycompass.test: timothy <no such user>
+shadycompass.test: coffee <no such user>

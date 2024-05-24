@@ -21,7 +21,7 @@ class ToolCategory(object):
     http_buster = 'http_buster'
     http_spider = 'http_spider'
     http_public_spider = 'http_public_spider'
-    vhost_scanner = 'vhost_scanner'
+    virtualhost_scanner = 'virtualhost_scanner'
     vuln_scanner = 'vuln_scanner'
     smb_scanner = 'smb_scanner'
     dns_scanner = 'dns_scanner'
@@ -51,7 +51,7 @@ def tool_category_priority(category: str) -> int:
             return 850
         case ToolCategory.vuln_scanner:
             return 800
-        case ToolCategory.vhost_scanner:
+        case ToolCategory.virtualhost_scanner:
             return 700
         case ToolCategory.http_spider:
             return 600

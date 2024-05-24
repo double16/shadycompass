@@ -38,6 +38,9 @@ def check_file_signature(file_path: str, *signatures) -> bool:
         with open(file_path, open_flags) as f:
             content = f.read(4096)
 
+        if 't' in open_flags:
+            content = next(remove_terminal_escapes([content]))
+
         for sig in signatures:
             if isinstance(sig, re.Pattern):
                 if sig.search(content) is None:
@@ -172,6 +175,22 @@ class TargetHostname(Fact):
 
     def get_hostname(self) -> str:
         return self.get('hostname')
+
+
+class VirtualHostname(Fact):
+    hostname = Field(str, mandatory=True)
+    port = Field(int, mandatory=True)
+    secure = Field(bool, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        lowercase_dict_values(kwargs, 'hostname')
+        super().__init__(*args, **kwargs)
+
+    def get_hostname(self) -> str:
+        return self.get('hostname')
+
+    def is_secure(self) -> bool:
+        return bool(self.get('secure'))
 
 
 class TargetIPv4Address(Fact):
@@ -519,6 +538,12 @@ class DockerService(TcpIpService):
     ]
 
 
+class DockerRegistryService(TcpIpService, HasTLS):
+    methodology_links = [
+        'https://book.hacktricks.xyz/network-services-pentesting/5000-pentesting-docker-registry'
+    ]
+
+
 class SquidHttpService(TcpIpService):
     methodology_links = [
         'https://book.hacktricks.xyz/network-services-pentesting/3128-pentesting-squid'
@@ -726,6 +751,12 @@ class HttpUrl(Fact):
     def get_vhost(self) -> str:
         return self.get('vhost')
 
+    def get_port(self) -> int:
+        return urlparse(self.get_url()).port
+
+    def is_secure(self) -> bool:
+        return urlparse(self.get_url()).scheme.endswith('s')
+
 
 def http_url(url: str, **kwargs) -> HttpUrl:
     parsed = urlparse(url)
@@ -738,17 +769,26 @@ def http_url(url: str, **kwargs) -> HttpUrl:
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
-def http_url_targets(facts: list[Fact]) -> list[Fact]:
+def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False) -> list[Fact]:
     """
     Creates TargetHostname, TargetIPv4Address and/or TargetIPv6Address facts from HttpUrl facts. This isn't done with
     rules because the presence of HttpUrl doesn't imply a target. We want the fact reader to make that decision.
     :param facts:
+    :param infer_virtual_hosts:
     :return:
     """
-    hostnames = set()
+    url_hosts = set()
+    virtual_hostnames = set()
     for url_fact in filter(lambda e: isinstance(e, HttpUrl), facts):
-        hostnames.add(url_fact.get_vhost())
-    return list(map(guess_target, hostnames))
+        url_hosts.add(url_fact.get_vhost())
+        if infer_virtual_hosts:
+            virtual_hostnames.add(
+                VirtualHostname(hostname=url_fact.get_vhost(), port=url_fact.get_port(), secure=url_fact.is_secure()))
+    result = list(map(guess_target, url_hosts))
+    if infer_virtual_hosts and len(virtual_hostnames) > 1:
+        result = list(filter(lambda e: not isinstance(e, TargetHostname), result))
+        result.extend(virtual_hostnames)
+    return result
 
 
 def guess_target(target: str) -> Union[Fact, None]:
@@ -809,6 +849,9 @@ class ScanNeeded(Fact):
 
     def get_url(self) -> Union[str, None]:
         return self.get('url')
+
+    def is_secure(self) -> bool:
+        return bool(self.get('secure'))
 
 
 class ScanPresent(Fact):

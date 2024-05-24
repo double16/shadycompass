@@ -88,6 +88,7 @@ class NmapXmlFactReader(FactReader):
                 continue
             protocol = port_el.attrib.get('protocol', None)
             port = int(port_el.attrib.get('portid', 0))
+            products: list[Product] = []
             state = 'open'
             service_name = ''
             os_type = None
@@ -147,13 +148,13 @@ class NmapXmlFactReader(FactReader):
                         my_kwargs = product_kwargs.copy()
                         if product_version:
                             my_kwargs['version'] = product_version
-                        result.extend(spread_addrs(Product, addrs, product=product, **my_kwargs))
+                        products.extend(spread_addrs(Product, addrs, product=product, **my_kwargs))
                     if extra_info:
                         for parsed in parse_products(extra_info):
                             my_kwargs = product_kwargs.copy()
                             if parsed.get_version():
                                 my_kwargs['version'] = parsed.get_version()
-                            result.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
+                            products.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
 
                     if product and 'Active Directory' in product:
                         ad_kwargs = dict(hostname=hostname, netbios_computer_name=hostname)
@@ -206,10 +207,12 @@ class NmapXmlFactReader(FactReader):
                     for user in smtp_enum_users[1:]:
                         result.extend(spread_addrs(Username, addrs, hostnames, username=user))
 
+            result.extend(products)
+
             if state == 'open':
                 if os_type:
                     result.extend(spread_addrs(OperatingSystem, addrs, port=port, os_type=os_type))
-                create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
+                create_service_facts(addrs, os_type, port, protocol, result, secure, service_name, products)
 
         return result
 

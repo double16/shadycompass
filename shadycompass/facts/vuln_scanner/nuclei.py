@@ -47,6 +47,22 @@ class NucleiJsonFactReader(FactReader):
             else:
                 continue
 
+            products: list[Product] = []
+            if 'tech' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
+                extracted = record.get('extracted-results', '')
+                if isinstance(extracted, list):
+                    extracted = ' '.join(extracted)
+                os_type = normalize_os_type(extracted)
+                kwargs = {'addr': addr, 'port': int(port)}
+                if hostname:
+                    kwargs['hostname'] = hostname
+                if os_type:
+                    kwargs['os_type'] = os_type
+                for parsed in parse_products(extracted):
+                    product = Product(product=parsed.get_product(), version=parsed.get_version(), **kwargs)
+                    products.append(product)
+                    result.add(product)
+
             if record_type == 'http':
                 secure = False
                 scheme = record.get('scheme', None)
@@ -74,22 +90,9 @@ class NucleiJsonFactReader(FactReader):
                         service_name = tags[0]
 
                 services = []
-                create_service_facts([addr], None, int(port), 'tcp', services, False, service_name)
+                create_service_facts([addr], None, int(port), 'tcp', services, False, service_name, products)
                 for service in services:
                     result.add(service)
-
-            if 'tech' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
-                extracted = record.get('extracted-results', '')
-                if isinstance(extracted, list):
-                    extracted = ' '.join(extracted)
-                os_type = normalize_os_type(extracted)
-                kwargs = {'addr': addr, 'port': int(port)}
-                if hostname:
-                    kwargs['hostname'] = hostname
-                if os_type:
-                    kwargs['os_type'] = os_type
-                for parsed in parse_products(extracted):
-                    result.add(Product(product=parsed.get_product(), version=parsed.get_version(), **kwargs))
 
             if 'smb' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
                 extracted = record.get('extracted-results', '')

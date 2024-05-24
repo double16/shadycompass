@@ -1,0 +1,14 @@
+# Nmap 7.94SVN scan initiated Tue May 21 04:55:38 2024 as: nmap -p- -sV -sC -oN nmap-tcp-all.txt -oX nmap-tcp-all.xml 10.129.175.32
+Nmap scan report for shadycompass.test (10.129.175.32)
+Host is up (0.065s latency).
+Not shown: 65530 closed tcp ports (conn-refused)
+PORT     STATE SERVICE  VERSION
+5000/tcp open  ssl/http Docker Registry (API: 2.0)
+| ssl-cert: Subject: organizationName=Internet Widgits Pty Ltd/stateOrProvinceName=Some-State/countryName=AU
+| Not valid before: 2023-05-23T11:57:43
+|_Not valid after:  2024-05-22T11:57:43
+|_http-title: Site doesn't have a title.
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Tue May 21 05:00:19 2024 -- 1 IP address (1 host up) scanned in 280.66 seconds
