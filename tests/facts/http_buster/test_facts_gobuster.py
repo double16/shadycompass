@@ -1,6 +1,6 @@
 import unittest
 
-from shadycompass.facts import HttpUrl, TargetHostname
+from shadycompass.facts import HttpUrl, VirtualHostname
 from shadycompass.facts.http_buster.gobuster import GobusterReader
 from tests.tests import assertFactIn
 
@@ -13,7 +13,7 @@ class GobusterReaderTest(unittest.TestCase):
 
     def test_facts(self):
         facts = self.reader.read_facts('tests/fixtures/gobuster/http_buster/gobuster-8080-shadycompass.test-dirs.txt')
-        assertFactIn(TargetHostname(hostname='shadycompass.test'), facts)
+        assertFactIn(VirtualHostname(hostname='shadycompass.test'), facts)
         assertFactIn(HttpUrl(port=8080, vhost='shadycompass.test', url='http://shadycompass.test:8080/images/'), facts)
         assertFactIn(HttpUrl(port=8080, vhost='shadycompass.test', url='http://shadycompass.test:8080/js/'), facts)
         assertFactIn(HttpUrl(port=8080, vhost='shadycompass.test', url='http://shadycompass.test:8080/css/'), facts)

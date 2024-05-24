@@ -36,14 +36,13 @@ def assertFactIn(fact: Fact, facts_source, times: int = 1):
         facts = facts_source.facts.values()
     else:
         facts = facts_source
-    assert times > 0
     count = 0
     for f1 in facts:
         if _is_match(fact, f1):
             count += 1
     if count == 0:
         raise AssertionError(f"{repr(fact)} not found in:\n{facts_str(_get_facts_by_type(fact, facts))}")
-    elif times != count:
+    elif times >= 0 and times != count:
         raise AssertionError(
             f"{repr(fact)} found {count} times (expected {times}) in:\n{facts_str(_get_facts_by_type(fact, facts))}")
 

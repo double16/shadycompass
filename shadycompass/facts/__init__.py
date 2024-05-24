@@ -794,9 +794,10 @@ def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False) -> li
         url_hosts.add(url_fact.get_vhost())
         if infer_virtual_hosts:
             virtual_hostnames.add(
-                VirtualHostname(hostname=url_fact.get_vhost(), port=url_fact.get_port(), secure=url_fact.is_secure()))
+                VirtualHostname(hostname=url_fact.get_vhost(), port=url_fact.get_port() or 80,
+                                secure=url_fact.is_secure()))
     result = list(map(guess_target, url_hosts))
-    if infer_virtual_hosts and len(virtual_hostnames) > 1:
+    if infer_virtual_hosts:
         result = list(filter(lambda e: not isinstance(e, TargetHostname), result))
         result.extend(virtual_hostnames)
     return result

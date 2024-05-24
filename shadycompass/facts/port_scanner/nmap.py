@@ -9,12 +9,13 @@ from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
     ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username, \
-    resolve_unescaped_encoding
+    resolve_unescaped_encoding, TargetHostname, VirtualHostname
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
 _EXTRAINFO_DOMAIN_MATCH = re.compile(r'Domain:\s+(\S+?)0[.],')
 _X509v3_SUBJECT_ALT_MATCH = re.compile(r'DNS:([^\s,]+)')
+
 
 def _is_nmap_xml(file_path: str) -> bool:
     return check_file_signature(file_path, '<nmaprun ')
@@ -181,7 +182,12 @@ class NmapXmlFactReader(FactReader):
             for redirect_el in port_el.findall(".//elem[@key='redirect_url']"):
                 url = urlparse(redirect_el.text)
                 if url.hostname and url.hostname not in hostnames:
-                    result.append(guess_target(url.hostname))
+                    url_target = guess_target(url.hostname)
+                    if isinstance(url_target, TargetHostname):
+                        result.append(
+                            VirtualHostname(hostname=url.hostname, domain=list(hostnames)[0], port=port, secure=secure))
+                    else:
+                        result.append(url_target)
                     for addr in addrs:
                         if '.' in addr:
                             if addr != url.hostname:

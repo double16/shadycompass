@@ -48,7 +48,7 @@ class WfuzzReader(FactReader):
                                     secure=target_secure))
                             else:
                                 result.append(http_url(target.replace('FUZZ', m.group(2))))
-        result.extend(http_url_targets(result))
+        result.extend(http_url_targets(result, infer_virtual_hosts=True))
         if virtualhost_scanner:
             result.append(ScanPresent(category=ToolCategory.virtualhost_scanner, name='wfuzz',
                                       hostname=target_parsed.hostname, port=target_parsed.port))

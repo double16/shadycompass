@@ -5,7 +5,7 @@ from experta import Fact
 from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry, \
     remove_terminal_escapes
 
-FEROXBUSTER_PATTERN = re.compile(r'^\d\d\d\s+\w+\s+\d+l\s+\d+w\s+\d+c\s+(\w+://.+)$', re.MULTILINE)
+FEROXBUSTER_PATTERN = re.compile(r'^\d\d\d\s+\w+\s+\d+l\s+\d+w\s+\d+c\s+(\w+://\S+).*?$', re.MULTILINE)
 
 
 class FeroxbusterReader(FactReader):
@@ -20,7 +20,7 @@ class FeroxbusterReader(FactReader):
                 if m:
                     url_fact = http_url(m.group(1))
                     result.append(url_fact)
-        result.extend(http_url_targets(result))
+        result.extend(http_url_targets(result, infer_virtual_hosts=True))
         return result
 
 

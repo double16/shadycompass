@@ -17,7 +17,7 @@ class DirbReader(FactReader):
                 m = HTTP_PATTERN.search(line)
                 if m:
                     result.append(http_url(m.group(0)))
-        result.extend(http_url_targets(result))
+        result.extend(http_url_targets(result, infer_virtual_hosts=True))
         return result
 
 
