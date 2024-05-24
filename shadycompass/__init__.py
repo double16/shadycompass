@@ -15,7 +15,7 @@ from shadycompass.config import ConfigFact, get_local_config_path, \
     set_local_config_path, SECTION_OPTIONS, combine_command_options, tool_category_priority
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
     HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain, \
-    Username, EmailAddress
+    Username, EmailAddress, VirtualHostname
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -478,6 +478,8 @@ Press enter/return at the prompt to refresh data.
             elif isinstance(fact, TargetIPv6Address):
                 addr_targets.add(fact.get_addr())
             elif isinstance(fact, TargetHostname):
+                hostname_targets.add(fact.get_hostname())
+            elif isinstance(fact, VirtualHostname):
                 hostname_targets.add(fact.get_hostname())
             elif isinstance(fact, TargetDomain):
                 domains.add(fact.get_domain())

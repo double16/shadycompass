@@ -70,7 +70,7 @@ $ python3 shadycompass.py /path/to/output
 
 ```shell
 $ mkdir -p ${HOME}/.config/shadycompass
-$ docker run --pull always -it --rm -v ${HOME}/.config/shadycompass:/config -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main /data
+$ docker run --pull always -it --rm -v ${HOME}/.config/shadycompass:/config -v /path/to/output:/data --user ${UID} ghcr.io/double16/shadycompass:main
 ```
 
 ## Commands

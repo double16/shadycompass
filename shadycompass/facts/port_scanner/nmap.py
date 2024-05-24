@@ -9,12 +9,13 @@ from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
     ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username, \
-    resolve_unescaped_encoding
+    resolve_unescaped_encoding, TargetHostname, VirtualHostname
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
 _EXTRAINFO_DOMAIN_MATCH = re.compile(r'Domain:\s+(\S+?)0[.],')
 _X509v3_SUBJECT_ALT_MATCH = re.compile(r'DNS:([^\s,]+)')
+
 
 def _is_nmap_xml(file_path: str) -> bool:
     return check_file_signature(file_path, '<nmaprun ')
@@ -88,6 +89,7 @@ class NmapXmlFactReader(FactReader):
                 continue
             protocol = port_el.attrib.get('protocol', None)
             port = int(port_el.attrib.get('portid', 0))
+            products: list[Product] = []
             state = 'open'
             service_name = ''
             os_type = None
@@ -147,13 +149,13 @@ class NmapXmlFactReader(FactReader):
                         my_kwargs = product_kwargs.copy()
                         if product_version:
                             my_kwargs['version'] = product_version
-                        result.extend(spread_addrs(Product, addrs, product=product, **my_kwargs))
+                        products.extend(spread_addrs(Product, addrs, product=product, **my_kwargs))
                     if extra_info:
                         for parsed in parse_products(extra_info):
                             my_kwargs = product_kwargs.copy()
                             if parsed.get_version():
                                 my_kwargs['version'] = parsed.get_version()
-                            result.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
+                            products.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
 
                     if product and 'Active Directory' in product:
                         ad_kwargs = dict(hostname=hostname, netbios_computer_name=hostname)
@@ -180,7 +182,12 @@ class NmapXmlFactReader(FactReader):
             for redirect_el in port_el.findall(".//elem[@key='redirect_url']"):
                 url = urlparse(redirect_el.text)
                 if url.hostname and url.hostname not in hostnames:
-                    result.append(guess_target(url.hostname))
+                    url_target = guess_target(url.hostname)
+                    if isinstance(url_target, TargetHostname):
+                        result.append(
+                            VirtualHostname(hostname=url.hostname, domain=list(hostnames)[0], port=port, secure=secure))
+                    else:
+                        result.append(url_target)
                     for addr in addrs:
                         if '.' in addr:
                             if addr != url.hostname:
@@ -206,10 +213,12 @@ class NmapXmlFactReader(FactReader):
                     for user in smtp_enum_users[1:]:
                         result.extend(spread_addrs(Username, addrs, hostnames, username=user))
 
+            result.extend(products)
+
             if state == 'open':
                 if os_type:
                     result.extend(spread_addrs(OperatingSystem, addrs, port=port, os_type=os_type))
-                create_service_facts(addrs, os_type, port, protocol, result, secure, service_name)
+                create_service_facts(addrs, os_type, port, protocol, result, secure, service_name, products)
 
         return result
 

@@ -27,7 +27,7 @@ def _get_facts_by_type(fact: Fact, facts: list[Fact]) -> list[Fact]:
     return list(filter(by_type, facts))
 
 
-def _facts_str(facts: Iterable[Fact]) -> str:
+def facts_str(facts: Iterable[Fact]) -> str:
     return '\n'.join(map(lambda e: repr(e), facts))
 
 
@@ -36,16 +36,15 @@ def assertFactIn(fact: Fact, facts_source, times: int = 1):
         facts = facts_source.facts.values()
     else:
         facts = facts_source
-    assert times > 0
     count = 0
     for f1 in facts:
         if _is_match(fact, f1):
             count += 1
     if count == 0:
-        raise AssertionError(f"{repr(fact)} not found in:\n{_facts_str(_get_facts_by_type(fact, facts))}")
-    elif times != count:
+        raise AssertionError(f"{repr(fact)} not found in:\n{facts_str(_get_facts_by_type(fact, facts))}")
+    elif times >= 0 and times != count:
         raise AssertionError(
-            f"{repr(fact)} found {count} times (expected {times}) in:\n{_facts_str(_get_facts_by_type(fact, facts))}")
+            f"{repr(fact)} found {count} times (expected {times}) in:\n{facts_str(_get_facts_by_type(fact, facts))}")
 
 
 def assertFactNotIn(fact: Fact, facts_source):
@@ -55,4 +54,4 @@ def assertFactNotIn(fact: Fact, facts_source):
         facts = facts_source
     for f1 in facts:
         if _is_match(fact, f1):
-            raise AssertionError(f"{repr(fact)} found in:\n{_facts_str(_get_facts_by_type(fact, facts))}")
+            raise AssertionError(f"{repr(fact)} found in:\n{facts_str(_get_facts_by_type(fact, facts))}")

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.94SVN scan initiated Tue May 21 04:55:38 2024 as: nmap -p- -sV -sC -oN nmap-tcp-all.txt -oX nmap-tcp-all.xml 10.129.175.32 -->
+<nmaprun scanner="nmap" args="nmap -p- -sV -sC -oN nmap-tcp-all.txt -oX nmap-tcp-all.xml 10.129.175.32"
+         start="1716285338" startstr="Tue May 21 04:55:38 2024" version="7.94SVN" xmloutputversion="1.05">
+    <scaninfo type="connect" protocol="tcp" numservices="65535" services="1-65535"/>
+    <verbose level="0"/>
+    <debugging level="0"/>
+    <hosthint>
+        <status state="up" reason="unknown-response" reason_ttl="0"/>
+        <address addr="10.129.175.32" addrtype="ipv4"/>
+        <hostnames>
+        </hostnames>
+    </hosthint>
+    <host starttime="1716285340" endtime="1716285619">
+        <status state="up" reason="syn-ack" reason_ttl="0"/>
+        <address addr="10.129.175.32" addrtype="ipv4"/>
+        <hostnames>
+            <hostname name="shadycompass.test" type="PTR"/>
+        </hostnames>
+        <ports>
+            <extraports state="closed" count="65530">
+                <extrareasons reason="conn-refused" count="65530" proto="tcp"
+                              ports="1-21,23-24,26-79,81-1336,1338-4999,5001-65535"/>
+            </extraports>
+            <port protocol="tcp" portid="5000">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service name="http" product="Docker Registry" extrainfo="API: 2.0" tunnel="ssl" method="probed"
+                         conf="10">
+                    <cpe>cpe:/a:redhat:docker</cpe>
+                </service>
+                <script id="ssl-cert"
+                        output="Subject: organizationName=Internet Widgits Pty Ltd/stateOrProvinceName=Some-State/countryName=AU&#xa;Not valid before: 2023-05-23T11:57:43&#xa;Not valid after:  2024-05-22T11:57:43">
+                    <table key="subject">
+                        <elem key="countryName">AU</elem>
+                        <elem key="organizationName">Internet Widgits Pty Ltd</elem>
+                        <elem key="stateOrProvinceName">Some-State</elem>
+                    </table>
+                    <table key="issuer">
+                        <elem key="countryName">AU</elem>
+                        <elem key="organizationName">Internet Widgits Pty Ltd</elem>
+                        <elem key="stateOrProvinceName">Some-State</elem>
+                    </table>
+                    <table key="pubkey">
+                        <elem key="type">rsa</elem>
+                        <elem key="bits">4096</elem>
+                        <elem key="modulus">
+                            DC87D933E2272BAE564A8386E5643D827E9BCFE868F749D260CB07C488936E2D7D15C63D67C42370706B87B155C321C1CD7D58DDF2B4BFCC7AED505EF438D8D77D644F428EE3844115E3ECD3B578F35F86A87AC3E86020F77DCED349B2E35822442CA76DADD3B1493D1030F91E41061FDFB140447BE718D0002871302FD98E12DBE0454BF12AB51C28007D5DD00E4598F37D27BAEDB79D178EE7EFE085C788A68B34BBE1D997C7DF4AC20BDBE093B72EB2A5411FCAEE5B2A3406F292E3CCC4AACEDA5D6C54D32DC68E7F04B906D9A4C1308D7631BAFE749D82E0B286B12CE3D99F6F251F44A0E242BF907362607688205EFFA8AD9F1163F9FD582540CC0358F5F753B8808F69A772B9866F6EE40BE490384E82A7EC683D365FF2850A59D19CBDE7639190014C381EA2DCDEA81D7F80E8AC3EE179C1147A12E1BD830308196AD30769C2C3900A941D27083C7C4FA9C807220A935CEAD5FBDF1E63BA193245A3E0EE8930301F72D1DD5A37BEB4D720B24D7D084E630B3FC58952F44B4EB9905830E6838DF883073F187F11A0BC91D76F81EFBDF55F4EC45DA03A9F236578CBE0055E97FBE32022D0AE010BF8C9581F5C9E3D0CBDE7D921FAE82384972AFE2FF9BAE206EE86C1A3C4D2C88042CB29490EDE525B1D3A6A0F30461A8FC2D7FBD8644DA08FBFC964F7835A6D28B66D53DEDACA207906B920EA55C6DEE919BCC6D19BF5
+                        </elem>
+                        <elem key="exponent">65537</elem>
+                    </table>
+                    <table key="extensions">
+                        <table>
+                            <elem key="name">X509v3 Subject Key Identifier</elem>
+                            <elem key="value">2B:D2:CA:46:D5:04:D8:80:0A:0C:37:C6:0A:BA:81:FE:11:B5:8A:B3</elem>
+                        </table>
+                        <table>
+                            <elem key="name">X509v3 Authority Key Identifier</elem>
+                            <elem key="value">2B:D2:CA:46:D5:04:D8:80:0A:0C:37:C6:0A:BA:81:FE:11:B5:8A:B3</elem>
+                        </table>
+                        <table>
+                            <elem key="name">X509v3 Basic Constraints</elem>
+                            <elem key="value">CA:TRUE</elem>
+                            <elem key="critical">true</elem>
+                        </table>
+                    </table>
+                    <elem key="sig_algo">sha256WithRSAEncryption</elem>
+                    <table key="validity">
+                        <elem key="notBefore">2023-05-23T11:57:43</elem>
+                        <elem key="notAfter">2024-05-22T11:57:43</elem>
+                    </table>
+                    <elem key="md5">2f97837217aeabe4a4d95937f4383e71</elem>
+                    <elem key="sha1">a6f9ce07c808150a00aaf1931b72a963f414f57c</elem>
+                    <elem key="pem">-&#45;&#45;&#45;&#45;BEGIN CERTIFICATE-&#45;&#45;&#45;&#45;&#xa;MIIFazCCA1OgAwIBAgIUDWhFdCp8MnPK7iV0Eqp2Tn4y5OQwDQYJKoZIhvcNAQEL&#xa;BQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUxITAfBgNVBAoM&#xa;GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDAeFw0yMzA1MjMxMTU3NDNaFw0yNDA1&#xa;MjIxMTU3NDNaMEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIDApTb21lLVN0YXRlMSEw&#xa;HwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwggIiMA0GCSqGSIb3DQEB&#xa;AQUAA4ICDwAwggIKAoICAQDch9kz4icrrlZKg4blZD2CfpvP6Gj3SdJgywfEiJNu&#xa;LX0Vxj1nxCNwcGuHsVXDIcHNfVjd8rS/zHrtUF70ONjXfWRPQo7jhEEV4+zTtXjz&#xa;X4aoesPoYCD3fc7TSbLjWCJELKdtrdOxST0QMPkeQQYf37FARHvnGNAAKHEwL9mO&#xa;EtvgRUvxKrUcKAB9XdAORZjzfSe67bedF47n7+CFx4imizS74dmXx99Kwgvb4JO3&#xa;LrKlQR/K7lsqNAbykuPMxKrO2l1sVNMtxo5/BLkG2aTBMI12Mbr+dJ2C4LKGsSzj&#xa;2Z9vJR9EoOJCv5BzYmB2iCBe/6itnxFj+f1YJUDMA1j191O4gI9pp3K5hm9u5Avk&#xa;kDhOgqfsaD02X/KFClnRnL3nY5GQAUw4HqLc3qgdf4DorD7hecEUehLhvYMDCBlq&#xa;0wdpwsOQCpQdJwg8fE+pyAciCpNc6tX73x5juhkyRaPg7okwMB9y0d1aN7601yCy&#xa;TX0ITmMLP8WJUvRLTrmQWDDmg434gwc/GH8RoLyR12+B7731X07EXaA6nyNleMvg&#xa;BV6X++MgItCuAQv4yVgfXJ49DL3n2SH66COElyr+L/m64gbuhsGjxNLIgELLKUkO&#xa;3lJbHTpqDzBGGo/C1/vYZE2gj7/JZPeDWm0otm1T3trKIHkGuSDqVcbe6Rm8xtGb&#xa;9QIDAQABo1MwUTAdBgNVHQ4EFgQUK9LKRtUE2IAKDDfGCrqB/hG1irMwHwYDVR0j&#xa;BBgwFoAUK9LKRtUE2IAKDDfGCrqB/hG1irMwDwYDVR0TAQH/BAUwAwEB/zANBgkq&#xa;hkiG9w0BAQsFAAOCAgEAM8+ImqdW9fT9jVE0XTGi0PmYM7bwXKWlJQU1NhzisuI2&#xa;7IzLsTH1HhysrMmksJu4/EdCMZdZFCpvPcZZqRzltJl0BW0Fcbl6YT12JCosbIRG&#xa;GhhNKt/Pi/1/Gbx0e3WjzNHMN/3RN4ARFx5MxL6yImJDq7+Xr2FJNvUeQ4HyUEH0&#xa;Qvz5PFhArLyUz3/NFqV4LxxyjxoLWyd8WXwFo71aq1GWLu9R/2RL+WPhN946TYlh&#xa;p/iJV3SeemHIgRdWDGkXxRe6itp2zA/nkggxxy5TexbPY2z7VwAMqIizIKAEScFm&#xa;t/cj12LxRswz2xicoNcC/nhoIxpZWh3qLfPh1W3gqMgAZvtPLDVQQvhNiJhJ2jPu&#xa;D6SozctK1yA9uGkEFUEhOiNZ2X2vENiqJGggQsDQKDSrGS2sqZvKXoyNqcHQsUBI&#xa;m5EZ6PQRgr4JMk2/JTqjpl2yN+EV7kfqrj5m6oiXmBOdg4osLse+7zLWUWSLwlic&#xa;jrwMmoQsRbgKCA5+pB+CnKBVZjxKPw3qneqK3Gp2qVNf/yVKK0fFUhCYgRiqxfAz&#xa;PhySBYrxEfqIqoMxCWIcnvvyil8rLJd4QEVAok5zZVIEohhlDhLZ60wnx2wNygA+&#xa;s/nOcZJ2ylq6Lz7syIeAzG9YeLkFOuRtQXj8CuwhLcDPliLrrjJiwYmMYBpb7Z0=&#xa;-&#45;&#45;&#45;&#45;END
+                        CERTIFICATE-&#45;&#45;&#45;&#45;&#xa;
+                    </elem>
+                </script>
+                <script id="http-title" output="Site doesn&apos;t have a title."></script>
+            </port>
+        </ports>
+        <times srtt="65367" rttvar="2401" to="100000"/>
+    </host>
+    <runstats>
+        <finished time="1716285619" timestr="Tue May 21 05:00:19 2024"
+                  summary="Nmap done at Tue May 21 05:00:19 2024; 1 IP address (1 host up) scanned in 280.66 seconds"
+                  elapsed="280.66" exit="success"/>
+        <hosts up="1" down="0" total="1"/>
+    </runstats>
+</nmaprun>

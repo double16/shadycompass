@@ -1,7 +1,8 @@
 import unittest
 
-from shadycompass.facts import HttpUrl, TargetHostname
+from shadycompass.facts import HttpUrl, VirtualHostname
 from shadycompass.facts.http_buster.feroxbuster import FeroxbusterReader
+from tests.tests import facts_str, assertFactIn
 
 
 class FeroxbusterReaderTest(unittest.TestCase):
@@ -12,22 +13,22 @@ class FeroxbusterReaderTest(unittest.TestCase):
 
     def test_facts(self):
         facts = self.reader.read_facts('tests/fixtures/feroxbuster/ferox-443-dirs.txt')
-        self.assertEqual(640, len(facts))
-        self.assertIn(TargetHostname(hostname='shadycompass.test'), facts)
-        self.assertIn(
+        assertFactIn(VirtualHostname(hostname='shadycompass.test'), facts)
+        assertFactIn(
             HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test/program/js/jstz.min.js'), facts)
-        self.assertIn(HttpUrl(port=443, vhost='shadycompass.test',
+        assertFactIn(HttpUrl(port=443, vhost='shadycompass.test',
                               url='https://shadycompass.test/skins/elastic/images/favicon.ico'), facts)
-        self.assertIn(
+        assertFactIn(
             HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test/skins/elastic/images/logo.svg'),
             facts)
-        self.assertIn(
+        assertFactIn(
             HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test/skins/elastic/watermark.html'),
             facts)
-        self.assertIn(HttpUrl(port=443, vhost='shadycompass.test',
+        assertFactIn(HttpUrl(port=443, vhost='shadycompass.test',
                               url='https://shadycompass.test/plugins/jqueryui/themes/elastic/jquery-ui.min.css'), facts)
-        self.assertIn(
+        assertFactIn(
             HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test/program/js/jquery.min.js'),
             facts)
-        self.assertIn(HttpUrl(port=443, vhost='shadycompass.test',
+        assertFactIn(HttpUrl(port=443, vhost='shadycompass.test',
                               url='https://shadycompass.test/skins/elastic/deps/bootstrap.bundle.min.js'), facts)
+        self.assertEqual(640, len(facts), facts_str(facts))
