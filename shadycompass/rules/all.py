@@ -8,19 +8,19 @@ import shadycompass.rules.smtp_scanner.all as smtp_scanner
 import shadycompass.rules.vuln_scanner.all as vuln_scanner
 from shadycompass.config import ConfigRules
 from shadycompass.rules.asrep_roaster import AsRepRoaster
-from shadycompass.rules.dnsscanner import DnsScan
+from shadycompass.rules.dns_scanner import DnsScan
 from shadycompass.rules.etc_hosts import EtcHostsRules
-from shadycompass.rules.httpbusting import HttpBusting
-from shadycompass.rules.imapscanner import ImapScan
-from shadycompass.rules.ldapscanner import LdapScan
+from shadycompass.rules.http_busting import HttpBusting
+from shadycompass.rules.imap_scanner import ImapScan
+from shadycompass.rules.ldap_scanner import LdapScan
 from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules, PublicAddrRules, MiscRules
-from shadycompass.rules.popscanner import PopScan
-from shadycompass.rules.portscanner import PortScan
+from shadycompass.rules.pop_scanner import PopScan
+from shadycompass.rules.port_scanner import PortScan
 from shadycompass.rules.scanner import ScanRules
-from shadycompass.rules.smbscanner import SmbScan
-from shadycompass.rules.smtpscanner import SmtpScan
+from shadycompass.rules.smb_scanner import SmbScan
+from shadycompass.rules.smtp_scanner import SmtpScan
 from shadycompass.rules.virtualhost_scanner import VirtualHostScan
-from shadycompass.rules.vulnscanner import VulnScan
+from shadycompass.rules.vuln_scanner import VulnScan
 
 
 class AllRules(
