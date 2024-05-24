@@ -179,11 +179,19 @@ class TargetHostname(Fact):
 
 class VirtualHostname(Fact):
     hostname = Field(str, mandatory=True)
+    domain = Field(str, mandatory=True)
     port = Field(int, mandatory=True)
     secure = Field(bool, mandatory=False)
 
     def __init__(self, *args, **kwargs):
-        lowercase_dict_values(kwargs, 'hostname')
+        lowercase_dict_values(kwargs, 'hostname', 'domain')
+        if 'domain' not in kwargs and 'hostname' in kwargs:
+            hostname = kwargs['hostname']
+            if isinstance(hostname, str):
+                if hostname.count('.') > 1:
+                    kwargs['domain'] = hostname.split('.', 1)[-1]
+                else:
+                    kwargs['domain'] = hostname
         super().__init__(*args, **kwargs)
 
     def get_hostname(self) -> str:
@@ -191,6 +199,9 @@ class VirtualHostname(Fact):
 
     def is_secure(self) -> bool:
         return bool(self.get('secure'))
+
+    def get_domain(self) -> str:
+        return self.get('domain')
 
 
 class TargetIPv4Address(Fact):

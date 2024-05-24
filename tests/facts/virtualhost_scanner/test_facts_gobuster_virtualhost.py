@@ -14,7 +14,10 @@ class GobusterVirtualHostReaderTest(unittest.TestCase):
     def test_facts(self):
         facts = self.reader.read_facts(
             'tests/fixtures/gobuster/virtualhost_scanner/gobuster-vhost-443-shadycompass.test.txt')
-        assertFactIn(VirtualHostname(hostname="ns3.shadycompass.test", port=443, secure=True), facts)
-        assertFactIn(VirtualHostname(hostname="blog.shadycompass.test", port=443, secure=True), facts)
-        assertFactIn(VirtualHostname(hostname="ftp.shadycompass.test", port=443, secure=True), facts)
+        assertFactIn(VirtualHostname(
+            hostname='ns3.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
+        assertFactIn(VirtualHostname(
+            hostname='blog.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
+        assertFactIn(VirtualHostname(
+            hostname='ftp.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
         self.assertEqual(3, len(facts), facts_str(facts))

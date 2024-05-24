@@ -42,7 +42,9 @@ class WfuzzReader(FactReader):
                         if http_status not in [404, 403]:
                             if virtualhost_scanner:
                                 result.append(VirtualHostname(
-                                    hostname=m.group(2) + '.' + target_parsed.hostname, port=target_parsed.port,
+                                    hostname=m.group(2) + '.' + target_parsed.hostname,
+                                    domain=target_parsed.hostname,
+                                    port=target_parsed.port,
                                     secure=target_secure))
                             else:
                                 result.append(http_url(target.replace('FUZZ', m.group(2))))

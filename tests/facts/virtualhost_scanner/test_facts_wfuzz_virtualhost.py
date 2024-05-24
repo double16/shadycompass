@@ -12,9 +12,12 @@ class WfuzzVirtualHostReaderTest(unittest.TestCase):
         self.reader = WfuzzReader()
 
     def _assert_facts(self, facts: list):
-        assertFactIn(VirtualHostname(hostname="ns3.shadycompass.test", port=443, secure=True), facts)
-        assertFactIn(VirtualHostname(hostname="blog.shadycompass.test", port=443, secure=True), facts)
-        assertFactIn(VirtualHostname(hostname="ftp.shadycompass.test", port=443, secure=True), facts)
+        assertFactIn(VirtualHostname(
+            hostname='ns3.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
+        assertFactIn(VirtualHostname(
+            hostname='blog.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
+        assertFactIn(VirtualHostname(
+            hostname='ftp.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
 
     def test_read_json(self):
         facts = self.reader.read_facts('tests/fixtures/wfuzz/virtualhost_scanner/wfuzz-vhost-10.129.157.138-443.json')
