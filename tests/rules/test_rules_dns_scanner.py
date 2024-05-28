@@ -19,7 +19,7 @@ class DnsScanTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.dns_scanner, addr='10.1.1.1', port=53),
                      self.engine)
 
-    def test_dnsscan_two_target(self):
+    def test_dnsscan_two_targets(self):
         self.engine.declare(DomainUdpIpService(addr='10.1.1.1', port=53))
         self.engine.declare(DomainUdpIpService(addr='10.1.1.2', port=53))
         self.engine.run()

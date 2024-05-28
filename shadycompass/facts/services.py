@@ -240,7 +240,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
 def spread_addrs(fact_type, addrs: Iterable[str], hostnames: Iterable[str] = None, **kwargs) -> list[Fact]:
     result = []
     for addr in addrs:
-        if hostnames:
+        if hostnames and 'hostname' not in kwargs:
             for hostname in hostnames:
                 result.append(fact_type(addr=addr, hostname=hostname, **kwargs))
         else:

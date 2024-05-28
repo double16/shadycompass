@@ -18,7 +18,7 @@ class PortScanTest(RulesBase):
         assertFactNotIn(ScanNeeded(category=ToolCategory.port_scanner, addr=ScanNeeded.ANY), self.engine)
         assertFactIn(ScanNeeded(category=ToolCategory.port_scanner, addr='10.1.1.1'), self.engine)
 
-    def test_portscan_two_target(self):
+    def test_portscan_two_targets(self):
         self.engine.declare(TargetIPv4Address(addr='10.1.1.1'))
         self.engine.declare(TargetIPv4Address(addr='10.1.1.2'))
         self.engine.run()

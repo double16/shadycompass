@@ -15,7 +15,7 @@ def shadycompass_cli(args: list[str]) -> int:
     parser = argparse.ArgumentParser(
         prog='shadycompass',
         description='Tool to help ethical hackers cover enumeration steps.')
-    parser.add_argument('directories', metavar='D', type=str, nargs='+',
+    parser.add_argument('directories', metavar='dir', type=str, nargs='+',
                         help='directory to search for tool output')
     parsed = parser.parse_args(args)
 

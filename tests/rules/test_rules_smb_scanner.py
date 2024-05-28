@@ -18,7 +18,7 @@ class SmbScanTest(RulesBase):
         assertFactNotIn(ScanNeeded(category=ToolCategory.smb_scanner, addr=ScanNeeded.ANY), self.engine)
         assertFactIn(ScanNeeded(category=ToolCategory.smb_scanner, addr='10.1.1.1'), self.engine)
 
-    def test_smbscan_two_target(self):
+    def test_smbscan_two_targets(self):
         self.engine.declare(SmbService(addr='10.1.1.1', port=445))
         self.engine.declare(SmbService(addr='10.1.1.2', port=445))
         self.engine.run()

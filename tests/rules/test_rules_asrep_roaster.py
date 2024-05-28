@@ -18,7 +18,7 @@ class AsRepRoasterTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.asrep_roaster, addr='10.1.1.1'),
                      self.engine)
 
-    def test_asrep_roaster_two_target(self):
+    def test_asrep_roaster_two_targets(self):
         self.engine.declare(Kerberos5SecTcpService(addr='10.1.1.1', port=88))
         self.engine.declare(Kerberos5SecUdpService(addr='10.1.1.2', port=88))
         self.engine.run()

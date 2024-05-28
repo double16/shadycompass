@@ -18,7 +18,7 @@ class PopScanTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.pop_scanner, addr='10.1.1.1', port=110, secure=False),
                      self.engine)
 
-    def test_popscan_two_target(self):
+    def test_popscan_two_targets(self):
         self.engine.declare(PopService(addr='10.1.1.1', port=110, secure=False))
         self.engine.declare(PopService(addr='10.1.1.2', port=110, secure=False))
         self.engine.run()

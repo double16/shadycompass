@@ -55,14 +55,15 @@ class NmapXmlFactReaderTest(unittest.TestCase):
         assertFactIn(DotNetMessageFramingService(addr='10.129.229.189', port=9389), facts)
         assertFactIn(HostnameIPv4Resolution(hostname='shadycompass.test', addr='10.129.229.189', implied=True), facts)
         assertFactIn(Product(product='apache httpd', version='2.4.56', os_type=OSTYPE_WINDOWS,
-                              addr='10.129.229.189', port=443, hostname="www.example.com"), facts)
+                             addr='10.129.229.189', port=443, hostname="www.example.com", secure=True), facts)
         assertFactIn(Product(product='openssl', version='1.1.1t', os_type=OSTYPE_WINDOWS,
-                              addr='10.129.229.189', port=443, hostname="www.example.com"), facts)
+                             addr='10.129.229.189', port=443, hostname="www.example.com", secure=True), facts)
         assertFactIn(Product(product='php', version='8.0.28', os_type=OSTYPE_WINDOWS,
                               addr='10.129.229.189', port=443, hostname="www.example.com"), facts)
         assertFactIn(Product(addr='10.129.229.189', product='openssh', os_type='linux', port=22,
                               version='9.0p1 ubuntu 1ubuntu8.5'), facts)
-        assertFactIn(Product(addr='10.129.229.189', product='simple dns plus', os_type='windows', port=53), facts)
+        assertFactIn(
+            Product(addr='10.129.229.189', product='simple dns plus', os_type='windows', port=53, secure=False), facts)
         assertFactIn(Product(addr='10.129.229.189', product='microsoft windows kerberos', os_type='windows', port=88),
                       facts)
         assertFactIn(
@@ -107,3 +108,8 @@ class NmapXmlFactReaderTest(unittest.TestCase):
     def test_docker_registry(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/docker_registry/nmap-docker-registry.xml')
         assertFactIn(DockerRegistryService(addr='10.129.175.32', port=5000, secure=True), facts)
+
+    def test_wordpress_generator(self):
+        facts = self.reader.read_facts('tests/fixtures/nmap/wordpress/nmap-wordpress.xml')
+        assertFactIn(Product(product='wordpress', version='5.4-alpha-47225',
+                             addr='10.129.229.189', port=80), facts)

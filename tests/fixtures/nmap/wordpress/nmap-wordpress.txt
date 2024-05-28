@@ -1,0 +1,12 @@
+# Nmap 7.94SVN scan initiated Fri Apr 19 14:06:16 2024 as: nmap -p- -sV -sC -oN tcp-all.txt -oX tcp-all.xml 10.13.37.11
+Nmap scan report for 10.13.37.11
+Host is up (0.036s latency).
+Not shown: 65529 closed tcp ports (conn-refused)
+PORT      STATE    SERVICE      VERSION
+80/tcp    open     http         Apache httpd 2.4.29 ((Ubuntu))
+|_http-server-header: Apache/2.4.29 (Ubuntu)
+|_http-generator: WordPress 5.4-alpha-47225
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Fri Apr 19 14:55:21 2024 -- 1 IP address (1 host up) scanned in 2945.46 seconds

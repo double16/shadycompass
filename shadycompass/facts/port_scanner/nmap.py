@@ -120,9 +120,22 @@ class NmapXmlFactReader(FactReader):
                         if len(subjects) > 0:
                             result.append(TlsCertificate(subjects=subjects, issuer=issuer))
 
+            product_kwargs = {}
+            if os_type:
+                product_kwargs['os_type'] = os_type
+            product_kwargs['port'] = port
+            product_kwargs['secure'] = secure
+
             for port_detail_el in port_el:
                 if port_detail_el.tag == 'state':
                     state = port_detail_el.attrib.get('state', 'unknown')
+                elif port_detail_el.tag == 'script' and port_detail_el.attrib.get('id', None) == 'http-generator':
+                    for parsed in parse_products(port_detail_el.get('output', None), multiple=False):
+                        my_kwargs = product_kwargs.copy()
+                        if parsed.get_version():
+                            my_kwargs['version'] = parsed.get_version()
+                        products.extend(
+                            spread_addrs(Product, addrs, hostnames, product=parsed.get_product(), **my_kwargs))
                 elif port_detail_el.tag == 'service':
                     service_name = port_detail_el.attrib.get('name', None)
                     confidence = int(port_detail_el.attrib.get('conf', '0'))  # 0-10
@@ -139,23 +152,22 @@ class NmapXmlFactReader(FactReader):
                         product_version_els = port_el.findall(".//elem[@key='Product_Version']")
                         if product_version_els:
                             product_version = product_version_els[0].text
-                    product_kwargs = {}
-                    if hostname:
-                        product_kwargs['hostname'] = hostname
-                    if os_type:
-                        product_kwargs['os_type'] = os_type
-                    product_kwargs['port'] = port
                     if product:
                         my_kwargs = product_kwargs.copy()
+                        if hostname:
+                            my_kwargs['hostname'] = hostname
                         if product_version:
                             my_kwargs['version'] = product_version
-                        products.extend(spread_addrs(Product, addrs, product=product, **my_kwargs))
+                        products.extend(spread_addrs(Product, addrs, hostnames, product=product, **my_kwargs))
                     if extra_info:
                         for parsed in parse_products(extra_info):
                             my_kwargs = product_kwargs.copy()
+                            if hostname:
+                                my_kwargs['hostname'] = hostname
                             if parsed.get_version():
                                 my_kwargs['version'] = parsed.get_version()
-                            products.extend(spread_addrs(Product, addrs, product=parsed.get_product(), **my_kwargs))
+                            products.extend(
+                                spread_addrs(Product, addrs, hostnames, product=parsed.get_product(), **my_kwargs))
 
                     if product and 'Active Directory' in product:
                         ad_kwargs = dict(hostname=hostname, netbios_computer_name=hostname)
