@@ -39,5 +39,5 @@ class VirtualHostScan(IRules, ABC):
         ScanPresent(category=ToolCategory.virtualhost_scanner, addr=MATCH.addr, port=MATCH.port,
                     hostname=MATCH.hostname),
     )
-    def retract_smtp_tool(self, f1: ToolRecommended):
+    def retract_virtualhost_scan_tool(self, f1: ToolRecommended):
         self.retract(f1)

@@ -21,7 +21,7 @@ class SmtpScanTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.smtp_scanner, addr='10.1.1.1', port=587, secure=True),
                      self.engine)
 
-    def test_smtpscan_two_target(self):
+    def test_smtpscan_two_targets(self):
         self.engine.declare(SmtpService(addr='10.1.1.1', port=25, secure=False))
         self.engine.declare(SmtpService(addr='10.1.1.1', port=587, secure=True))
         self.engine.declare(SmtpService(addr='10.1.1.2', port=25, secure=False))

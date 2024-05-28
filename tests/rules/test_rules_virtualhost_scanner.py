@@ -27,7 +27,7 @@ class VirtualHostScanTest(RulesBase):
             addr='10.1.1.1', hostname="shadycompass.test", port=443, secure=True, url='https://shadycompass.test:443'),
             self.engine)
 
-    def test_virtualhost_scan_two_target(self):
+    def test_virtualhost_scan_two_targets(self):
         self.engine.declare(TargetHostname(hostname="shadycompass.test"))
         self.engine.declare(HostnameIPv4Resolution(hostname="shadycompass.test", addr='10.1.1.1'))
         self.engine.declare(TargetHostname(hostname="shadycompass2.test"))

@@ -1,0 +1,519 @@
+{
+  "banner": {
+    "description": "WordPress Security Scanner by the WPScan Team",
+    "version": "3.8.25",
+    "authors": [
+      "@_WPScan_",
+      "@ethicalhack3r",
+      "@erwan_lr",
+      "@firefart"
+    ],
+    "sponsor": "Sponsored by Automattic - https://automattic.com/"
+  },
+  "start_time": 1714148471,
+  "start_memory": 66437120,
+  "target_url": "http://10.129.229.189/",
+  "target_ip": "10.129.229.189",
+  "effective_url": "http://10.129.229.189/",
+  "interesting_findings": [
+    {
+      "url": "http://10.129.229.189/xmlrpc.php",
+      "to_s": "XML-RPC seems to be enabled: http://10.129.229.189/xmlrpc.php",
+      "type": "xmlrpc",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "http://codex.wordpress.org/XML-RPC_Pingback_API"
+        ],
+        "metasploit": [
+          "auxiliary/scanner/http/wordpress_ghost_scanner",
+          "auxiliary/dos/http/wordpress_xmlrpc_dos",
+          "auxiliary/scanner/http/wordpress_xmlrpc_login",
+          "auxiliary/scanner/http/wordpress_pingback_access"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "http://10.129.229.189/readme.html",
+      "to_s": "WordPress readme found: http://10.129.229.189/readme.html",
+      "type": "readme",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 100,
+      "confirmed_by": {
+
+      },
+      "references": {
+
+      },
+      "interesting_entries": [
+
+      ]
+    },
+    {
+      "url": "http://10.129.229.189/wp-cron.php",
+      "to_s": "The external WP-Cron seems to be enabled: http://10.129.229.189/wp-cron.php",
+      "type": "wp_cron",
+      "found_by": "Direct Access (Aggressive Detection)",
+      "confidence": 60,
+      "confirmed_by": {
+
+      },
+      "references": {
+        "url": [
+          "https://www.iplocation.net/defend-wordpress-from-ddos",
+          "https://github.com/wpscanteam/wpscan/issues/1299"
+        ]
+      },
+      "interesting_entries": [
+
+      ]
+    }
+  ],
+  "version": {
+    "number": "5.4",
+    "release_date": "2020-03-31",
+    "status": "insecure",
+    "found_by": "Style Etag (Aggressive Detection)",
+    "confidence": 100,
+    "interesting_entries": [
+      "http://10.129.229.189/wp-admin/load-styles.php, Match: '5.4'"
+    ],
+    "confirmed_by": {
+      "Query Parameter In Install Page (Aggressive Detection)": {
+        "confidence": 100,
+        "interesting_entries": [
+          "http://10.129.229.189/wp-includes/css/dashicons.min.css?ver=5.4-alpha-47225",
+          "http://10.129.229.189/wp-includes/css/buttons.min.css?ver=5.4-alpha-47225",
+          "http://10.129.229.189/wp-admin/css/forms.min.css?ver=5.4-alpha-47225",
+          "http://10.129.229.189/wp-admin/css/l10n.min.css?ver=5.4-alpha-47225",
+          "http://10.129.229.189/wp-admin/css/install.min.css?ver=5.4-alpha-47225"
+        ]
+      }
+    },
+    "vulnerabilities": [
+
+    ]
+  },
+  "main_theme": null,
+  "plugins": {
+
+  },
+  "themes": {
+    "twentyeleven": {
+      "slug": "twentyeleven",
+      "location": "http://10.129.229.189/wp-content/themes/twentyeleven/",
+      "latest_version": "4.6",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentyeleven/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentyeleven/style.css",
+      "style_name": "Twenty Eleven",
+      "style_uri": "https://wordpress.org/themes/twentyeleven/",
+      "description": "The 2011 theme for WordPress is sophisticated, lightweight, and adaptable. Make it yours with a custom menu, header image, and background -- then go further with available theme options for light or dark color scheme, custom link colors, and three layout choices. Twenty Eleven comes equipped with a Showcase page template that transforms your front page into a showcase to show off your best content, widget support galore (sidebar, three footer areas, and a Showcase page widget area), and a custom \"Ephemera\" widget to display your Aside, Link, Quote, or Status posts. Included are styles for print and for the admin editor, support for featured images (as custom header images on posts and pages and as large images on featured \"sticky\" posts), and special styles for six different post formats.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, one-column, two-columns, left-sidebar, right-sidebar, custom-background, custom-colors, custom-header, custom-menu, editor-style, featured-image-header, featured-images, flexible-header, footer-widgets, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready",
+      "text_domain": "twentyeleven",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentyeleven/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentyfifteen": {
+      "slug": "twentyfifteen",
+      "location": "http://10.129.229.189/wp-content/themes/twentyfifteen/",
+      "latest_version": "3.7",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentyfifteen/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentyfifteen/style.css",
+      "style_name": "Twenty Fifteen",
+      "style_uri": "https://wordpress.org/themes/twentyfifteen/",
+      "description": "Our 2015 default theme is clean, blog-focused, and designed for clarity. Twenty Fifteen's simple, straightforward typography is readable on a wide variety of screen sizes, and suitable for multiple languages. We designed it using a mobile-first approach, meaning your content takes center-stage, regardless of whether your visitors arrive by smartphone, tablet, laptop, or desktop computer.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, two-columns, left-sidebar, accessibility-ready, custom-background, custom-colors, custom-header, custom-logo, custom-menu, editor-style, featured-images, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready",
+      "text_domain": "twentyfifteen",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentyfifteen/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentyfourteen": {
+      "slug": "twentyfourteen",
+      "location": "http://10.129.229.189/wp-content/themes/twentyfourteen/",
+      "latest_version": "3.9",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentyfourteen/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentyfourteen/style.css",
+      "style_name": "Twenty Fourteen",
+      "style_uri": "https://wordpress.org/themes/twentyfourteen/",
+      "description": "In 2014, our default theme lets you create a responsive magazine website with a sleek, modern design. Feature your favorite homepage content in either a grid or a slider. Use the three widget areas to customize your website, and change your content's layout with a full-width page template and a contributor page to show off your authors. Creating a magazine website with WordPress has never been easier.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, news, two-columns, three-columns, left-sidebar, right-sidebar, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, footer-widgets, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready, accessibility-ready",
+      "text_domain": "twentyfourteen",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentyfourteen/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentynineteen": {
+      "slug": "twentynineteen",
+      "location": "http://10.129.229.189/wp-content/themes/twentynineteen/",
+      "latest_version": "2.8",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentynineteen/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentynineteen/style.css",
+      "style_name": "Twenty Nineteen",
+      "style_uri": "https://wordpress.org/themes/twentynineteen/",
+      "description": "Our 2019 default theme is designed to show off the power of the block editor. It features custom styles for all the default blocks, and is built so that what you see in the editor looks like what you'll see on your website. Twenty Nineteen is designed to be adaptable to a wide range of websites, whether you’re running a photo blog, launching a new business, or supporting a non-profit. Featuring ample whitespace and modern sans-serif headlines paired with classic serif body text, it's built to be beautiful on all screen sizes.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "one-column, flexible-header, accessibility-ready, custom-colors, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, rtl-language-support, sticky-post, threaded-comments, translation-ready",
+      "text_domain": "twentynineteen",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentynineteen/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentyseventeen": {
+      "slug": "twentyseventeen",
+      "location": "http://10.129.229.189/wp-content/themes/twentyseventeen/",
+      "latest_version": "3.6",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentyseventeen/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentyseventeen/style.css",
+      "style_name": "Twenty Seventeen",
+      "style_uri": "https://wordpress.org/themes/twentyseventeen/",
+      "description": "Twenty Seventeen brings your site to life with header video and immersive featured images. With a focus on business sites, it features multiple sections on the front page as well as widgets, navigation and social menus, a logo, and more. Personalize its asymmetrical grid with a custom color scheme and showcase your multimedia content with post formats. Our default theme for 2017 works great in many languages, for any abilities, and on any device.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "one-column, two-columns, right-sidebar, flexible-header, accessibility-ready, custom-colors, custom-header, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, post-formats, rtl-language-support, sticky-post, theme-options, threaded-comments, translation-ready",
+      "text_domain": "twentyseventeen",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentyseventeen/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentysixteen": {
+      "slug": "twentysixteen",
+      "location": "http://10.129.229.189/wp-content/themes/twentysixteen/",
+      "latest_version": "3.2",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentysixteen/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentysixteen/style.css",
+      "style_name": "Twenty Sixteen",
+      "style_uri": "https://wordpress.org/themes/twentysixteen/",
+      "description": "Twenty Sixteen is a modernized take on an ever-popular WordPress layout — the horizontal masthead with an optional right sidebar that works perfectly for blogs and websites. It has custom color options with beautiful default color schemes, a harmonious fluid grid using a mobile-first approach, and impeccable polish in every detail. Twenty Sixteen will make your WordPress look beautiful everywhere.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "one-column, two-columns, right-sidebar, accessibility-ready, custom-background, custom-colors, custom-header, custom-menu, editor-style, featured-images, flexible-header, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready, blog",
+      "text_domain": "twentysixteen",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentysixteen/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentyten": {
+      "slug": "twentyten",
+      "location": "http://10.129.229.189/wp-content/themes/twentyten/",
+      "latest_version": "4.1",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentyten/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentyten/style.css",
+      "style_name": "Twenty Ten",
+      "style_uri": "https://wordpress.org/themes/twentyten/",
+      "description": "The 2010 theme for WordPress is stylish, customizable, simple, and readable -- make it yours with a custom menu, header image, and background. Twenty Ten supports six widgetized areas (two in the sidebar, four in the footer) and featured images (thumbnails for gallery posts and custom header images for posts and pages). It includes stylesheets for print and the admin Visual Editor, special styles for posts in the \"Asides\" and \"Gallery\" categories, and has an optional one-column page template that removes the sidebar.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, two-columns, custom-header, custom-background, threaded-comments, sticky-post, translation-ready, microformats, rtl-language-support, editor-style, custom-menu, flexible-header, featured-images, footer-widgets, featured-image-header",
+      "text_domain": "twentyten",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentyten/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentythirteen": {
+      "slug": "twentythirteen",
+      "location": "http://10.129.229.189/wp-content/themes/twentythirteen/",
+      "latest_version": "4.1",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentythirteen/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentythirteen/style.css",
+      "style_name": "Twenty Thirteen",
+      "style_uri": "https://wordpress.org/themes/twentythirteen/",
+      "description": "The 2013 theme for WordPress takes us back to the blog, featuring a full range of post formats, each displayed beautifully in their own unique way. Design details abound, starting with a vibrant color scheme and matching header images, beautiful typography and icons, and a flexible layout that looks great on any device, big or small.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, one-column, two-columns, right-sidebar, custom-header, custom-menu, editor-style, featured-images, footer-widgets, microformats, post-formats, rtl-language-support, sticky-post, translation-ready, accessibility-ready",
+      "text_domain": "twentythirteen",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentythirteen/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentytwelve": {
+      "slug": "twentytwelve",
+      "location": "http://10.129.229.189/wp-content/themes/twentytwelve/",
+      "latest_version": "4.2",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentytwelve/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentytwelve/style.css",
+      "style_name": "Twenty Twelve",
+      "style_uri": "https://wordpress.org/themes/twentytwelve/",
+      "description": "The 2012 theme for WordPress is a fully responsive theme that looks great on any device. Features include a front page template with its own widgets, an optional display font, styling for post formats on both index and single views, and an optional no-sidebar page template. Make it yours with a custom menu, header image, and background.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": null,
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, one-column, two-columns, right-sidebar, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, footer-widgets, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready",
+      "text_domain": "twentytwelve",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentytwelve/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    },
+    "twentytwenty": {
+      "slug": "twentytwenty",
+      "location": "http://10.129.229.189/wp-content/themes/twentytwenty/",
+      "latest_version": "2.6",
+      "last_updated": "2024-04-02T00:00:00.000Z",
+      "outdated": false,
+      "readme_url": "http://10.129.229.189/wp-content/themes/twentytwenty/readme.txt",
+      "directory_listing": false,
+      "error_log_url": null,
+      "style_url": "http://10.129.229.189/wp-content/themes/twentytwenty/style.css",
+      "style_name": "Twenty Twenty",
+      "style_uri": "https://wordpress.org/themes/twentytwenty/",
+      "description": "Our default theme for 2020 is designed to take full advantage of the flexibility of the block editor. Organizations and businesses have the ability to create dynamic landing pages with endless layouts using the group and column blocks. The centered content column and fine-tuned typography also makes it perfect for traditional blogs. Complete editor styles give you a good idea of what your content will look like, even before you publish. You can give your site a personal touch by changing the background colors and the accent color in the Customizer. The colors of all elements on your site are automatically calculated based on the colors you pick, ensuring a high, accessible color contrast for your visitors.",
+      "author": "the WordPress team",
+      "author_uri": "https://wordpress.org/",
+      "template": "Cover Template",
+      "license": "GNU General Public License v2 or later",
+      "license_uri": "http://www.gnu.org/licenses/gpl-2.0.html",
+      "tags": "blog, one-column, custom-background, custom-colors, custom-logo, custom-menu, editor-style, featured-images, footer-widgets, full-width-template, rtl-language-support, sticky-post, theme-options, threaded-comments, translation-ready, block-styles, wide-blocks, accessibility-ready",
+      "text_domain": "twentytwenty",
+      "found_by": "Known Locations (Aggressive Detection)",
+      "confidence": 80,
+      "interesting_entries": [
+        "http://10.129.229.189/wp-content/themes/twentytwenty/, status: 500"
+      ],
+      "confirmed_by": {
+
+      },
+      "vulnerabilities": [
+
+      ],
+      "version": null,
+      "parents": [
+
+      ]
+    }
+  },
+  "timthumbs": {
+
+  },
+  "config_backups": {
+
+  },
+  "db_exports": {
+
+  },
+  "medias": {
+
+  },
+  "users": {
+    "user1": {
+      "id": 1,
+      "found_by": "Wp Json Api (Aggressive Detection)",
+      "confidence": 100,
+      "interesting_entries": [
+        "http://10.129.229.189/index.php/wp-json/wp/v2/users/?per_page=100&page=1"
+      ],
+      "confirmed_by": {
+        "Author Id Brute Forcing - Author Pattern (Aggressive Detection)": {
+          "confidence": 100,
+          "interesting_entries": [
+
+          ]
+        },
+        "Login Error Messages (Aggressive Detection)": {
+          "confidence": 100,
+          "interesting_entries": [
+
+          ]
+        }
+      }
+    }
+  },
+  "vuln_api": {
+    "error": "No WPScan API Token given, as a result vulnerability data has not been output.\nYou can get a free API token with 25 daily requests by registering at https://wpscan.com/register"
+  },
+  "stop_time": 1714148764,
+  "elapsed": 293,
+  "requests_done": 30216,
+  "cached_requests": 16,
+  "data_sent": 8050208,
+  "data_sent_humanised": "7.677 MB",
+  "data_received": 5186247,
+  "data_received_humanised": "4.946 MB",
+  "used_memory": 370622464,
+  "used_memory_humanised": "353.453 MB"
+}

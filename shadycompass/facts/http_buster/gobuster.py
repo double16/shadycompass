@@ -9,7 +9,7 @@ GOBUSTER_DIR_FILENAME_PATTERN = re.compile(r'gobuster-(\d+)-([^/\\]+[.][a-z]{2,6
 GOBUSTER_DIR_PATTERN = re.compile(r'(/\S+)\s+.*Status:\s+\d+.*Size:\s+\d+', re.IGNORECASE)
 
 GOBUSTER_VHOST_FILENAME_PATTERN = re.compile(r'gobuster-vhost-(\d+)-([^/\\]+[.][a-z]{2,6})(?:-[\w-]+?)?[.]\w{3,5}$')
-GOBUSTER_VHOST_PATTERN = re.compile(r'Found:\s+(\S+)\s+Status:\s+(\d+)', re.IGNORECASE)
+GOBUSTER_VHOST_PATTERN = re.compile(r'Found:\s+(\S+?)(:\d+)?\s+Status:\s+(\d+)', re.IGNORECASE)
 
 
 class GobusterReader(FactReader):
@@ -51,9 +51,13 @@ class GobusterReader(FactReader):
             for line in remove_terminal_escapes(file.readlines()):
                 m = GOBUSTER_VHOST_PATTERN.search(line)
                 if m:
-                    status = int(m.group(2))
+                    status = int(m.group(3))
                     if status < 400:
-                        result.append(VirtualHostname(hostname=m.group(1), port=port, secure=secure))
+                        if m.group(2):
+                            my_port = int(m.group(2)[1:])
+                        else:
+                            my_port = port
+                        result.append(VirtualHostname(hostname=m.group(1), port=my_port, secure=secure))
         return result
 
 

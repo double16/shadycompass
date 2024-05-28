@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.94SVN scan initiated Fri Apr 19 14:06:16 2024 as: nmap -p- -sV -sC -oN tcp-all.txt -oX tcp-all.xml 10.129.229.189 -->
+<nmaprun scanner="nmap" args="nmap -p- -sV -sC -oN tcp-all.txt -oX tcp-all.xml 10.129.229.189" start="1713553576"
+         startstr="Fri Apr 19 14:06:16 2024" version="7.94SVN" xmloutputversion="1.05">
+    <scaninfo type="connect" protocol="tcp" numservices="65535" services="1-65535"/>
+    <verbose level="0"/>
+    <debugging level="0"/>
+    <hosthint>
+        <status state="up" reason="unknown-response" reason_ttl="0"/>
+        <address addr="10.129.229.189" addrtype="ipv4"/>
+        <hostnames>
+        </hostnames>
+    </hosthint>
+    <taskprogress task="Connect Scan" time="1713555641" percent="84.14" remaining="390" etc="1713556030"/>
+    <taskprogress task="Connect Scan" time="1713555846" percent="88.03" remaining="309" etc="1713556155"/>
+    <taskprogress task="Connect Scan" time="1713556380" percent="98.18" remaining="52" etc="1713556432"/>
+    <taskprogress task="Connect Scan" time="1713556419" percent="98.91" remaining="32" etc="1713556450"/>
+    <host starttime="1713553576" endtime="1713556521">
+        <status state="up" reason="syn-ack" reason_ttl="0"/>
+        <address addr="10.129.229.189" addrtype="ipv4"/>
+        <hostnames>
+        </hostnames>
+        <ports>
+            <extraports state="closed" count="65529">
+                <extrareasons reason="conn-refused" count="65529" proto="tcp"
+                              ports="1-21,23-79,81-2820,2822-4999,5001-11933,11935-14447,14449-65535"/>
+            </extraports>
+            <port protocol="tcp" portid="80">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service name="http" product="Apache httpd" version="2.4.29" extrainfo="(Ubuntu)" method="probed"
+                         conf="10">
+                    <cpe>cpe:/a:apache:http_server:2.4.29</cpe>
+                </service>
+                <script id="http-server-header" output="Apache/2.4.29 (Ubuntu)">
+                    <elem>Apache/2.4.29 (Ubuntu)</elem>
+                </script>
+                <script id="http-generator" output="WordPress 5.4-alpha-47225"/>
+            </port>
+        </ports>
+        <times srtt="36119" rttvar="1736" to="100000"/>
+    </host>
+    <runstats>
+        <finished time="1713556521" timestr="Fri Apr 19 14:55:21 2024"
+                  summary="Nmap done at Fri Apr 19 14:55:21 2024; 1 IP address (1 host up) scanned in 2945.46 seconds"
+                  elapsed="2945.46" exit="success"/>
+        <hosts up="1" down="0" total="1"/>
+    </runstats>
+</nmaprun>

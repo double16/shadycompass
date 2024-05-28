@@ -18,7 +18,7 @@ class LdapScanTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.ldap_scanner, addr='10.1.1.1'),
                      self.engine)
 
-    def test_ldapscan_two_target(self):
+    def test_ldapscan_two_targets(self):
         self.engine.declare(LdapService(addr='10.1.1.1', port=389, secure=False))
         self.engine.declare(LdapService(addr='10.1.1.2', port=636, secure=True))
         self.engine.run()

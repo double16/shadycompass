@@ -50,3 +50,7 @@ METHOD_ASREP_ROASTING = [
 METHOD_LDAP = [
     'https://book.hacktricks.xyz/network-services-pentesting/pentesting-ldap',
 ]
+
+METHOD_WORDPRESS = [
+    'https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/wordpress',
+]

@@ -21,7 +21,7 @@ class ImapScanTest(RulesBase):
         assertFactIn(ScanNeeded(category=ToolCategory.imap_scanner, addr='10.1.1.1', port=993, secure=True),
                      self.engine)
 
-    def test_imapscan_two_target(self):
+    def test_imapscan_two_targets(self):
         self.engine.declare(ImapService(addr='10.1.1.1', port=143, secure=False))
         self.engine.declare(ImapService(addr='10.1.1.1', port=993, secure=True))
         self.engine.declare(ImapService(addr='10.1.1.2', port=143, secure=False))

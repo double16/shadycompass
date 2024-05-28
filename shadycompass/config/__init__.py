@@ -32,6 +32,7 @@ class ToolCategory(object):
     asrep_roaster = 'asrep_roaster'
     kerberoaster = 'kerberoaster'
     timeroaster = 'timeroaster'
+    wordpress_scanner = 'wordpress_scanner'
     etc_hosts = 'hosts'
     docs = 'docs'
 

@@ -10,7 +10,8 @@ from experta import Fact, Field
 from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, METHOD_DNS
 
 HTTP_PATTERN = re.compile(r'https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(%[0-9a-fA-F][0-9a-fA-F]))+')
-PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
+PRODUCTS_PATTERN = re.compile(r'([A-Za-z0-9.-]+)/([0-9]+[.][A-Za-z0-9.]+)')
+PRODUCT_PATTERN = re.compile(r'([A-Za-z0-9.-]+)[/ ]([0-9]+[.][A-Za-z0-9.-]+)')
 IPV4_PATTERN = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
 IPV6_PATTERN = re.compile(
     r'(([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:)|([0-9A-Fa-f]{1,4}:){1,6}:([0-9A-Fa-f]{1,4}|:){1,5}|([0-9A-Fa-f]{1,4}:){1,5}(:[0-9A-Fa-f]{1,4}){1,2}|([0-9A-Fa-f]{1,4}:){1,4}(:[0-9A-Fa-f]{1,4}){1,3}|([0-9A-Fa-f]{1,4}:){1,3}(:[0-9A-Fa-f]{1,4}){1,4}|([0-9A-Fa-f]{1,4}:){1,2}(:[0-9A-Fa-f]{1,4}){1,5}|([0-9A-Fa-f]{1,4}:)((:[0-9A-Fa-f]{1,4}){1,6}|:)|:((:[0-9A-Fa-f]{1,4}){1,7}|:))')
@@ -984,12 +985,18 @@ class Product(Fact):
         return self.get_product()
 
 
-def parse_products(value: str, **kwargs) -> list[Product]:
+def parse_products(value: str, multiple=True, **kwargs) -> list[Product]:
     if not value:
         return []
     result = set()
-    for match in re.findall(PRODUCT_PATTERN, value):
-        result.add(Product(product=match[0].lower(), version=match[1].lower(), **kwargs))
+    if multiple:
+        for match in re.findall(PRODUCTS_PATTERN, value):
+            result.add(Product(product=match[0].lower(), version=match[1].lower(), **kwargs))
+    else:
+        match = re.search(PRODUCT_PATTERN, value)
+        if match:
+            result.add(Product(product=match[1].lower(), version=match[2].lower(), **kwargs))
+
     return list(result)
 
 
