@@ -20,6 +20,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  latest_tag: latest
 
 jobs:
   test:
@@ -161,6 +162,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Update latest tag
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          git tag -d ${{ env.latest_tag }} || true
+          git push origin :refs/tags/${{ env.latest_tag }} || true
+          git tag ${{ env.latest_tag }}
+          git push origin ${{ env.latest_tag }}
+
       - name: Download exe
         uses: actions/download-artifact@v4
         with:
@@ -172,10 +181,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: "Development Build"
-          tag_name: latest
+          tag_name: ${{ env.latest_tag }}
           prerelease: true
           fail_on_unmatched_files: true
-          generate_release_notes: true
+          generate_release_notes: false
           files: |
             dist/shadycompass_${{github.ref_name}}_linux_amd64
             dist/shadycompass_${{github.ref_name}}_macos
@@ -204,6 +213,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
+          fail_on_unmatched_files: true
           generate_release_notes: true
           files: |
             dist/shadycompass_${{github.ref_name}}_linux_amd64
