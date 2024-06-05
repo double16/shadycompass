@@ -27,8 +27,7 @@ class KerbruteRules(IRules, ABC):
 
     # kerbrute --safe passwordspray -d shadycompass.test --dc dc.shadycompass.test users 'Passw0rd!' >kerbrute-passwordspray-shadycompass.test.txt
 
-    def _declare_kerbrute_asrep_roast(self, f1: ScanNeeded, ratelimit: RateLimitEnable = None,
-                                      domain: WindowsDomain = None):
+    def _declare_kerbrute_asrep_roast(self, f1: ScanNeeded, domain: WindowsDomain, ratelimit: RateLimitEnable = None):
         addr = f1.get_addr()
         addr_file_name_part = f'-{addr}'
         if domain:
@@ -64,26 +63,6 @@ class KerbruteRules(IRules, ABC):
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
-        TOOL_PREF(ToolCategory.asrep_roaster, kerbrute_tool_name),
-        TOOL_CONF(ToolCategory.asrep_roaster, kerbrute_tool_name),
-        NOT(RateLimitEnable(addr=MATCH.addr)),
-        NOT(WindowsDomain(netbios_domain_name=MATCH.netbios_domain_name))
-    )
-    def run_kerbrute_asrep_roast(self, f1: ScanNeeded):
-        self._declare_kerbrute_asrep_roast(f1)
-
-    @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
-        AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
-        TOOL_PREF(ToolCategory.asrep_roaster, kerbrute_tool_name),
-        TOOL_CONF(ToolCategory.asrep_roaster, kerbrute_tool_name),
-        NOT(WindowsDomain(netbios_domain_name=MATCH.netbios_domain_name))
-    )
-    def run_kerbrute_asrep_roast_ratelimit(self, f1: ScanNeeded, ratelimit: RateLimitEnable):
-        self._declare_kerbrute_asrep_roast(f1, ratelimit=ratelimit)
-
-    @Rule(
-        AS.f1 << ScanNeeded(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
         AS.domain << WindowsDomain(netbios_domain_name=MATCH.netbios_domain_name),
         TOOL_PREF(ToolCategory.asrep_roaster, kerbrute_tool_name),
         TOOL_CONF(ToolCategory.asrep_roaster, kerbrute_tool_name),
@@ -101,4 +80,4 @@ class KerbruteRules(IRules, ABC):
     )
     def run_kerbrute_asrep_roast_domain_ratelimit(self, f1: ScanNeeded, domain: WindowsDomain,
                                                   ratelimit: RateLimitEnable):
-        self._declare_kerbrute_asrep_roast(f1, ratelimit=ratelimit, domain=domain)
+        self._declare_kerbrute_asrep_roast(f1, domain=domain, ratelimit=ratelimit)

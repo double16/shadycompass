@@ -54,13 +54,21 @@ def tool_category_priority(category: str) -> int:
             return 800
         case ToolCategory.virtualhost_scanner:
             return 700
-        case ToolCategory.http_spider:
-            return 600
+        case ToolCategory.wordpress_scanner:
+            return 602
         case ToolCategory.http_public_spider:
             return 601
+        case ToolCategory.http_spider:
+            return 600
         case ToolCategory.http_buster:
             return 500
-        case ToolCategory.asrep_roaster, ToolCategory.kerberoaster, ToolCategory.timeroaster:
+        case ToolCategory.asrep_roaster:
+            return 650
+        case ToolCategory.kerberoaster:
+            return 650
+        case ToolCategory.timeroaster:
+            return 650
+        case ToolCategory.ldap_scanner:
             return 650
         case ToolCategory.smb_scanner:
             return 650

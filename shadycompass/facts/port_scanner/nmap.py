@@ -9,7 +9,7 @@ from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
     ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username, \
-    resolve_unescaped_encoding, TargetHostname, VirtualHostname
+    resolve_unescaped_encoding, TargetHostname, VirtualHostname, TargetDomain
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -172,7 +172,7 @@ class NmapXmlFactReader(FactReader):
                     if product and 'Active Directory' in product:
                         ad_kwargs = dict(hostname=hostname, netbios_computer_name=hostname)
 
-                        if windows_domain:
+                        if windows_domain is not None:
                             dns_domain_name = windows_domain.get_dns_domain_name()
                             if windows_domain.get_dns_tree_name():
                                 ad_kwargs['dns_tree_name'] = windows_domain.get_dns_tree_name()
@@ -189,6 +189,11 @@ class NmapXmlFactReader(FactReader):
                             hostname = hostname + '.' + dns_domain_name
                             ad_kwargs['hostname'] = hostname
                         result.extend(spread_addrs(WindowsDomainController, addrs, **ad_kwargs))
+                        if dns_domain_name:
+                            result.append(TargetDomain(domain=dns_domain_name))
+                            if windows_domain is None:
+                                result.append(WindowsDomain(dns_domain_name=dns_domain_name,
+                                                            domain_controller_hostname=hostname))
 
             # Look for additional host names, such as http virtual hosts
             for redirect_el in port_el.findall(".//elem[@key='redirect_url']"):
