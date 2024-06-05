@@ -4,7 +4,7 @@ import unittest
 
 from shadycompass import ShadyCompassEngine
 from shadycompass.config import ConfigFactReader, ConfigFact, SECTION_TOOLS, ToolCategory, set_global_config_path, \
-    ToolChoiceNeeded, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended
+    ToolChoiceNeeded, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended, tool_category_priority
 from shadycompass.facts import HttpBustingNeeded
 from tests.tests import assertFactIn, assertFactNotIn
 
@@ -156,3 +156,16 @@ class ConfigRulesTest(unittest.TestCase):
         assertFactNotIn(t2, self.engine)
         assertFactNotIn(t3, self.engine)
         assertFactIn(t4, self.engine)
+
+
+class ToolCategoryTest(unittest.TestCase):
+
+    def __init__(self, methodName: str = ...):
+        super().__init__(methodName)
+
+    def test_tool_category_priority(self):
+        for k, v in ToolCategory.__dict__.items():
+            if k.startswith('__') or not isinstance(v, str):
+                continue
+            priority = tool_category_priority(v)
+            self.assertNotEqual(100, priority, f"ToolCategory.{k} missing in tool_category_priority(...) function")

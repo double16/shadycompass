@@ -153,13 +153,7 @@ class KerbruteRulesNATest(RulesBase):
         self.engine.declare(Kerberos5SecTcpService(addr='10.1.1.1', port=88))
         self.engine.run()
         assertFactIn(ScanNeeded(category=ToolCategory.asrep_roaster, addr='10.1.1.1'), self.engine)
-        assertFactIn(ToolRecommended(
+        assertFactNotIn(ToolRecommended(
             category=ToolCategory.asrep_roaster,
             name=KerbruteRules.kerbrute_tool_name,
-            command_line=[
-                '--safe', '--dc', '10.1.1.1',
-                'userenum',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
-                '>kerbrute-userenum-10.1.1.1.txt'
-            ],
         ), self.engine)

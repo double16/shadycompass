@@ -5,7 +5,7 @@ from shadycompass.facts import HostnameIPv4Resolution, TargetIPv4Address, Target
     DomainTcpIpService, HttpService, WinRMService, Kerberos5SecTcpService, MicrosoftRpcService, NetbiosSessionService, \
     LdapService, SmbService, RdpService, MsmqService, Product, OSTYPE_WINDOWS, DotNetMessageFramingService, \
     MicrosoftRpcHttpService, SshService, ScanPresent, OperatingSystem, WindowsDomain, WindowsDomainController, \
-    TlsCertificate, DockerRegistryService, VirtualHostname
+    TlsCertificate, DockerRegistryService, VirtualHostname, TargetDomain
 from shadycompass.facts.port_scanner.nmap import NmapXmlFactReader
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, facts_str
@@ -24,6 +24,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
             facts)
         assertFactIn(TargetIPv4Address(addr='10.129.229.189'), facts)
         assertFactIn(TargetHostname(hostname='shadycompass.test'), facts, times=-1)
+        assertFactIn(TargetDomain(domain='shadycompass.test'), facts, times=-1)
         assertFactIn(HostnameIPv4Resolution(hostname='shadycompass.test', addr='10.129.229.189', implied=True), facts)
         assertFactIn(SshService(addr='10.129.229.189', port=22), facts)
         assertFactIn(DomainTcpIpService(addr='10.129.229.189', port=53), facts)
@@ -91,7 +92,7 @@ class NmapXmlFactReaderTest(unittest.TestCase):
             subjects=['DC.shadycompass.test'],
             issuer='DC',
         ), facts, times=-1)
-        self.assertEqual(88, len(facts), facts_str(facts))
+        self.assertEqual(90, len(facts), facts_str(facts))
 
     def test_ignore_not_xml(self):
         facts = self.reader.read_facts('tests/fixtures/nmap/all/open-ports.txt')

@@ -54,6 +54,17 @@ $
 
 ## Run it!
 
+### Binaries
+
+Binaries are provided using `pyinstaller` for a few systems as downloads in the release pages on GitHub. For example,
+on Linux:
+
+```shell
+$ sudo curl -o /usr/local/bin/shadycompass -L https://github.com/double16/shadycompass/releases/download/latest/shadycompass_main_linux_amd64
+$ sudo chmod +x /usr/local/bin/shadycompass
+$ shadycompass /path/to/output
+```
+
 ### Source
 
 Running it from source gets the latest but requires python3 and installing some packages:
