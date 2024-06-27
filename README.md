@@ -129,6 +129,8 @@ users
     displays the users that have been found
 emails
     displays the emails that have been found
+reload
+    reload from all files, only needed if recommendations aren't updated properly
 ```
 
 ### info 
@@ -427,9 +429,14 @@ tests/fixtures shadycompass > emails
 - bin@shadycompass.test
 ```
 
+### reload
+
+Shadycompass is designed to update recommendations based on changes in files. Sometimes the logic isn't quite right.
+Run the `reload` command to reload all files.
+
 ### facts
 
-Displays the things shady compass knows about to make recommendations. This is used for debugging purposes.
+Displays the things shadycompass knows about to make recommendations. This is used for debugging purposes.
 
 ## Configuration
 

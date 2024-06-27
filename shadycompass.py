@@ -23,7 +23,7 @@ def shadycompass_cli(args: list[str]) -> int:
     history = InMemoryHistory()
     ops = ShadyCompassOps(parsed.directories)
     commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
-                'services', 'products', 'urls', 'users', 'emails']
+                'services', 'products', 'urls', 'users', 'emails', 'reload']
     config_names = {'ratelimit', 'production'}
     tools = set(map(lambda e: e.get_name(), filter(lambda e: isinstance(e, ToolAvailable), ops.engine.facts.values())))
     completer = NestedCompleter.from_nested_dict({
@@ -122,6 +122,9 @@ def shadycompass_cli(args: list[str]) -> int:
                     ops.show_users(user_command)
                 elif user_command[0] == 'emails':
                     ops.show_emails(user_command)
+                elif user_command[0] == 'reload':
+                    ops.reload()
+                    break
 
                 else:
                     print(f'''
@@ -162,6 +165,8 @@ users
     displays the users that have been found
 emails
     displays the emails that have been found
+reload
+    reload from all files, only needed if recommendations aren't updated properly
 facts
     show current facts (useful for debugging)
 ''')

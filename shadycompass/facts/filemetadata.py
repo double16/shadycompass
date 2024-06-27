@@ -48,6 +48,9 @@ class FileMetadataCache:
             self.files.pop(path)
         return changes
 
+    def reset(self):
+        self.files.clear()
+
     def _check_file_change(self, file_path: str) -> list[str]:
         if file_path in self.files:
             file_meta_data = self.files[file_path]

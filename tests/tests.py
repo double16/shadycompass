@@ -55,3 +55,22 @@ def assertFactNotIn(fact: Fact, facts_source):
     for f1 in facts:
         if _is_match(fact, f1):
             raise AssertionError(f"{repr(fact)} found in:\n{facts_str(_get_facts_by_type(fact, facts))}")
+
+
+def assertFactsEqual(expected: list[Fact], facts_source):
+    if isinstance(facts_source, KnowledgeEngine):
+        actual = list(facts_source.facts.values())
+    else:
+        actual = list(facts_source)
+    left = expected.copy()
+    right = actual.copy()
+    for left_fact in left.copy():
+        for right_idx, right_fact in enumerate(right):
+            if left_fact.as_dict() == right_fact.as_dict():
+                right.pop(right_idx)
+                left.remove(left_fact)
+                break
+
+    if left or right:
+        raise AssertionError(
+            f"expected facts != actual facts\nExpected, not in actual:\n{facts_str(left)}\nActual, not in expected:\n{facts_str(right)}")
