@@ -47,16 +47,16 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r dev_requirements.txt
-          PYTHONPATH=$(pwd) pytest tests --junitxml=junit/test-results-${{ matrix.python-version }}.xml --cov=shadycompass --cov-branch --cov-report=xml:coverage-${{ matrix.python-version }}.xml --cov-report=html:htmlcov/${{ matrix.python-version }} --cov-report=term-missing
+          RESULT_DIR="test-results/${{ matrix.python-version }}"
+          mkdir -p "${RESULT_DIR}"
+          PYTHONPATH=$(pwd) pytest tests --junitxml=${RESULT_DIR}/test-results.xml --cov=shadycompass --cov-branch --cov-report=xml:${RESULT_DIR}/coverage.xml --cov-report=html:${RESULT_DIR}/htmlcov --cov-report=term-missing
 
       - name: Upload pytest test results
         uses: actions/upload-artifact@v4
         with:
           name: pytest-results-${{ matrix.python-version }}
           path: |
-            junit/test-results-${{ matrix.python-version }}.xml
-            coverage-${{ matrix.python-version }}.xml
-            htmlcov/${{ matrix.python-version }}
+            test-results/${{ matrix.python-version }}
         # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}
 
