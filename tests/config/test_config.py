@@ -2,11 +2,22 @@ import os
 import tempfile
 import unittest
 
+from parameterized import parameterized
+
 from shadycompass import ShadyCompassEngine
 from shadycompass.config import ConfigFactReader, ConfigFact, SECTION_TOOLS, ToolCategory, set_global_config_path, \
-    ToolChoiceNeeded, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended, tool_category_priority
+    ToolChoiceNeeded, PreferredTool, ToolAvailable, OPTION_VALUE_ALL, ToolRecommended, tool_category_priority, \
+    SECTION_WORDLISTS, OPTION_WORDLIST_FILE, PreferredWordlist, OPTION_WORDLIST_USERNAME, OPTION_WORDLIST_PASSWORD, \
+    OPTION_WORDLIST_SUBDOMAIN
 from shadycompass.facts import HttpBustingNeeded
 from tests.tests import assertFactIn, assertFactNotIn
+
+WORDLIST_CATEGORIES = [
+    OPTION_WORDLIST_FILE,
+    OPTION_WORDLIST_USERNAME,
+    OPTION_WORDLIST_PASSWORD,
+    OPTION_WORDLIST_SUBDOMAIN,
+]
 
 
 class ConfigFactReaderTest(unittest.TestCase):
@@ -136,10 +147,8 @@ class ConfigRulesTest(unittest.TestCase):
         t2 = ToolRecommended(category=ToolCategory.http_buster, name='wfuzz')
         t3 = ToolRecommended(category=ToolCategory.http_buster, name='gobuster')
         t4 = ToolRecommended(category=ToolCategory.http_buster, name='feroxbuster')
-        cAll = ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value=OPTION_VALUE_ALL, global0=False)
-        cFerox = ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value='feroxbuster', global0=False)
 
-        self.engine.declare(cAll)
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, OPTION_VALUE_ALL, False)
         self.engine.declare(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test'))
         self.engine.run()
         assertFactIn(t1, self.engine)
@@ -147,8 +156,7 @@ class ConfigRulesTest(unittest.TestCase):
         assertFactIn(t3, self.engine)
         assertFactIn(t4, self.engine)
 
-        self.engine.retract(cAll)
-        self.engine.declare(cFerox)
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, 'feroxbuster', False)
         self.engine.run()
         assertFactIn(PreferredTool(category=ToolCategory.http_buster, name='feroxbuster'), self.engine)
         assertFactNotIn(PreferredTool(category=ToolCategory.http_buster, name=OPTION_VALUE_ALL), self.engine)
@@ -156,6 +164,49 @@ class ConfigRulesTest(unittest.TestCase):
         assertFactNotIn(t2, self.engine)
         assertFactNotIn(t3, self.engine)
         assertFactIn(t4, self.engine)
+
+    def test_default_wordllist_file(self):
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=OPTION_WORDLIST_FILE, path='raft-large-files.txt', default=True),
+                     self.engine)
+
+    def test_default_wordllist_username(self):
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=OPTION_WORDLIST_USERNAME, path='xato-net-10-million-usernames.txt',
+                                       default=True), self.engine)
+
+    def test_default_wordllist_password(self):
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=OPTION_WORDLIST_PASSWORD, path='rockyou.txt', default=True),
+                     self.engine)
+
+    def test_default_wordllist_subdomain(self):
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=OPTION_WORDLIST_SUBDOMAIN, path='subdomains-top1million-110000.txt',
+                                       default=True), self.engine)
+
+    @parameterized.expand(WORDLIST_CATEGORIES)
+    def test_preferred_wordlist_global(self, category: str):
+        self.engine.declare(
+            ConfigFact(section=SECTION_WORDLISTS, option=category, value='wordlist1.txt', global0=True))
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=category, path='wordlist1.txt', default=False), self.engine)
+
+    @parameterized.expand(WORDLIST_CATEGORIES)
+    def test_preferred_wordlist_local(self, category: str):
+        self.engine.declare(
+            ConfigFact(section=SECTION_WORDLISTS, option=category, value='wordlist2.txt', global0=False))
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=category, path='wordlist2.txt', default=False), self.engine)
+
+    @parameterized.expand(WORDLIST_CATEGORIES)
+    def test_preferred_wordlist_local_over_global(self, category: str):
+        self.engine.declare(
+            ConfigFact(section=SECTION_WORDLISTS, option=category, value='wordlist1.txt', global0=True))
+        self.engine.declare(
+            ConfigFact(section=SECTION_WORDLISTS, option=category, value='wordlist2.txt', global0=False))
+        self.engine.run()
+        assertFactIn(PreferredWordlist(category=category, path='wordlist2.txt', default=False), self.engine)
 
 
 class ToolCategoryTest(unittest.TestCase):

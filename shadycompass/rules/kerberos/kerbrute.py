@@ -1,10 +1,10 @@
 from abc import ABC
-
-from experta import DefFacts, Rule, AS, NOT, MATCH
 from math import floor
 
+from experta import DefFacts, Rule, AS, NOT, MATCH
+
 from shadycompass import ToolAvailable
-from shadycompass.config import ToolCategory
+from shadycompass.config import ToolCategory, PreferredWordlist, OPTION_WORDLIST_USERNAME
 from shadycompass.facts import ScanNeeded, RateLimitEnable, WindowsDomain
 from shadycompass.rules.conditions import TOOL_PREF, TOOL_CONF
 from shadycompass.rules.irules import IRules
@@ -27,7 +27,8 @@ class KerbruteRules(IRules, ABC):
 
     # kerbrute --safe passwordspray -d shadycompass.test --dc dc.shadycompass.test users 'Passw0rd!' >kerbrute-passwordspray-shadycompass.test.txt
 
-    def _declare_kerbrute_asrep_roast(self, f1: ScanNeeded, domain: WindowsDomain, ratelimit: RateLimitEnable = None):
+    def _declare_kerbrute_asrep_roast(self, f1: ScanNeeded, domain: WindowsDomain, ratelimit: RateLimitEnable = None,
+                                      wordlist: PreferredWordlist = None):
         addr = f1.get_addr()
         addr_file_name_part = f'-{addr}'
         if domain:
@@ -49,7 +50,7 @@ class KerbruteRules(IRules, ABC):
             ],
         )
         command_line.extend([
-            '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+            wordlist.get_path(),
             f'>{self.kerbrute_tool_name}-userenum{addr_file_name_part}.txt',
         ])
         self.recommend_tool(
@@ -64,20 +65,22 @@ class KerbruteRules(IRules, ABC):
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
         AS.domain << WindowsDomain(netbios_domain_name=MATCH.netbios_domain_name),
+        AS.wordlist << PreferredWordlist(category=OPTION_WORDLIST_USERNAME),
         TOOL_PREF(ToolCategory.asrep_roaster, kerbrute_tool_name),
         TOOL_CONF(ToolCategory.asrep_roaster, kerbrute_tool_name),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
-    def run_kerbrute_asrep_roast_domain(self, f1: ScanNeeded, domain: WindowsDomain):
-        self._declare_kerbrute_asrep_roast(f1, domain=domain)
+    def run_kerbrute_asrep_roast_domain(self, f1: ScanNeeded, domain: WindowsDomain, wordlist: PreferredWordlist):
+        self._declare_kerbrute_asrep_roast(f1, domain=domain, wordlist=wordlist)
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.asrep_roaster, addr=MATCH.addr),
         AS.domain << WindowsDomain(netbios_domain_name=MATCH.netbios_domain_name),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
+        AS.wordlist << PreferredWordlist(category=OPTION_WORDLIST_USERNAME),
         TOOL_PREF(ToolCategory.asrep_roaster, kerbrute_tool_name),
         TOOL_CONF(ToolCategory.asrep_roaster, kerbrute_tool_name),
     )
     def run_kerbrute_asrep_roast_domain_ratelimit(self, f1: ScanNeeded, domain: WindowsDomain,
-                                                  ratelimit: RateLimitEnable):
-        self._declare_kerbrute_asrep_roast(f1, domain=domain, ratelimit=ratelimit)
+                                                  ratelimit: RateLimitEnable, wordlist: PreferredWordlist):
+        self._declare_kerbrute_asrep_roast(f1, domain=domain, ratelimit=ratelimit, wordlist=wordlist)

@@ -9,6 +9,8 @@ from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.history import InMemoryHistory
 
 from shadycompass import ShadyCompassOps, get_local_config_path, get_global_config_path, ToolAvailable
+from shadycompass.config import OPTION_RATELIMIT, OPTION_PRODUCTION, SECTION_WORDLISTS, OPTION_WORDLIST_FILE, \
+    OPTION_WORDLIST_USERNAME, OPTION_WORDLIST_PASSWORD, OPTION_WORDLIST_SUBDOMAIN
 
 
 def shadycompass_cli(args: list[str]) -> int:
@@ -23,27 +25,33 @@ def shadycompass_cli(args: list[str]) -> int:
     history = InMemoryHistory()
     ops = ShadyCompassOps(parsed.directories)
     commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
-                'services', 'products', 'urls', 'users', 'emails']
-    config_names = {'ratelimit', 'production'}
+                'services', 'products', 'urls', 'users', 'emails', 'reload']
+    config_names = {
+        OPTION_RATELIMIT, OPTION_PRODUCTION,
+        SECTION_WORDLISTS + '.' + OPTION_WORDLIST_FILE, SECTION_WORDLISTS + '.' + OPTION_WORDLIST_SUBDOMAIN,
+        SECTION_WORDLISTS + '.' + OPTION_WORDLIST_USERNAME, SECTION_WORDLISTS + '.' + OPTION_WORDLIST_PASSWORD,
+    }
+    config_dict = {name: None for name in config_names}
     tools = set(map(lambda e: e.get_name(), filter(lambda e: isinstance(e, ToolAvailable), ops.engine.facts.values())))
+    tools_dict = {tool: None for tool in tools}
     completer = NestedCompleter.from_nested_dict({
         **{command:None for command in commands},
         'use': {
             'global': tools,
-            **{tool: None for tool in tools},
+            **tools_dict,
         },
         'option': {
             'global': tools,
-            **{tool: None for tool in tools},
+            **tools_dict,
         },
         'info': tools,
         'set': {
             'global': config_names,
-            **{name: None for name in config_names},
+            **config_dict,
         },
         'unset': {
             'global': config_names,
-            **{name: None for name in config_names},
+            **config_dict,
         },
     })
 
@@ -122,6 +130,9 @@ def shadycompass_cli(args: list[str]) -> int:
                     ops.show_users(user_command)
                 elif user_command[0] == 'emails':
                     ops.show_emails(user_command)
+                elif user_command[0] == 'reload':
+                    ops.reload()
+                    break
 
                 else:
                     print(f'''
@@ -162,6 +173,8 @@ users
     displays the users that have been found
 emails
     displays the emails that have been found
+reload
+    reload from all files, only needed if recommendations aren't updated properly
 facts
     show current facts (useful for debugging)
 ''')

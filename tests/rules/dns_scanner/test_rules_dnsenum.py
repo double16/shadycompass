@@ -1,5 +1,5 @@
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, \
-    OPTION_RATELIMIT, OPTION_PRODUCTION
+    OPTION_RATELIMIT, OPTION_PRODUCTION, SECTION_WORDLISTS, OPTION_WORDLIST_SUBDOMAIN
 from shadycompass.facts import ScanNeeded, ScanPresent, TargetDomain, TargetIPv4Address, DomainUdpIpService
 from shadycompass.rules.dns_scanner.dnsenum import DnsEnumRules
 from tests.rules.base import RulesBase
@@ -22,7 +22,7 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass.test',
+                '-f', 'subdomains-top1million-110000.txt', 'shadycompass.test',
             ],
         ), self.engine)
         self.engine.declare(ScanPresent(category=ToolCategory.dns_scanner, addr='10.129.229.189', port=53,
@@ -45,8 +45,8 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '--threads', '1',
+                '-f', 'subdomains-top1million-110000.txt',
                 'shadycompass.test',
             ],
         ), self.engine)
@@ -65,7 +65,7 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '8.8.8.8',
                 '--enum',
                 '-o', 'dnsenum-8.8.8.8-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass.test',
+                '-f', 'subdomains-top1million-110000.txt', 'shadycompass.test',
             ],
         ), self.engine)
 
@@ -84,8 +84,8 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '8.8.8.8',
                 '--enum',
                 '-o', 'dnsenum-8.8.8.8-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '--threads', '1',
+                '-f', 'subdomains-top1million-110000.txt',
                 'shadycompass.test',
             ],
         ), self.engine)
@@ -102,7 +102,7 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass.test',
+                '-f', 'subdomains-top1million-110000.txt', 'shadycompass.test',
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -112,7 +112,7 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass2.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt', 'shadycompass2.test',
+                '-f', 'subdomains-top1million-110000.txt', 'shadycompass2.test',
             ],
         ), self.engine)
 
@@ -127,8 +127,8 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '--nocolor',
+                '-f', 'subdomains-top1million-110000.txt',
                 'shadycompass.test',
             ],
         ), self.engine)
@@ -144,8 +144,8 @@ class DnsEnumTest(RulesBase):
                 '--dnsserver', '10.129.229.189',
                 '-p', '0', '-s', '0',
                 '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
-                '-f', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '--nocolor',
+                '-f', 'subdomains-top1million-110000.txt',
                 'shadycompass.test',
             ],
         ), self.engine)
@@ -162,3 +162,25 @@ class DnsEnumTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsEnumRules.dnsenum_tool_name,
         ), self.engine)
+
+    def test_dnsenum_private_wordlist(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.dns_scanner, DnsEnumRules.dnsenum_tool_name, True)
+        self.engine.config_set(SECTION_WORDLISTS, OPTION_WORDLIST_SUBDOMAIN, 'subdomains-top1million-5000.txt', True)
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.dns_scanner), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.dns_scanner,
+            name=DnsEnumRules.dnsenum_tool_name,
+            command_line=[
+                '--dnsserver', '10.129.229.189',
+                '-p', '0', '-s', '0',
+                '-o', 'dnsenum-10.129.229.189-53-subdomains-shadycompass.test.xml',
+                '-f', 'subdomains-top1million-5000.txt', 'shadycompass.test',
+            ],
+        ), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.dns_scanner, addr='10.129.229.189', port=53,
+                                        name=DnsEnumRules.dnsenum_tool_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.dns_scanner, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.dns_scanner, name=DnsEnumRules.dnsenum_tool_name),
+                        self.engine)

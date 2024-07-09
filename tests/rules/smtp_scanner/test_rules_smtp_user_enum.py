@@ -1,5 +1,6 @@
 from shadycompass import ToolRecommended
-from shadycompass.config import ToolCategory, SECTION_TOOLS, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT
+from shadycompass.config import ToolCategory, SECTION_TOOLS, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT, \
+    SECTION_WORDLISTS, OPTION_WORDLIST_USERNAME
 from shadycompass.facts import ScanNeeded, TargetDomain, TargetIPv4Address, ScanPresent
 from shadycompass.rules.smtp_scanner.smtp_user_enum import SmtpUserEnumRules
 from tests.rules.base import RulesBase
@@ -20,7 +21,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-t', '10.129.229.189', '-p', '25',
                 '>smtp-user-enum-10.129.229.189-25.txt',
             ],
@@ -44,7 +45,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-v',
                 '-t', '10.129.229.189', '-p', '25',
                 '>smtp-user-enum-10.129.229.189-25.txt',
@@ -63,7 +64,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-v',
                 '-t', '10.129.229.189', '-p', '25',
                 '>smtp-user-enum-10.129.229.189-25.txt',
@@ -83,7 +84,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-D', 'shadycompass.test',
                 '-f', 'user@shadycompass.test',
                 '-t', '10.129.229.189', '-p', '25',
@@ -96,7 +97,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-D', 'shadycompass2.test',
                 '-f', 'user@shadycompass2.test',
                 '-t', '10.129.229.189', '-p', '25',
@@ -117,7 +118,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-m', '1',
                 '-t', '10.129.229.189', '-p', '25',
                 '>smtp-user-enum-10.129.229.189-25.txt',
@@ -138,7 +139,7 @@ class SmtpUserEnumRulesTest(RulesBase):
             name=SmtpUserEnumRules.smtp_user_enum_name,
             command_line=[
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', 'xato-net-10-million-usernames.txt',
                 '-m', '1',
                 '-D', 'shadycompass.test',
                 '-f', 'user@shadycompass.test',
@@ -147,6 +148,30 @@ class SmtpUserEnumRulesTest(RulesBase):
             ],
             addr='10.129.229.189', port=25,
         ), self.engine)
+
+    def test_smtp_user_enum_wordlist(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.smtp_scanner, SmtpUserEnumRules.smtp_user_enum_name, True)
+        self.engine.config_set(SECTION_WORDLISTS, OPTION_WORDLIST_USERNAME, 'top-usernames-shortlist.txt', True)
+        self.engine.declare(
+            ScanNeeded(category=ToolCategory.smtp_scanner, addr='10.129.229.189', port=25, secure=False))
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.smtp_scanner,
+            name=SmtpUserEnumRules.smtp_user_enum_name,
+            command_line=[
+                '-M', 'VRFY',
+                '-U', 'top-usernames-shortlist.txt',
+                '-t', '10.129.229.189', '-p', '25',
+                '>smtp-user-enum-10.129.229.189-25.txt',
+            ],
+            addr='10.129.229.189', port=25,
+        ), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.smtp_scanner, addr='10.129.229.189', port=25,
+                                        name=SmtpUserEnumRules.smtp_user_enum_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.smtp_scanner, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.smtp_scanner, name=SmtpUserEnumRules.smtp_user_enum_name),
+                        self.engine)
 
 
 class SmtpUserEnumRulesNATest(RulesBase):

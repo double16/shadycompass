@@ -78,6 +78,10 @@ class ShadyCompassEngine(
         for fact in retract_queue:
             self.retract(fact)
 
+    def reset(self, **kwargs):
+        super().reset(**kwargs)
+        self.file_metadata.reset()
+
     def _save_config(self, facts: list[ConfigFact], config_path: str):
         config = ConfigParser()
         for fact in facts:
@@ -289,6 +293,18 @@ Press enter/return at the prompt to refresh data.
 """, file=self.fd_out)
 
     def refresh(self):
+        """
+        Update the facts from changed files and run the rules.
+        """
+        self.engine.update_facts()
+        self.engine.run()
+
+    def reload(self):
+        """
+        Clear the facts and load all from files. This should not be needed if the rules are correct to handle
+        incremental changes.
+        """
+        self.engine.reset()
         self.engine.update_facts()
         self.engine.run()
 

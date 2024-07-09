@@ -1,5 +1,5 @@
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, \
-    OPTION_RATELIMIT, OPTION_PRODUCTION
+    OPTION_RATELIMIT, OPTION_PRODUCTION, SECTION_WORDLISTS, OPTION_WORDLIST_FILE
 from shadycompass.rules.http_buster.dirb import DirbRules
 from tests.rules.base import RulesBase
 from tests.tests import assertFactIn, assertFactNotIn
@@ -88,4 +88,21 @@ class DirbTest(RulesBase):
             category=ToolCategory.http_buster,
             name=DirbRules.dirb_tool_name,
             command_line=['https://shadycompass.test:443', '-o', 'dirb-443-shadycompass.test.txt'],
+        ), self.engine)
+
+    def test_dirb_wordlist(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, DirbRules.dirb_tool_name, True)
+        self.engine.config_set(SECTION_WORDLISTS, OPTION_WORDLIST_FILE, 'raft-large-files.txt', True)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+            command_line=['http://shadycompass.test:8080', 'raft-large-files.txt', '-o',
+                          'dirb-8080-shadycompass.test.txt'],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=DirbRules.dirb_tool_name,
+            command_line=['https://shadycompass.test:443', 'raft-large-files.txt', '-o',
+                          'dirb-443-shadycompass.test.txt'],
         ), self.engine)

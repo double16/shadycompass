@@ -11,7 +11,7 @@ from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpSe
     NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService, TargetDomain, Username, \
     EmailAddress, HostnameIPv6Resolution, VirtualHostname
 from shadycompass.rules.port_scanner.nmap import NmapRules
-from tests.tests import assertFactIn, assertFactNotIn
+from tests.tests import assertFactIn, assertFactNotIn, assertFactsEqual
 
 
 class OutputCapture:
@@ -351,3 +351,9 @@ class ShadyCompassOpsTest(unittest.TestCase):
             command_line=['--top-ports=100', '-sV', '-sC', '-oN', 'nmap-tcp-100.txt', '-oX', 'nmap-tcp-100.xml',
                           '--max-rate', '5', '$IP'],
         ), self.ops.engine)
+
+    def test_reload(self):
+        self.ops.refresh()
+        facts_copy = list(self.ops.engine.facts.values())
+        self.ops.reload()
+        assertFactsEqual(facts_copy, self.ops.engine)

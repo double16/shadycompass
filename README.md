@@ -129,6 +129,8 @@ users
     displays the users that have been found
 emails
     displays the emails that have been found
+reload
+    reload from all files, only needed if recommendations aren't updated properly
 ```
 
 ### info 
@@ -427,9 +429,14 @@ tests/fixtures shadycompass > emails
 - bin@shadycompass.test
 ```
 
+### reload
+
+Shadycompass is designed to update recommendations based on changes in files. Sometimes the logic isn't quite right.
+Run the `reload` command to reload all files.
+
 ### facts
 
-Displays the things shady compass knows about to make recommendations. This is used for debugging purposes.
+Displays the things shadycompass knows about to make recommendations. This is used for debugging purposes.
 
 ## Configuration
 
@@ -467,3 +474,18 @@ shadycompass> set global production true
 
 shadycompass> unset production
  ```
+
+### word lists
+
+Some tools use word lists for brute forcing such as HTTP busting, sub domain enumeration, etc. The files can be
+configured using the `set` command.
+
+```
+shadycompass> set global wordlists.subdomain /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+
+shadycompass> set wordlists.file /usr/share/seclists/Discovery/Web-Content/raft-medium-files.txt
+
+shadycompass> set wordlists.username /usr/share/seclists/Usernames/xato-net-10-million-usernames-dup.txt
+
+shadycompass> set wordlists.password /usr/share/seclists/Passwords/xato-net-10-million-passwords-100000.txt
+```

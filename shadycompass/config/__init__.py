@@ -15,6 +15,13 @@ OPTION_RATELIMIT = 'ratelimit'
 OPTION_PRODUCTION = 'production'
 OPTION_VALUE_ALL = '*'
 
+# wordlist configuration
+SECTION_WORDLISTS = 'wordlists'
+OPTION_WORDLIST_FILE = 'file'
+OPTION_WORDLIST_USERNAME = 'username'
+OPTION_WORDLIST_PASSWORD = 'password'
+OPTION_WORDLIST_SUBDOMAIN = 'subdomain'
+
 
 class ToolCategory(object):
     port_scanner = 'port_scanner'
@@ -264,6 +271,22 @@ class ToolRecommended(Fact):
         return self.get('hostname')
 
 
+class PreferredWordlist(Fact):
+    """
+    Identifies a preferred wordlist for brute forcing. This fact is expected to be present for all categories whether
+    the default or configured value. Therefore, rules do not need to check for non-existence.
+    """
+    category = Field(str, mandatory=True)
+    path = Field(str, mandatory=True)
+    default = Field(bool, mandatory=True)
+
+    def get_path(self) -> str:
+        return self.get('path')
+
+    def is_default(self) -> bool:
+        return bool(self.get('default'))
+
+
 class ConfigRules(IRules, ABC):
     def _get_tools(self, category: str) -> list[ToolAvailable]:
         tools = []
@@ -321,3 +344,55 @@ class ConfigRules(IRules, ABC):
     )
     def retract_tool(self, f1):
         self.retract(f1)
+
+    def _declare_preferred_wordlist(self, category: str, path: str, default: bool):
+        retract_queue = []
+        for fact in filter(
+                lambda f: isinstance(f, PreferredWordlist) and f.get('category') == category,
+                self.get_facts()):
+            retract_queue.append(fact)
+        for fact in retract_queue:
+            self.retract(fact)
+        self.declare(PreferredWordlist(category=category, path=path, default=default))
+
+    @Rule(
+        NOT(ConfigFact(section=SECTION_WORDLISTS, option=OPTION_WORDLIST_FILE)),
+        salience=200
+    )
+    def preferred_wordlist_file_default(self):
+        self._declare_preferred_wordlist(OPTION_WORDLIST_FILE, "raft-large-files.txt", True)
+
+    @Rule(
+        NOT(ConfigFact(section=SECTION_WORDLISTS, option=OPTION_WORDLIST_USERNAME)),
+        salience=200
+    )
+    def preferred_wordlist_username_default(self):
+        self._declare_preferred_wordlist(OPTION_WORDLIST_USERNAME, "xato-net-10-million-usernames.txt", True)
+
+    @Rule(
+        NOT(ConfigFact(section=SECTION_WORDLISTS, option=OPTION_WORDLIST_PASSWORD)),
+        salience=200
+    )
+    def preferred_wordlist_password_default(self):
+        self._declare_preferred_wordlist(OPTION_WORDLIST_PASSWORD, "rockyou.txt", True)
+
+    @Rule(
+        NOT(ConfigFact(section=SECTION_WORDLISTS, option=OPTION_WORDLIST_SUBDOMAIN)),
+        salience=200
+    )
+    def preferred_wordlist_subdomain_default(self):
+        self._declare_preferred_wordlist(OPTION_WORDLIST_SUBDOMAIN, "subdomains-top1million-110000.txt", True)
+
+    @Rule(
+        ConfigFact(section=SECTION_WORDLISTS, option=MATCH.category, value=MATCH.path, global0=False),
+        salience=100
+    )
+    def preferred_wordlist_local(self, category, path):
+        self._declare_preferred_wordlist(category, path, False)
+
+    @Rule(
+        ConfigFact(section=SECTION_WORDLISTS, option=MATCH.category, value=MATCH.path, global0=True),
+        NOT(PreferredWordlist(category=MATCH.category, default=False)),
+    )
+    def preferred_wordlist_global(self, category, path):
+        self._declare_preferred_wordlist(category, path, False)
