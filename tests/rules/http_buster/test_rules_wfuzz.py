@@ -1,5 +1,5 @@
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, \
-    OPTION_RATELIMIT, OPTION_PRODUCTION
+    OPTION_RATELIMIT, OPTION_PRODUCTION, SECTION_WORDLISTS, OPTION_WORDLIST_FILE
 from shadycompass.rules.http_buster.wfuzz import WfuzzRules
 from tests.rules.base import RulesBase
 from tests.tests import assertFactIn, assertFactNotIn
@@ -17,7 +17,7 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-8080-shadycompass.test.json,json',
                 'http://shadycompass.test:8080/FUZZ',
@@ -27,7 +27,7 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-443-shadycompass.test.json,json',
                 'https://shadycompass.test:443/FUZZ',
@@ -42,7 +42,7 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404,500',
                 '-f', 'wfuzz-8080-shadycompass.test.json,json',
                 'http://shadycompass.test:8080/FUZZ',
@@ -58,7 +58,7 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-8080-shadycompass.test.json,json',
                 '-t', '1', '-s', '12',
@@ -69,7 +69,7 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-443-shadycompass.test.json,json',
                 '-t', '1', '-s', '12',
@@ -80,7 +80,7 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-8080-shadycompass.test.json,json',
                 'http://shadycompass.test:8080/FUZZ'
@@ -90,9 +90,34 @@ class WfuzzTest(RulesBase):
             category=ToolCategory.http_buster,
             name=WfuzzRules.wfuzz_tool_name,
             command_line=[
-                '-w', '/usr/share/seclists/Discovery/Web-Content/raft-small-files.txt',
+                '-w', 'raft-large-files.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-443-shadycompass.test.json,json',
                 'https://shadycompass.test:443/FUZZ'
+            ],
+        ), self.engine)
+
+    def test_wfuzz_wordlist(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.http_buster, WfuzzRules.wfuzz_tool_name, True)
+        self.engine.config_set(SECTION_WORDLISTS, OPTION_WORDLIST_FILE, 'raft-large-files.txt', True)
+        self.engine.run()
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=WfuzzRules.wfuzz_tool_name,
+            command_line=[
+                '-w', 'raft-large-files.txt',
+                '--hc', '404',
+                '-f', 'wfuzz-8080-shadycompass.test.json,json',
+                'http://shadycompass.test:8080/FUZZ',
+            ],
+        ), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.http_buster,
+            name=WfuzzRules.wfuzz_tool_name,
+            command_line=[
+                '-w', 'raft-large-files.txt',
+                '--hc', '404',
+                '-f', 'wfuzz-443-shadycompass.test.json,json',
+                'https://shadycompass.test:443/FUZZ',
             ],
         ), self.engine)

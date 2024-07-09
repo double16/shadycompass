@@ -1,5 +1,6 @@
 from shadycompass import SECTION_TOOLS
-from shadycompass.config import ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT
+from shadycompass.config import ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, OPTION_RATELIMIT, \
+    SECTION_WORDLISTS, OPTION_WORDLIST_USERNAME
 from shadycompass.facts import ScanNeeded, WindowsDomain, TargetIPv4Address, Kerberos5SecTcpService, ScanPresent
 from shadycompass.rules.kerberos.kerbrute import KerbruteRules
 from tests.rules.base import RulesBase
@@ -20,7 +21,7 @@ class KerbruteRulesTest(RulesBase):
             command_line=[
                 '--safe', '--dc', '10.129.229.189', '-d', 'SHADYCOMPASS',
                 'userenum',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
             addr='10.129.229.189',
@@ -45,7 +46,7 @@ class KerbruteRulesTest(RulesBase):
                 '--safe', '--dc', '10.129.229.189', '-d', 'SHADYCOMPASS',
                 'userenum',
                 '-v',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
             addr='10.129.229.189', port=88,
@@ -64,7 +65,7 @@ class KerbruteRulesTest(RulesBase):
                 '--safe', '--dc', '10.129.229.189', '-d', 'SHADYCOMPASS',
                 'userenum',
                 '-v',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
             addr='10.129.229.189', port=88,
@@ -82,7 +83,7 @@ class KerbruteRulesTest(RulesBase):
             command_line=[
                 '--safe', '--dc', '10.129.229.189', '-d', 'SHADYCOMPASS',
                 'userenum',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
             addr='10.129.229.189', port=88,
@@ -93,7 +94,7 @@ class KerbruteRulesTest(RulesBase):
             command_line=[
                 '--safe', '--dc', '10.129.229.189', '-d', 'SHADYCOMPASS2',
                 'userenum',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS2.txt'
             ],
             addr='10.129.229.189', port=88,
@@ -112,7 +113,7 @@ class KerbruteRulesTest(RulesBase):
             command_line=[
                 '--safe', '--dc', '10.129.229.189', '--delay', '12000', '-d', 'SHADYCOMPASS',
                 'userenum',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
             addr='10.129.229.189', port=88,
@@ -131,11 +132,34 @@ class KerbruteRulesTest(RulesBase):
             command_line=[
                 '--safe', '--dc', '10.129.229.189', '--delay', '12000', '-d', 'SHADYCOMPASS',
                 'userenum',
-                '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                'xato-net-10-million-usernames.txt',
                 '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
             ],
             addr='10.129.229.189', port=88,
         ), self.engine)
+
+    def test_asrep_roaster_wordlist(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.asrep_roaster, KerbruteRules.kerbrute_tool_name, True)
+        self.engine.config_set(SECTION_WORDLISTS, OPTION_WORDLIST_USERNAME, 'top-usernames-shortlist.txt', True)
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.asrep_roaster, addr='10.129.229.189'), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.asrep_roaster,
+            name=KerbruteRules.kerbrute_tool_name,
+            command_line=[
+                '--safe', '--dc', '10.129.229.189', '-d', 'SHADYCOMPASS',
+                'userenum',
+                'top-usernames-shortlist.txt',
+                '>kerbrute-userenum-10.129.229.189-SHADYCOMPASS.txt'
+            ],
+            addr='10.129.229.189',
+        ), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.asrep_roaster, addr='10.129.229.189',
+                                        name=KerbruteRules.kerbrute_tool_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.asrep_roaster, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.asrep_roaster, name=KerbruteRules.kerbrute_tool_name),
+                        self.engine)
 
 
 class KerbruteRulesNATest(RulesBase):

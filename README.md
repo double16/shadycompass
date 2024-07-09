@@ -474,3 +474,18 @@ shadycompass> set global production true
 
 shadycompass> unset production
  ```
+
+### word lists
+
+Some tools use word lists for brute forcing such as HTTP busting, sub domain enumeration, etc. The files can be
+configured using the `set` command.
+
+```
+shadycompass> set global wordlist.subdomain /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+
+shadycompass> set wordlist.file /usr/share/seclists/Discovery/Web-Content/raft-medium-files.txt
+
+shadycompass> set wordlist.username /usr/share/seclists/Usernames/xato-net-10-million-usernames-dup.txt
+
+shadycompass> set wordlist.password /usr/share/seclists/Passwords/xato-net-10-million-passwords-100000.txt
+```

@@ -1,5 +1,5 @@
 from shadycompass.config import SECTION_TOOLS, ToolCategory, ToolRecommended, SECTION_OPTIONS, SECTION_DEFAULT, \
-    OPTION_RATELIMIT, OPTION_PRODUCTION
+    OPTION_RATELIMIT, OPTION_PRODUCTION, SECTION_WORDLISTS, OPTION_WORDLIST_SUBDOMAIN
 from shadycompass.facts import ScanNeeded, ScanPresent, TargetDomain, TargetIPv4Address, DomainUdpIpService
 from shadycompass.rules.dns_scanner.dnsrecon import DnsReconRules
 from tests.rules.base import RulesBase
@@ -20,8 +20,8 @@ class DnsReconTest(RulesBase):
             name=DnsReconRules.dnsrecon_tool_name,
             command_line=[
                 '-n', '10.129.229.189',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-10.129.229.189-53-shadycompass.test.json',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -43,9 +43,9 @@ class DnsReconTest(RulesBase):
             name=DnsReconRules.dnsrecon_tool_name,
             command_line=[
                 '-n', '10.129.229.189',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-10.129.229.189-53-shadycompass.test.json',
                 '--threads', '1',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -63,8 +63,8 @@ class DnsReconTest(RulesBase):
             command_line=[
                 '-n', '8.8.8.8',
                 '-a', '-s', '-b', '-y', '-k', '-w', '-z',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-8.8.8.8-53-shadycompass.test.json',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -83,9 +83,9 @@ class DnsReconTest(RulesBase):
             command_line=[
                 '-n', '8.8.8.8',
                 '-a', '-s', '-b', '-y', '-k', '-w', '-z',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-8.8.8.8-53-shadycompass.test.json',
                 '--threads', '1',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -100,8 +100,8 @@ class DnsReconTest(RulesBase):
             name=DnsReconRules.dnsrecon_tool_name,
             command_line=[
                 '-n', '10.129.229.189',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-10.129.229.189-53-shadycompass.test.json',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -110,8 +110,8 @@ class DnsReconTest(RulesBase):
             name=DnsReconRules.dnsrecon_tool_name,
             command_line=[
                 '-n', '10.129.229.189',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-10.129.229.189-53-shadycompass2.test.json',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass2.test',
             ],
         ), self.engine)
@@ -125,9 +125,9 @@ class DnsReconTest(RulesBase):
             name=DnsReconRules.dnsrecon_tool_name,
             command_line=[
                 '-n', '10.129.229.189',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-10.129.229.189-53-shadycompass.test.json',
                 '-f',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -141,9 +141,9 @@ class DnsReconTest(RulesBase):
             name=DnsReconRules.dnsrecon_tool_name,
             command_line=[
                 '-n', '10.129.229.189',
-                '-D', '/usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt',
                 '-j', 'dnsrecon-10.129.229.189-53-shadycompass.test.json',
                 '-f',
+                '-D', 'subdomains-top1million-110000.txt',
                 '-d', 'shadycompass.test',
             ],
         ), self.engine)
@@ -160,3 +160,25 @@ class DnsReconTest(RulesBase):
             category=ToolCategory.dns_scanner,
             name=DnsReconRules.dnsrecon_tool_name,
         ), self.engine)
+
+    def test_dnsrecon_private_wordlist(self):
+        self.engine.config_set(SECTION_TOOLS, ToolCategory.dns_scanner, DnsReconRules.dnsrecon_tool_name, True)
+        self.engine.config_set(SECTION_WORDLISTS, OPTION_WORDLIST_SUBDOMAIN, 'subdomains-top1million-5000.txt', True)
+        self.engine.run()
+        assertFactIn(ScanNeeded(category=ToolCategory.dns_scanner), self.engine)
+        assertFactIn(ToolRecommended(
+            category=ToolCategory.dns_scanner,
+            name=DnsReconRules.dnsrecon_tool_name,
+            command_line=[
+                '-n', '10.129.229.189',
+                '-j', 'dnsrecon-10.129.229.189-53-shadycompass.test.json',
+                '-D', 'subdomains-top1million-5000.txt',
+                '-d', 'shadycompass.test',
+            ],
+        ), self.engine)
+        self.engine.declare(ScanPresent(category=ToolCategory.dns_scanner, addr='10.129.229.189', port=53,
+                                        name=DnsReconRules.dnsrecon_tool_name))
+        self.engine.run()
+        assertFactNotIn(ScanNeeded(category=ToolCategory.dns_scanner, addr='10.129.229.189'), self.engine)
+        assertFactNotIn(ToolRecommended(category=ToolCategory.dns_scanner, name=DnsReconRules.dnsrecon_tool_name),
+                        self.engine)

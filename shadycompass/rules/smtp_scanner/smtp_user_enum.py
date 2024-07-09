@@ -1,10 +1,11 @@
 from abc import ABC
 
-from experta import DefFacts, Rule, AS, MATCH, OR, NOT
+from experta import DefFacts, Rule, AS, MATCH, NOT
 
 from shadycompass import ToolAvailable
-from shadycompass.config import ToolCategory, PreferredTool, OPTION_VALUE_ALL, SECTION_OPTIONS, ConfigFact
+from shadycompass.config import ToolCategory, PreferredWordlist, OPTION_WORDLIST_USERNAME
 from shadycompass.facts import ScanNeeded, RateLimitEnable, TargetDomain
+from shadycompass.rules.conditions import TOOL_PREF, TOOL_CONF
 from shadycompass.rules.irules import IRules
 from shadycompass.rules.library import METHOD_SMTP
 
@@ -24,7 +25,8 @@ class SmtpUserEnumRules(IRules, ABC):
             methodology_links=METHOD_SMTP,
         )
 
-    def _declare_smtp_user_enum(self, f1: ScanNeeded, ratelimit: RateLimitEnable = None, domain: TargetDomain = None):
+    def _declare_smtp_user_enum(self, f1: ScanNeeded, ratelimit: RateLimitEnable = None, domain: TargetDomain = None,
+                                wordlist: PreferredWordlist = None):
         addr = f1.get_addr()
         addr_file_name_part = f'-{addr}-{f1.get_port()}'
         if domain:
@@ -41,7 +43,7 @@ class SmtpUserEnumRules(IRules, ABC):
             self.smtp_user_enum_name,
             [
                 '-M', 'VRFY',
-                '-U', '/usr/share/seclists/Usernames/xato-net-10-million-usernames.txt',
+                '-U', wordlist.get_path(),
             ], *more_options
         )
         command_line.extend(
@@ -57,60 +59,45 @@ class SmtpUserEnumRules(IRules, ABC):
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.smtp_scanner, addr=MATCH.addr),
-        OR(
-            PreferredTool(category=ToolCategory.smtp_scanner, name=smtp_user_enum_name),
-            PreferredTool(category=ToolCategory.smtp_scanner, name=OPTION_VALUE_ALL),
-            NOT(PreferredTool(category=ToolCategory.smtp_scanner)),
-        ),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name))),
+        AS.wordlist << PreferredWordlist(category=OPTION_WORDLIST_USERNAME),
+        TOOL_PREF(ToolCategory.smtp_scanner, smtp_user_enum_name),
+        TOOL_CONF(ToolCategory.smtp_scanner, smtp_user_enum_name),
         NOT(RateLimitEnable(addr=MATCH.addr)),
         NOT(TargetDomain())
     )
-    def run_smtp_user_enum(self, f1: ScanNeeded):
-        self._declare_smtp_user_enum(f1)
+    def run_smtp_user_enum(self, f1: ScanNeeded, wordlist: PreferredWordlist):
+        self._declare_smtp_user_enum(f1, wordlist=wordlist)
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.smtp_scanner, addr=MATCH.addr),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
-        OR(
-            PreferredTool(category=ToolCategory.smtp_scanner, name=smtp_user_enum_name),
-            PreferredTool(category=ToolCategory.smtp_scanner, name=OPTION_VALUE_ALL),
-            NOT(PreferredTool(category=ToolCategory.smtp_scanner)),
-        ),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name))),
+        AS.wordlist << PreferredWordlist(category=OPTION_WORDLIST_USERNAME),
+        TOOL_PREF(ToolCategory.smtp_scanner, smtp_user_enum_name),
+        TOOL_CONF(ToolCategory.smtp_scanner, smtp_user_enum_name),
         NOT(TargetDomain())
     )
-    def run_smtp_user_enum_ratelimit(self, f1: ScanNeeded, ratelimit: RateLimitEnable):
-        self._declare_smtp_user_enum(f1, ratelimit=ratelimit)
+    def run_smtp_user_enum_ratelimit(self, f1: ScanNeeded, ratelimit: RateLimitEnable, wordlist: PreferredWordlist):
+        self._declare_smtp_user_enum(f1, ratelimit=ratelimit, wordlist=wordlist)
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.smtp_scanner, addr=MATCH.addr),
         AS.domain << TargetDomain(),
-        OR(
-            PreferredTool(category=ToolCategory.smtp_scanner, name=smtp_user_enum_name),
-            PreferredTool(category=ToolCategory.smtp_scanner, name=OPTION_VALUE_ALL),
-            NOT(PreferredTool(category=ToolCategory.smtp_scanner)),
-        ),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name))),
+        AS.wordlist << PreferredWordlist(category=OPTION_WORDLIST_USERNAME),
+        TOOL_PREF(ToolCategory.smtp_scanner, smtp_user_enum_name),
+        TOOL_CONF(ToolCategory.smtp_scanner, smtp_user_enum_name),
         NOT(RateLimitEnable(addr=MATCH.addr))
     )
-    def run_smtp_user_enum_domain(self, f1: ScanNeeded, domain: TargetDomain):
-        self._declare_smtp_user_enum(f1, domain=domain)
+    def run_smtp_user_enum_domain(self, f1: ScanNeeded, domain: TargetDomain, wordlist: PreferredWordlist):
+        self._declare_smtp_user_enum(f1, domain=domain, wordlist=wordlist)
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.smtp_scanner, addr=MATCH.addr),
         AS.domain << TargetDomain(),
         AS.ratelimit << RateLimitEnable(addr=MATCH.addr),
-        OR(
-            PreferredTool(category=ToolCategory.smtp_scanner, name=smtp_user_enum_name),
-            PreferredTool(category=ToolCategory.smtp_scanner, name=OPTION_VALUE_ALL),
-            NOT(PreferredTool(category=ToolCategory.smtp_scanner)),
-        ),
-        OR(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name),
-           NOT(ConfigFact(section=SECTION_OPTIONS, option=smtp_user_enum_name))),
+        AS.wordlist << PreferredWordlist(category=OPTION_WORDLIST_USERNAME),
+        TOOL_PREF(ToolCategory.smtp_scanner, smtp_user_enum_name),
+        TOOL_CONF(ToolCategory.smtp_scanner, smtp_user_enum_name),
     )
-    def run_smtp_user_enum_domain_ratelimit(self, f1: ScanNeeded, domain: TargetDomain, ratelimit: RateLimitEnable):
-        self._declare_smtp_user_enum(f1, ratelimit=ratelimit, domain=domain)
+    def run_smtp_user_enum_domain_ratelimit(self, f1: ScanNeeded, domain: TargetDomain, ratelimit: RateLimitEnable,
+                                            wordlist: PreferredWordlist):
+        self._declare_smtp_user_enum(f1, ratelimit=ratelimit, domain=domain, wordlist=wordlist)
