@@ -12,7 +12,7 @@ from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
 class NucleiJsonFactReader(FactReader):
     def read_facts(self, file_path: str) -> list[Fact]:
-        if not check_file_signature(file_path, '"matcher-name"'):
+        if not check_file_signature(file_path, '"template-id"'):
             return []
         try:
             with open(file_path, 'rt') as f:

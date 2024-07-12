@@ -30,29 +30,33 @@ fact_reader_registry: list[FactReader] = list()
 
 
 def check_file_signature(file_path: str, *signatures) -> bool:
-    try:
-        if isinstance(signatures[0], bytes):
-            open_flags = 'rb'
-        else:
-            open_flags = 'rt'
+    if isinstance(signatures[0], bytes):
+        open_flags = 'rb'
+    else:
+        open_flags = 'rt'
 
+    try:
         with open(file_path, open_flags) as f:
             content = f.read(4096)
-
-        if 't' in open_flags:
-            content = next(remove_terminal_escapes([content]))
-
-        for sig in signatures:
-            if isinstance(sig, re.Pattern):
-                if sig.search(content) is None:
-                    return False
-            else:
-                if str(sig) not in content:
-                    return False
-
-        return True
     except UnicodeDecodeError:
-        return False
+        with open(file_path, 'rb') as f:
+            content = f.read(4096).decode(encoding='iso_8859_1')
+
+    if 't' in open_flags:
+        content = next(remove_terminal_escapes([content]))
+
+    for sig in signatures:
+        if isinstance(sig, re.Pattern):
+            if sig.search(content) is None:
+                return False
+        elif isinstance(content, bytes):
+            if sig not in content:
+                return False
+        else:
+            if str(sig) not in content:
+                return False
+
+    return True
 
 
 def extract_from_file_path(file_path: str) -> dict:
