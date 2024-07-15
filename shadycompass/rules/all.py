@@ -1,3 +1,4 @@
+import shadycompass.rules.cve_exploit_search.all as cve_exploit_search
 import shadycompass.rules.dns_scanner.all as dns_scanner
 import shadycompass.rules.http_buster.all as http_buster
 import shadycompass.rules.kerberos.all as kerberoaster
@@ -9,6 +10,7 @@ import shadycompass.rules.vuln_scanner.all as vuln_scanner
 import shadycompass.rules.wordpress_scanner.all as wordpress_scanner
 from shadycompass.config import ConfigRules
 from shadycompass.rules.asrep_roaster import AsRepRoaster
+from shadycompass.rules.cve_exploit_search import CveExploitSearch
 from shadycompass.rules.dns_scanner import DnsScan
 from shadycompass.rules.etc_hosts import EtcHostsRules
 from shadycompass.rules.http_buster import HttpBusting
@@ -35,6 +37,7 @@ class AllRules(
     kerberoaster.AllRules,
     ldap_scanner.AllRules,
     wordpress_scanner.AllRules,
+    cve_exploit_search.AllRules,
     HttpBusting,
     ScanRules,
     PortScan,
@@ -48,6 +51,7 @@ class AllRules(
     LdapScan,
     VirtualHostScan,
     WordpressScan,
+    CveExploitSearch,
     ConfigRules,
     EtcHostsRules,
     ProductionTargetRules,

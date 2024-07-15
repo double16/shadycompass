@@ -1278,6 +1278,10 @@ class UsernameNtlmHash(Username, NtlmHash):
     pass
 
 
+def nvd_url(cve: str) -> str:
+    return f"https://nvd.nist.gov/vuln/detail/{cve}"
+
+
 class CVE(Fact):
     cve = Field(str, mandatory=True)
     addr = Field(str, mandatory=False)
@@ -1291,6 +1295,9 @@ class CVE(Fact):
 
     def get_cve(self) -> str:
         return self.get('cve')
+
+    def get_url(self) -> str:
+        return nvd_url(self.get_cve())
 
     def get_addr(self):
         return self.get('addr')
