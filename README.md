@@ -376,6 +376,21 @@ tests/fixtures shadycompass > products
 ...
 ```
 
+### cve
+
+Displays the CVEs that have been found.
+
+```
+tests/fixtures shadycompass > cve
+
+# 10.129.229.189:143
+ - CVE-2022-99999
+# 10.129.229.189:993
+ - CVE-2021-99999
+
+...
+```
+
 ### urls
 
 Displays the URLs that have been found.

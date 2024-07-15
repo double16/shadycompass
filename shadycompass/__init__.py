@@ -15,7 +15,7 @@ from shadycompass.config import ConfigFact, get_local_config_path, \
     set_local_config_path, SECTION_OPTIONS, combine_command_options, tool_category_priority
 from shadycompass.facts import fact_reader_registry, TargetIPv4Address, TargetIPv6Address, HostnameIPv6Resolution, \
     HostnameIPv4Resolution, TargetHostname, TcpIpService, UdpIpService, Product, HttpUrl, HasTLS, TargetDomain, \
-    Username, EmailAddress, VirtualHostname
+    Username, EmailAddress, VirtualHostname, CVE
 from shadycompass.facts.filemetadata import FileMetadataCache
 from shadycompass.rules.all import AllRules
 
@@ -576,6 +576,19 @@ Press enter/return at the prompt to refresh data.
             print(f'# {service}', file=self.fd_out)
             for product in products:
                 print(f' - {product}', file=self.fd_out)
+
+    def show_cves(self, command: list[str]):
+        cves_by_service: dict[str, set[str]] = dict()
+        for fact in filter(lambda f: isinstance(f, CVE), self.engine.facts.values()):
+            key = f'{fact.get_addr()}:{fact.get_port()}'
+            if key not in cves_by_service:
+                cves_by_service[key] = set()
+            cves_by_service[key].add(fact.get_cve())
+        print('', file=self.fd_out)
+        for service, cves in cves_by_service.items():
+            print(f'# {service}', file=self.fd_out)
+            for cve in cves:
+                print(f' - {cve}, https://nvd.nist.gov/vuln/detail/{cve}', file=self.fd_out)
 
     def show_urls(self, command: list[str]):
         print('', file=self.fd_out)

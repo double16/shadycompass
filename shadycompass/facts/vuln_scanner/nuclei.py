@@ -5,7 +5,7 @@ from experta import Fact
 from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, \
     HostnameIPv4Resolution, TargetIPv6Address, HostnameIPv6Resolution, HttpService, fact_reader_registry, \
-    parse_products, Product, normalize_os_type, ScanPresent, guess_target, WindowsDomain
+    parse_products, Product, normalize_os_type, ScanPresent, guess_target, WindowsDomain, CVE
 from shadycompass.facts.services import create_service_facts
 from shadycompass.rules.vuln_scanner.nuclei import NucleiRules
 
@@ -93,6 +93,17 @@ class NucleiJsonFactReader(FactReader):
                 create_service_facts([addr], None, int(port), 'tcp', services, False, service_name, products)
                 for service in services:
                     result.add(service)
+
+            if 'cve-id' in record.get('info', {}).get('classification', {}):
+                cve_kwargs = {}
+                if hostname:
+                    cve_kwargs['hostname'] = hostname
+                if addr:
+                    cve_kwargs['addr'] = addr
+                if port:
+                    cve_kwargs['port'] = int(port)
+                for cve_id in (record.get('info', {}).get('classification', {}).get('cve-id', []) or []):
+                    result.add(CVE(cve=cve_id, **cve_kwargs))
 
             if 'smb' in record.get('info', {}).get('tags', {}) and 'extracted-results' in record:
                 extracted = record.get('extracted-results', '')

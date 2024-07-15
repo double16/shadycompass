@@ -9,7 +9,7 @@ from shadycompass.config import set_local_config_path, set_global_config_path, C
     ToolRecommended, SECTION_OPTIONS
 from shadycompass.facts import SshService, DomainTcpIpService, Kerberos5SecTcpService, MicrosoftRpcService, \
     NetbiosSessionService, DomainUdpIpService, Product, OSTYPE_WINDOWS, HttpUrl, ImapService, TargetDomain, Username, \
-    EmailAddress, HostnameIPv6Resolution, VirtualHostname
+    EmailAddress, HostnameIPv6Resolution, VirtualHostname, CVE
 from shadycompass.rules.port_scanner.nmap import NmapRules
 from tests.tests import assertFactIn, assertFactNotIn, assertFactsEqual
 
@@ -301,6 +301,17 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.ops.show_emails([])
         self.assertTrue('- admin@shadycompass.test' in self.fd_out.output)
         self.assertTrue('- jack@shadycompass.test' in self.fd_out.output)
+
+    def test_show_cves(self):
+        self.ops.engine.declare(CVE(cve='CVE-1970-1000', addr='10.0.1.1', port=443, hostname="www.example.com"))
+        self.ops.engine.declare(CVE(cve='CVE-1984-88', addr='10.0.1.2', port=5000, hostname="www.drbrown.com"))
+        self.ops.show_cves([])
+        self.assertTrue('# 10.0.1.1:443' in self.fd_out.output)
+        self.assertTrue('- CVE-1970-1000, https://nvd.nist.gov/vuln/detail/CVE-1970-1000' in self.fd_out.output,
+                        self.fd_out.output)
+        self.assertTrue('# 10.0.1.2:5000' in self.fd_out.output)
+        self.assertTrue('- CVE-1984-88, https://nvd.nist.gov/vuln/detail/CVE-1984-88' in self.fd_out.output,
+                        self.fd_out.output)
 
     def test_tool_option_local(self):
         self.ops.tool_option(['option', 'dirb', '-w', 'raft-large-files.txt'])
