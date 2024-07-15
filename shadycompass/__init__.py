@@ -570,7 +570,7 @@ Press enter/return at the prompt to refresh data.
             key = f'{fact.get_addr()}:{fact.get_port()}'
             if key not in products_by_service:
                 products_by_service[key] = set()
-            products_by_service[key].add(fact.get_product_spec())
+            products_by_service[key].add(fact.get_cpe())
         print('', file=self.fd_out)
         for service, products in products_by_service.items():
             print(f'# {service}', file=self.fd_out)

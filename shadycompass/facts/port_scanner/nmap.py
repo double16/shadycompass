@@ -9,7 +9,7 @@ from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, TargetIPv4Address, TargetIPv6Address, \
     HostnameIPv4Resolution, HostnameIPv6Resolution, fact_reader_registry, normalize_os_type, Product, parse_products, \
     ScanPresent, OperatingSystem, guess_target, WindowsDomain, WindowsDomainController, TlsCertificate, Username, \
-    resolve_unescaped_encoding, TargetHostname, VirtualHostname, TargetDomain
+    resolve_unescaped_encoding, TargetHostname, VirtualHostname, TargetDomain, parse_cpe
 from shadycompass.facts.services import create_service_facts, spread_addrs
 from shadycompass.rules.port_scanner.nmap import NmapRules
 
@@ -146,8 +146,22 @@ class NmapXmlFactReader(FactReader):
                     if service_name == 'pando-pub' and confidence < 8:
                         service_name = 'wudo'
 
-                    product = port_detail_el.attrib.get('product', None)
-                    product_version = port_detail_el.attrib.get('version', None)
+                    product_vendor = None
+                    product = None
+                    product_version = None
+                    service_os_type = os_type
+
+                    for cpe_el in filter(lambda e: e.tag == 'cpe', port_detail_el):
+                        cpe = parse_cpe(cpe_el.text)
+                        if isinstance(cpe, Product):
+                            product_vendor = cpe.get_vendor()
+                            product = cpe.get_product()
+                            product_version = cpe.get_version()
+                        elif isinstance(cpe, OperatingSystem):
+                            service_os_type = cpe.get_os_type()
+
+                    product = product or port_detail_el.attrib.get('product', None)
+                    product_version = product_version or port_detail_el.attrib.get('version', None)
                     if not product_version:
                         product_version_els = port_el.findall(".//elem[@key='Product_Version']")
                         if product_version_els:
@@ -158,6 +172,10 @@ class NmapXmlFactReader(FactReader):
                             my_kwargs['hostname'] = hostname
                         if product_version:
                             my_kwargs['version'] = product_version
+                        if service_os_type:
+                            my_kwargs['os_type'] = service_os_type
+                        if product_vendor:
+                            my_kwargs['vendor'] = product_vendor
                         products.extend(spread_addrs(Product, addrs, hostnames, product=product, **my_kwargs))
                     if extra_info:
                         for parsed in parse_products(extra_info):
@@ -166,6 +184,8 @@ class NmapXmlFactReader(FactReader):
                                 my_kwargs['hostname'] = hostname
                             if parsed.get_version():
                                 my_kwargs['version'] = parsed.get_version()
+                            if service_os_type:
+                                my_kwargs['os_type'] = service_os_type
                             products.extend(
                                 spread_addrs(Product, addrs, hostnames, product=parsed.get_product(), **my_kwargs))
 

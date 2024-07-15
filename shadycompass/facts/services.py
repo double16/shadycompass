@@ -28,7 +28,7 @@ def create_service_facts(addrs: Iterable[str], os_type, port, protocol, result, 
         products = []
     service_name = ''.join((service_name or '').split()[0:1])
     if service_name == 'http':
-        if any(map(lambda e: 'docker registry' in e.get_product(), products)):
+        if any(map(lambda e: 'docker' in e.get_product(), products)):
             result.extend(spread_addrs(DockerRegistryService, addrs, port=port, secure=secure))
         elif os_type == OSTYPE_WINDOWS and port == 5985:
             result.extend(spread_addrs(WinRMService, addrs, port=port, secure=secure))

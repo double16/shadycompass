@@ -261,7 +261,8 @@ class ShadyCompassOpsTest(unittest.TestCase):
         self.assertTrue('- 993/tcp imap/ssl,' in self.fd_out.output)
 
     def test_show_products(self):
-        self.ops.engine.declare(Product(product='apache httpd', version='2.4.56', os_type=OSTYPE_WINDOWS,
+        self.ops.engine.declare(
+            Product(vendor='apache', product='http_server', version='2.4.56', os_type=OSTYPE_WINDOWS,
                                         addr='10.0.1.1', port=443, hostname="www.example.com"))
         self.ops.engine.declare(Product(product='openssl', version='1.1.1t', os_type=OSTYPE_WINDOWS,
                                         addr='10.0.1.1', port=443, hostname="www.example.com"))
@@ -269,9 +270,9 @@ class ShadyCompassOpsTest(unittest.TestCase):
                                         addr='10.0.1.1', port=443, hostname="www.example.com"))
         self.ops.show_products([])
         self.assertTrue('# 10.0.1.1:443' in self.fd_out.output)
-        self.assertTrue('- apache httpd/2.4.56' in self.fd_out.output)
-        self.assertTrue('- openssl/1.1.1t' in self.fd_out.output)
-        self.assertTrue('- php/8.0.28' in self.fd_out.output)
+        self.assertTrue('- cpe:2.3:a:apache:http_server:2.4.56:*:*:*:*:*:*:*' in self.fd_out.output, self.fd_out.output)
+        self.assertTrue('- cpe:2.3:a:*:openssl:1.1.1t:*:*:*:*:*:*:*' in self.fd_out.output, self.fd_out.output)
+        self.assertTrue('- cpe:2.3:a:*:php:8.0.28:*:*:*:*:*:*:*' in self.fd_out.output, self.fd_out.output)
 
     def test_show_urls(self):
         self.ops.engine.declare(

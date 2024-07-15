@@ -913,23 +913,75 @@ class HttpBustingNeeded(Fact):
         return f"{self.get_protocol()}://{self.get_vhost()}:{self.get_port()}"
 
 
+OSTYPE_WINDOWS = 'windows'
+OSTYPE_LINUX = 'linux'
+OSTYPE_MAC = 'mac'
+
+
 class OperatingSystem(Fact):
     addr = Field(str, mandatory=False)
     port = Field(int, mandatory=False)
     hostname = Field(str, mandatory=False)
     os_type = Field(str, mandatory=True)  # OSTYPE_* constants: windows, linux, mac, ...
+    vendor = Field(str, mandatory=False)  # Microsoft, Linux, Apple, ...
     name = Field(str, mandatory=False)  # Windows, Ubuntu, ...
     version = Field(str, mandatory=False)  # 10 (Windows 10), 22.04 (Ubuntu)
     kernel_version = Field(str, mandatory=False)
 
     def __init__(self, *args, **kwargs):
-        lowercase_dict_values(kwargs, 'hostname', 'addr')
+        lowercase_dict_values(kwargs, 'hostname', 'addr', 'vendor', 'name')
+
+        if 'os_type' in kwargs and 'vendor' not in kwargs:
+            if kwargs['os_type'] == OSTYPE_WINDOWS:
+                kwargs['vendor'] = 'microsoft'
+                if 'name' not in kwargs:
+                    kwargs['name'] = 'windows'
+            elif kwargs['os_type'] == OSTYPE_LINUX:
+                kwargs['vendor'] = 'linux'
+                if 'name' not in kwargs:
+                    kwargs['name'] = 'linux_kernel'
+            elif kwargs['os_type'] == OSTYPE_MAC:
+                kwargs['vendor'] = 'apple'
+                if 'name' not in kwargs:
+                    kwargs['name'] = 'macos'
+        elif 'os_type' not in kwargs and 'vendor' in kwargs:
+            match str(kwargs['vendor']):
+                case 'microsoft':
+                    kwargs['os_type'] = OSTYPE_WINDOWS
+                case 'linux':
+                    kwargs['os_type'] = OSTYPE_LINUX
+                case 'apple':
+                    kwargs['os_type'] = OSTYPE_MAC
+        elif 'os_type' not in kwargs and 'name' in kwargs:
+            match str(kwargs['name']):
+                case 'windows':
+                    kwargs['os_type'] = OSTYPE_WINDOWS
+                case 'linux.*':
+                    kwargs['os_type'] = OSTYPE_LINUX
+                case 'macos':
+                    kwargs['os_type'] = OSTYPE_MAC
+
         super().__init__(*args, **kwargs)
 
+    def get_vendor(self) -> str:
+        return self.get('vendor')
 
-OSTYPE_WINDOWS = 'windows'
-OSTYPE_LINUX = 'linux'
-OSTYPE_MAC = 'mac'
+    def get_name(self) -> str:
+        return self.get('name')
+
+    def get_version(self) -> str:
+        return self.get('version')
+
+    def get_os_type(self) -> int:
+        return self.get('os_type')
+
+    def get_cpe(self) -> str:
+        # Use CPE 2.3: https://en.wikipedia.org/wiki/Common_Platform_Enumeration
+        return (f"cpe:2.3:o:"
+                f"{self.get_vendor() or '*'}:"
+                f"{self.get_name() or '*'}:"
+                f"{self.get_version() or '*'}:"
+                f"*:*:*:*:*:*:*")
 
 
 def normalize_os_type(*args) -> Union[str, None]:
@@ -962,11 +1014,12 @@ class Product(Fact):
     """
     Product name without version. Must be lowercase to simplify matching.
     """
+    vendor = Field(str, mandatory=False)
     version = Field(str, mandatory=False)
     os_type = Field(str, mandatory=False)
 
     def __init__(self, *args, **kwargs):
-        lowercase_dict_values(kwargs, 'addr', 'hostname', 'product', 'version', 'os_type')
+        lowercase_dict_values(kwargs, 'addr', 'hostname', 'vendor', 'product', 'version', 'os_type')
         super().__init__(*args, **kwargs)
 
     def get_addr(self):
@@ -977,16 +1030,22 @@ class Product(Fact):
             return int(self.get('port'))
         return None
 
+    def get_vendor(self):
+        return self.get('vendor')
+
     def get_product(self):
         return self.get('product')
 
     def get_version(self):
         return self.get('version')
 
-    def get_product_spec(self):
-        if 'version' in self:
-            return self.get_product() + '/' + self.get_version()
-        return self.get_product()
+    def get_cpe(self):
+        # Use CPE 2.3: https://en.wikipedia.org/wiki/Common_Platform_Enumeration
+        return (f"cpe:2.3:a:"
+                f"{self.get_vendor() or '*'}:"
+                f"{self.get_product() or '*'}:"
+                f"{self.get_version() or '*'}:"
+                f"*:*:*:*:*:*:*")
 
 
 def parse_products(value: str, multiple=True, **kwargs) -> list[Product]:
@@ -1002,6 +1061,43 @@ def parse_products(value: str, multiple=True, **kwargs) -> list[Product]:
             result.add(Product(product=match[1].lower(), version=match[2].lower(), **kwargs))
 
     return list(result)
+
+
+def parse_cpe(value: str) -> Union[Fact, None]:
+    kwargs = {}
+    if value is None:
+        return None
+    try:
+        cpe_parts = value.split(':')
+        assert cpe_parts.pop(0) == 'cpe'
+        cpe_type = cpe_parts.pop(0)  # [/a,/o,/h] or float version
+        try:
+            cpe_version = float(cpe_type)
+            cpe_type = cpe_parts.pop(0)
+        except ValueError:
+            cpe_version = 1.0
+
+        kwargs['vendor'] = cpe_parts.pop(0)
+        kwargs['product'] = cpe_parts.pop(0)
+        if len(cpe_parts) > 0:
+            kwargs['version'] = cpe_parts.pop(0)
+
+        kwargs = {k: v for k, v in kwargs.items() if v != '*'}
+        if len(kwargs) == 0:
+            return None
+
+        if cpe_type.endswith('o'):
+            if 'product' in kwargs:
+                kwargs['name'] = kwargs['product']
+                kwargs.pop('product')
+            return OperatingSystem(**kwargs)
+        elif cpe_type.endswith('a'):
+            return Product(**kwargs)
+        else:
+            return None
+
+    except IndexError:
+        return None
 
 
 class RateLimitEnable(Fact):
@@ -1180,3 +1276,26 @@ class UsernamePasswordHash(Username, PasswordHash):
 
 class UsernameNtlmHash(Username, NtlmHash):
     pass
+
+
+class CVE(Fact):
+    cve = Field(str, mandatory=True)
+    addr = Field(str, mandatory=False)
+    port = Field(int, mandatory=False)
+    hostname = Field(str, mandatory=False)
+
+    def __init__(self, *args, **kwargs):
+        uppercase_dict_values(kwargs, 'cve')
+        lowercase_dict_values(kwargs, 'addr', 'hostname')
+        super().__init__(*args, **kwargs)
+
+    def get_cve(self) -> str:
+        return self.get('cve')
+
+    def get_addr(self):
+        return self.get('addr')
+
+    def get_port(self):
+        if 'port' in self:
+            return int(self.get('port'))
+        return None
