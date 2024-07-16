@@ -25,7 +25,7 @@ def shadycompass_cli(args: list[str]) -> int:
     history = InMemoryHistory()
     ops = ShadyCompassOps(parsed.directories)
     commands = ['exit', 'quit', 'save', 'use', 'option', 'set', 'unset', 'reset', 'info', 'facts', 'tools', 'targets',
-                'services', 'products', 'urls', 'users', 'emails', 'reload']
+                'services', 'products', 'cve', 'urls', 'users', 'emails', 'reload']
     config_names = {
         OPTION_RATELIMIT, OPTION_PRODUCTION,
         SECTION_WORDLISTS + '.' + OPTION_WORDLIST_FILE, SECTION_WORDLISTS + '.' + OPTION_WORDLIST_SUBDOMAIN,
@@ -124,6 +124,8 @@ def shadycompass_cli(args: list[str]) -> int:
                     ops.show_services(user_command)
                 elif user_command[0] == 'products':
                     ops.show_products(user_command)
+                elif user_command[0] == 'cve':
+                    ops.show_cves(user_command)
                 elif user_command[0] == 'urls':
                     ops.show_urls(user_command)
                 elif user_command[0] == 'users':
@@ -167,6 +169,8 @@ services
     displays the services that have been found
 products
     displays the products that have been found
+cve
+    displays the CVEs that have been found
 urls
     displays the urls that have been found
 users

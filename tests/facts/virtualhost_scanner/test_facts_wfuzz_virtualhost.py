@@ -1,6 +1,7 @@
 import unittest
 
-from shadycompass.facts import VirtualHostname
+from shadycompass.config import ToolCategory
+from shadycompass.facts import VirtualHostname, ScanPresent
 from shadycompass.facts.http_buster.wfuzz import WfuzzReader
 from tests.tests import assertFactIn, facts_str
 
@@ -18,6 +19,8 @@ class WfuzzVirtualHostReaderTest(unittest.TestCase):
             hostname='blog.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
         assertFactIn(VirtualHostname(
             hostname='ftp.shadycompass.test', domain='shadycompass.test', port=443, secure=True), facts)
+        assertFactIn(
+            ScanPresent(category=ToolCategory.virtualhost_scanner, name='wfuzz', port=443, hostname='shadycompass.test'), facts)
 
     def test_read_json(self):
         facts = self.reader.read_facts('tests/fixtures/wfuzz/virtualhost_scanner/wfuzz-vhost-10.129.157.138-443.json')

@@ -1,4 +1,7 @@
 import os
+import sys
+
+FILE_SIZE_LIMIT = 10 * 1024 * 1024
 
 
 class FileMetaData:
@@ -38,8 +41,9 @@ class FileMetadataCache:
             for root, _, files in os.walk(path, topdown=True):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    if os.path.isfile(file_path) and os.stat(file_path).st_size > 10 * 1024 * 1024:
+                    if os.path.isfile(file_path) and os.stat(file_path).st_size > FILE_SIZE_LIMIT:
                         # we'll fill up memory with very large files
+                        print(f"[!] skipping {file_path} because file is larger than {FILE_SIZE_LIMIT} bytes", file=sys.stderr)
                         continue
                     removed.discard(file_path)
                     changes.extend(self._check_file_change(file_path))

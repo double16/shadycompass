@@ -34,9 +34,9 @@ class VirtualHostScan(IRules, ABC):
         self.retract(f1)
 
     @Rule(
-        AS.f1 << ToolRecommended(category=ToolCategory.virtualhost_scanner, addr=MATCH.addr, port=MATCH.port,
+        AS.f1 << ToolRecommended(category=ToolCategory.virtualhost_scanner, port=MATCH.port,
                                  hostname=MATCH.hostname),
-        ScanPresent(category=ToolCategory.virtualhost_scanner, addr=MATCH.addr, port=MATCH.port,
+        ScanPresent(category=ToolCategory.virtualhost_scanner, port=MATCH.port,
                     hostname=MATCH.hostname),
     )
     def retract_virtualhost_scan_tool(self, f1: ToolRecommended):

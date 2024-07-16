@@ -363,16 +363,30 @@ Displays the products that have been found.
 tests/fixtures shadycompass > products
 
 # 10.129.229.189:143
- - hmailserver imapd
+ - cpe:2.3:a:hmailserver:imapd:*:*:*:*:*:*:*:*
 # 10.129.229.189:993
- - hmailserver imapd
+ - cpe:2.3:a:hmailserver:imapd:*:*:*:*:*:*:*:*
 # 10.129.229.189:110
- - hmailserver pop3d
+ - cpe:2.3:a:hmailserver:pop3d:*:*:*:*:*:*:*:*
 # 10.129.229.189:443
- - php/8.0.28
- - openssl/1.1.1t
- - apache httpd/2.4.56
- - apache/2.4.56
+ - cpe:2.3:a:*:php:8.0.28:*:*:*:*:*:*:*
+ - cpe:2.3:a:openbsd:openssl:1.1.1t:*:*:*:*:*:*:*
+ - cpe:2.3:a:apache:http_server:2.4.56:*:*:*:*:*:*:*
+
+...
+```
+
+### cve
+
+Displays the CVEs that have been found.
+
+```
+tests/fixtures shadycompass > cve
+
+# 10.129.229.189:143
+ - CVE-2022-99999
+# 10.129.229.189:993
+ - CVE-2021-99999
 
 ...
 ```

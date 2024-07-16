@@ -40,6 +40,7 @@ class ToolCategory(object):
     kerberoaster = 'kerberoaster'
     timeroaster = 'timeroaster'
     wordpress_scanner = 'wordpress_scanner'
+    cve_exploit_search = 'cve_exploit_search'
     etc_hosts = 'hosts'
     docs = 'docs'
 
@@ -85,6 +86,8 @@ def tool_category_priority(category: str) -> int:
             return 620
         case ToolCategory.imap_scanner:
             return 610
+        case ToolCategory.cve_exploit_search:
+            return 700
         case ToolCategory.docs:
             return 150
         case _:
