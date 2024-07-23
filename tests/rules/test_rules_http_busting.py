@@ -14,13 +14,13 @@ class HttpBustingTest(RulesBase):
             ConfigFact(section=SECTION_TOOLS, option=ToolCategory.http_buster, value=DirbRules.dirb_tool_name, global0=True))
         self.engine.run()
 
-    def test_httpbusting_needed(self):
+    def test_http_busting_needed(self):
         assertFactIn(HttpBustingNeeded(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test'),
                      self.engine)
         assertFactIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test'),
                      self.engine)
 
-    def test_httpbusting_not_needed(self):
+    def test_http_busting_not_needed(self):
         self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test',
                                     url="https://shadycompass.test/"))
         self.engine.declare(HttpUrl(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test',
@@ -31,7 +31,7 @@ class HttpBustingTest(RulesBase):
         assertFactNotIn(HttpBustingNeeded(secure=False, addr='10.129.229.189', port=8080, vhost='shadycompass.test'),
                         self.engine)
 
-    def test_httpbusting_retract(self):
+    def test_http_busting_retract(self):
         self.engine.run()
         self.engine.declare(HttpUrl(secure=True, addr='10.129.229.189', port=443, vhost='shadycompass.test',
                                     url="https://shadycompass.test/"))

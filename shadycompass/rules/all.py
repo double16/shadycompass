@@ -1,6 +1,7 @@
 import shadycompass.rules.cve_exploit_search.all as cve_exploit_search
 import shadycompass.rules.dns_scanner.all as dns_scanner
 import shadycompass.rules.http_buster.all as http_buster
+import shadycompass.rules.http_spider.all as http_spider
 import shadycompass.rules.kerberos.all as kerberoaster
 import shadycompass.rules.ldap_scanner.all as ldap_scanner
 import shadycompass.rules.port_scanner.all as port_scanner
@@ -14,6 +15,7 @@ from shadycompass.rules.cve_exploit_search import CveExploitSearch
 from shadycompass.rules.dns_scanner import DnsScan
 from shadycompass.rules.etc_hosts import EtcHostsRules
 from shadycompass.rules.http_buster import HttpBusting
+from shadycompass.rules.http_spider import HttpSpiderScan
 from shadycompass.rules.imap_scanner import ImapScan
 from shadycompass.rules.ldap_scanner import LdapScan
 from shadycompass.rules.misc import ProductionTargetRules, RateLimitRules, PublicAddrRules, MiscRules
@@ -29,6 +31,7 @@ from shadycompass.rules.wordpress_scanner import WordpressScan
 
 class AllRules(
     http_buster.AllRules,
+    http_spider.AllRules,
     port_scanner.AllRules,
     vuln_scanner.AllRules,
     smb_scanner.AllRules,
@@ -38,6 +41,7 @@ class AllRules(
     ldap_scanner.AllRules,
     wordpress_scanner.AllRules,
     cve_exploit_search.AllRules,
+    HttpSpiderScan,
     HttpBusting,
     ScanRules,
     PortScan,
