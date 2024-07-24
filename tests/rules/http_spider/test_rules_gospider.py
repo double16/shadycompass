@@ -47,7 +47,7 @@ class GospiderRulesTest(RulesBase):
                           '--js', '--sitemap', '--robots',
                           '--depth', '3',
                           '-o', "gospider-8080-shadycompass.test", '--json',
-                          '--concurrent', '1', '--delay', '2'],
+                          '--concurrent', '1', '--delay', '12'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
@@ -57,7 +57,7 @@ class GospiderRulesTest(RulesBase):
                           '--js', '--sitemap', '--robots',
                           '--depth', '3',
                           '-o', "gospider-443-shadycompass.test", '--json',
-                          '--concurrent', '1', '--delay', '2'],
+                          '--concurrent', '1', '--delay', '12'],
         ), self.engine)
 
     def test_gospider_private_options(self):
@@ -73,7 +73,7 @@ class GospiderRulesTest(RulesBase):
                           '--js', '--sitemap', '--robots',
                           '--depth', '4',
                           '-o', "gospider-8080-shadycompass.test", '--json',
-                          '--concurrent', '1', '--delay', '2'],
+                          '--concurrent', '1', '--delay', '12'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
@@ -83,7 +83,7 @@ class GospiderRulesTest(RulesBase):
                           '--js', '--sitemap', '--robots',
                           '--depth', '4',
                           '-o', "gospider-443-shadycompass.test", '--json',
-                          '--concurrent', '1', '--delay', '2'],
+                          '--concurrent', '1', '--delay', '12'],
         ), self.engine)
 
     def test_gospider_private_ratelimit_options(self):
@@ -119,10 +119,11 @@ class GospiderRulesTest(RulesBase):
             command_line=['--site', 'http://shadycompass.test:8080',
                           '--user-agent', 'web',
                           '--js', '--sitemap', '--robots',
-                          '--include-other-source',
                           '--depth', '3',
                           '-o', "gospider-8080-shadycompass.test", '--json',
-                          '--concurrent', '4'],
+                          '--concurrent', '4',
+                          '--include-other-source',
+                          ],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
@@ -130,10 +131,11 @@ class GospiderRulesTest(RulesBase):
             command_line=['--site', 'https://shadycompass.test:443',
                           '--user-agent', 'web',
                           '--js', '--sitemap', '--robots',
-                          '--include-other-source',
                           '--depth', '3',
                           '-o', "gospider-443-shadycompass.test", '--json',
-                          '--concurrent', '4'],
+                          '--concurrent', '4',
+                          '--include-other-source',
+                          ],
         ), self.engine)
 
     def test_gospider_public_ratelimit(self):
@@ -147,10 +149,11 @@ class GospiderRulesTest(RulesBase):
             command_line=['--site', 'http://shadycompass.test:8080',
                           '--user-agent', 'web',
                           '--js', '--sitemap', '--robots',
-                          '--include-other-source',
                           '--depth', '3',
                           '-o', "gospider-8080-shadycompass.test", '--json',
-                          '--concurrent', '1', '--delay', '2'],
+                          '--concurrent', '1', '--delay', '12',
+                          '--include-other-source',
+                          ],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
@@ -158,8 +161,9 @@ class GospiderRulesTest(RulesBase):
             command_line=['--site', 'https://shadycompass.test:443',
                           '--user-agent', 'web',
                           '--js', '--sitemap', '--robots',
-                          '--include-other-source',
                           '--depth', '3',
                           '-o', "gospider-443-shadycompass.test", '--json',
-                          '--concurrent', '1', '--delay', '2'],
+                          '--concurrent', '1', '--delay', '12',
+                          '--include-other-source',
+                          ],
         ), self.engine)

@@ -25,7 +25,28 @@ class KatanaRules(IRules, ABC):
         )
 
     def _declare_katana(self, f1: ScanNeeded, ratelimit: RateLimitEnable = None, public: PublicTarget = None):
-        pass
+        more_options = []
+        if ratelimit:
+            more_options.append(['-rate-limit', str(ratelimit.get_request_per_second())])
+        if public:
+            more_options.append(['-passive'])
+        command_line = self.resolve_command_line(
+            self.katana_tool_name,
+            [
+                '-u', f1.get_url(),
+                '-js-crawl',
+                '-known-files', 'all', '-form-extraction',
+                '-o', f"katana-{f1.get_port()}-{f1.get_hostname()}.json", '-jsonl'
+            ], *more_options)
+        self.recommend_tool(
+            category=ToolCategory.http_spider,
+            name=self.katana_tool_name,
+            variant=None,
+            command_line=command_line,
+            addr=f1.get_addr(),
+            port=f1.get_port(),
+            hostname=f1.get_hostname(),
+        )
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.http_spider, addr=MATCH.addr),

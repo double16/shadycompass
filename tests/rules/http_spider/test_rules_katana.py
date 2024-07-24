@@ -19,16 +19,16 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-js-crawl',
-                          '-known-files', 'all',
-                          '-o', "katana-8080-shadycompass.test.txt", '-jsonl'],
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-8080-shadycompass.test.json', '-jsonl'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-js-crawl',
-                          '-known-files', 'all',
-                          '-o', "katana-443-shadycompass.test.txt", '-jsonl'],
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-443-shadycompass.test.json', '-jsonl'],
         ), self.engine)
 
     def test_katana_private_ratelimit(self):
@@ -40,8 +40,8 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-js-crawl',
-                          '-known-files', 'all',
-                          '-o', "katana-8080-shadycompass.test.txt", '-jsonl',
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-8080-shadycompass.test.json', '-jsonl',
                           '-rate-limit', '5'],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -49,8 +49,8 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-js-crawl',
-                          '-known-files', 'all',
-                          '-o', "katana-443-shadycompass.test.txt", '-jsonl',
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-443-shadycompass.test.json', '-jsonl',
                           '-rate-limit', '5'],
         ), self.engine)
 
@@ -62,16 +62,16 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-js-crawl',
-                          '-known-files', 'robotstxt',
-                          '-o', "katana-8080-shadycompass.test.txt", '-jsonl'],
+                          '-known-files', 'robotstxt', '-form-extraction',
+                          '-o', 'katana-8080-shadycompass.test.json', '-jsonl'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-js-crawl',
-                          '-known-files', 'robotstxt',
-                          '-o', "katana-443-shadycompass.test.txt", '-jsonl'],
+                          '-known-files', 'robotstxt', '-form-extraction',
+                          '-o', 'katana-443-shadycompass.test.json', '-jsonl'],
         ), self.engine)
 
     def test_katana_private_ratelimit_options(self):
@@ -84,8 +84,8 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-js-crawl',
-                          '-known-files', 'robotstxt',
-                          '-o', "katana-8080-shadycompass.test.txt", '-jsonl',
+                          '-known-files', 'robotstxt', '-form-extraction',
+                          '-o', 'katana-8080-shadycompass.test.json', '-jsonl',
                           '-rate-limit', '5'],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -93,8 +93,8 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-js-crawl',
-                          '-known-files', 'robotstxt',
-                          '-o', "katana-443-shadycompass.test.txt", '-jsonl',
+                          '-known-files', 'robotstxt', '-form-extraction',
+                          '-o', 'katana-443-shadycompass.test.json', '-jsonl',
                           '-rate-limit', '5'],
         ), self.engine)
 
@@ -106,18 +106,20 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-js-crawl',
-                          '-known-files', 'all',
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-8080-shadycompass.test.json', '-jsonl',
                           '-passive',
-                          '-o', "katana-8080-shadycompass.test.txt", '-jsonl'],
+                          ],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-js-crawl',
-                          '-known-files', 'all',
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-443-shadycompass.test.json', '-jsonl',
                           '-passive',
-                          '-o', "katana-443-shadycompass.test.txt", '-jsonl'],
+                          ],
         ), self.engine)
 
     def test_katana_public_ratelimit(self):
@@ -130,18 +132,20 @@ class KatanaRulesTest(RulesBase):
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-js-crawl',
-                          '-known-files', 'all',
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-8080-shadycompass.test.json', '-jsonl',
+                          '-rate-limit', '5',
                           '-passive',
-                          '-o', "katana-8080-shadycompass.test.txt", '-jsonl',
-                          '-rate-limit', '5'],
+                          ],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_spider,
             name=KatanaRules.katana_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-js-crawl',
-                          '-known-files', 'all',
+                          '-known-files', 'all', '-form-extraction',
+                          '-o', 'katana-443-shadycompass.test.json', '-jsonl',
+                          '-rate-limit', '5',
                           '-passive',
-                          '-o', "katana-443-shadycompass.test.txt", '-jsonl',
-                          '-rate-limit', '5'],
+                          ],
         ), self.engine)

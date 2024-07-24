@@ -18,10 +18,10 @@ class HttpSpiderTest(RulesBase):
 
     def test_http_spider_needed(self):
         assertFactIn(ScanNeeded(category=ToolCategory.http_spider, secure=True, addr='10.129.229.189', port=443,
-                                hostname='shadycompass.test'),
+                                hostname='shadycompass.test', url='https://shadycompass.test:443'),
                      self.engine)
         assertFactIn(ScanNeeded(category=ToolCategory.http_spider, secure=False, addr='10.129.229.189', port=8080,
-                                hostname='shadycompass.test'),
+                                hostname='shadycompass.test', url='http://shadycompass.test:8080'),
                      self.engine)
 
     def test_http_spider_not_needed(self):
@@ -49,5 +49,5 @@ class HttpSpiderTest(RulesBase):
                                    hostname='shadycompass.test'),
                         self.engine)
         assertFactIn(ScanNeeded(category=ToolCategory.http_spider, secure=False, addr='10.129.229.189', port=8080,
-                                hostname='shadycompass.test'),
+                                hostname='shadycompass.test', url='http://shadycompass.test:8080'),
                      self.engine)

@@ -22,9 +22,14 @@ def _get_facts_by_type(fact: Fact, facts: list[Fact]) -> list[Fact]:
         return isinstance(e, type(fact)) and e.get('category') == fact.get('category')
 
     if fact.get('category') is not None:
-        return list(filter(by_type_and_category, facts))
+        result = list(filter(by_type_and_category, facts))
+    else:
+        result = list(filter(by_type, facts))
 
-    return list(filter(by_type, facts))
+    if not result:
+        result = facts
+
+    return result
 
 
 def facts_str(facts: Iterable[Fact]) -> str:

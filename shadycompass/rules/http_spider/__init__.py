@@ -20,8 +20,13 @@ class HttpSpiderScan(IRules, ABC):
         NOT(ScanPresent(category=ToolCategory.http_spider, addr=MATCH.addr, port=MATCH.port, hostname=MATCH.hostname)),
     )
     def need_http_spider(self, f1: HttpService, addr, port, hostname):
+        if f1.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+        url = f"{protocol}://{hostname or addr}:{port}"
         self.declare(ScanNeeded(category=ToolCategory.http_spider, secure=f1.is_secure(), addr=addr, port=port,
-                                hostname=hostname))
+                                hostname=hostname, url=url))
 
     @Rule(
         AS.f1 << ScanNeeded(category=ToolCategory.http_spider, addr=MATCH.addr, port=MATCH.port,
