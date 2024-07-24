@@ -1,5 +1,6 @@
 from experta import Fact
 
+from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, HTTP_PATTERN, http_url, http_url_targets, \
     fact_reader_registry, remove_terminal_escapes
 
@@ -17,7 +18,11 @@ class DirbReader(FactReader):
                 m = HTTP_PATTERN.search(line)
                 if m:
                     result.append(http_url(m.group(0)))
-        result.extend(http_url_targets(result, infer_virtual_hosts=True))
+        result.extend(http_url_targets(
+            result,
+            infer_virtual_hosts=True,
+            infer_scan_category_tool_name=(ToolCategory.http_buster, 'dirb')
+        ))
         return result
 
 

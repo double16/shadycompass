@@ -37,7 +37,11 @@ class GobusterReader(FactReader):
                 m = GOBUSTER_DIR_PATTERN.search(line)
                 if m:
                     result.append(http_url(target+m.group(1)))
-        result.extend(http_url_targets(result, infer_virtual_hosts=True))
+        result.extend(http_url_targets(
+            result,
+            infer_virtual_hosts=True,
+            infer_scan_category_tool_name=(ToolCategory.http_buster, 'gobuster')
+        ))
         return result
 
     def _read_vhost(self, file_path: str) -> list[Fact]:

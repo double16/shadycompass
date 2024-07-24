@@ -813,7 +813,8 @@ def http_url(url: str, **kwargs) -> HttpUrl:
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
-def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False) -> list[Fact]:
+def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False,
+                     infer_scan_category_tool_name: tuple[str, str] = None) -> list[Fact]:
     """
     Creates TargetHostname, TargetIPv4Address and/or TargetIPv6Address facts from HttpUrl facts. This isn't done with
     rules because the presence of HttpUrl doesn't imply a target. We want the fact reader to make that decision.
@@ -830,9 +831,18 @@ def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False) -> li
                 VirtualHostname(hostname=url_fact.get_vhost(), port=url_fact.get_port() or 80,
                                 secure=url_fact.is_secure()))
     result = list(map(guess_target, url_hosts))
+
     if infer_virtual_hosts:
         result = list(filter(lambda e: not isinstance(e, TargetHostname), result))
         result.extend(virtual_hostnames)
+
+    if infer_scan_category_tool_name:
+        for virtual_hostname in filter(lambda e: isinstance(e, VirtualHostname), result):
+            result.append(ScanPresent(category=infer_scan_category_tool_name[0], name=infer_scan_category_tool_name[1],
+                                      secure=virtual_hostname.is_secure(), port=virtual_hostname.get_port(),
+                                      hostname=virtual_hostname.get_hostname(),
+                                      url=virtual_hostname.get_url()))
+
     return result
 
 

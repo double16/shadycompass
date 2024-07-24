@@ -4,8 +4,7 @@ import jsonschema
 from experta import Fact
 
 from shadycompass.config import ToolCategory
-from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, http_url_targets, http_url, \
-    VirtualHostname, ScanPresent
+from shadycompass.facts import FactReader, fact_reader_registry, check_file_signature, http_url_targets, http_url
 
 KATANA_SCHEMA = {
     "type": "object",
@@ -41,12 +40,11 @@ class KatanaReader(FactReader):
                         result.append(url_fact)
                 except (ValueError, jsonschema.exceptions.ValidationError):
                     pass
-        result.extend(http_url_targets(result, infer_virtual_hosts=True))
-        for virtual_hostname in filter(lambda e: isinstance(e, VirtualHostname), result):
-            result.append(ScanPresent(category=ToolCategory.http_spider, name='katana',
-                                      secure=virtual_hostname.is_secure(), port=virtual_hostname.get_port(),
-                                      hostname=virtual_hostname.get_hostname(),
-                                      url=virtual_hostname.get_url()))
+        result.extend(http_url_targets(
+            result,
+            infer_virtual_hosts=True,
+            infer_scan_category_tool_name=(ToolCategory.http_spider, 'katana')
+        ))
         return result
 
 
