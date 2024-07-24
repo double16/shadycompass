@@ -27,7 +27,6 @@ class ToolCategory(object):
     port_scanner = 'port_scanner'
     http_buster = 'http_buster'
     http_spider = 'http_spider'
-    http_public_spider = 'http_public_spider'
     virtualhost_scanner = 'virtualhost_scanner'
     vuln_scanner = 'vuln_scanner'
     smb_scanner = 'smb_scanner'
@@ -38,7 +37,7 @@ class ToolCategory(object):
     ldap_scanner = 'ldap_scanner'
     asrep_roaster = 'asrep_roaster'
     kerberoaster = 'kerberoaster'
-    timeroaster = 'timeroaster'
+    time_roaster = 'time_roaster'
     wordpress_scanner = 'wordpress_scanner'
     cve_exploit_search = 'cve_exploit_search'
     etc_hosts = 'hosts'
@@ -64,8 +63,6 @@ def tool_category_priority(category: str) -> int:
             return 700
         case ToolCategory.wordpress_scanner:
             return 602
-        case ToolCategory.http_public_spider:
-            return 601
         case ToolCategory.http_spider:
             return 600
         case ToolCategory.http_buster:
@@ -74,7 +71,7 @@ def tool_category_priority(category: str) -> int:
             return 650
         case ToolCategory.kerberoaster:
             return 650
-        case ToolCategory.timeroaster:
+        case ToolCategory.time_roaster:
             return 650
         case ToolCategory.ldap_scanner:
             return 650

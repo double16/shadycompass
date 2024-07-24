@@ -1,10 +1,12 @@
 import abc
 import ipaddress
+import json
 import os.path
 import re
 from typing import Union
 from urllib.parse import urlparse
 
+import jsonschema
 from experta import Fact, Field
 
 from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, METHOD_DNS
@@ -48,6 +50,17 @@ def check_file_signature(file_path: str, *signatures) -> bool:
     for sig in signatures:
         if isinstance(sig, re.Pattern):
             if sig.search(content) is None:
+                return False
+        elif isinstance(sig, dict):
+            # jsonl
+            lines = content.split('\n')
+            if len(lines) == 0:
+                return False
+            try:
+                # ignore the last line, it's likely cut off
+                for line in lines[0:-1]:
+                    jsonschema.validate(instance=json.loads(line), schema=sig)
+            except (ValueError, jsonschema.exceptions.ValidationError):
                 return False
         elif isinstance(content, bytes):
             if sig not in content:
@@ -207,6 +220,18 @@ class VirtualHostname(Fact):
 
     def get_domain(self) -> str:
         return self.get('domain')
+
+    def get_port(self) -> Union[int, None]:
+        if 'port' not in self:
+            return None
+        return int(self.get('port'))
+
+    def get_url(self) -> str:
+        if self.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+        return f"{protocol}://{self.get_hostname()}:{self.get_port()}"
 
 
 class TargetIPv4Address(Fact):
@@ -768,7 +793,10 @@ class HttpUrl(Fact):
         return self.get('vhost')
 
     def get_port(self) -> int:
-        return urlparse(self.get_url()).port
+        result = urlparse(self.get_url()).port
+        if result:
+            return result
+        return 443 if self.is_secure() else 80
 
     def is_secure(self) -> bool:
         return urlparse(self.get_url()).scheme.endswith('s')
@@ -785,7 +813,8 @@ def http_url(url: str, **kwargs) -> HttpUrl:
     return HttpUrl(port=port, vhost=parsed.hostname, url=url, **kwargs)
 
 
-def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False) -> list[Fact]:
+def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False,
+                     infer_scan_category_tool_name: tuple[str, str] = None) -> list[Fact]:
     """
     Creates TargetHostname, TargetIPv4Address and/or TargetIPv6Address facts from HttpUrl facts. This isn't done with
     rules because the presence of HttpUrl doesn't imply a target. We want the fact reader to make that decision.
@@ -802,9 +831,18 @@ def http_url_targets(facts: list[Fact], infer_virtual_hosts: bool = False) -> li
                 VirtualHostname(hostname=url_fact.get_vhost(), port=url_fact.get_port() or 80,
                                 secure=url_fact.is_secure()))
     result = list(map(guess_target, url_hosts))
+
     if infer_virtual_hosts:
         result = list(filter(lambda e: not isinstance(e, TargetHostname), result))
         result.extend(virtual_hostnames)
+
+    if infer_scan_category_tool_name:
+        for virtual_hostname in filter(lambda e: isinstance(e, VirtualHostname), result):
+            result.append(ScanPresent(category=infer_scan_category_tool_name[0], name=infer_scan_category_tool_name[1],
+                                      secure=virtual_hostname.is_secure(), port=virtual_hostname.get_port(),
+                                      hostname=virtual_hostname.get_hostname(),
+                                      url=virtual_hostname.get_url()))
+
     return result
 
 

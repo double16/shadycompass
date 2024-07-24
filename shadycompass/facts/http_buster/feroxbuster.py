@@ -2,6 +2,7 @@ import re
 
 from experta import Fact
 
+from shadycompass.config import ToolCategory
 from shadycompass.facts import FactReader, check_file_signature, http_url, http_url_targets, fact_reader_registry, \
     remove_terminal_escapes
 
@@ -20,7 +21,11 @@ class FeroxbusterReader(FactReader):
                 if m:
                     url_fact = http_url(m.group(1))
                     result.append(url_fact)
-        result.extend(http_url_targets(result, infer_virtual_hosts=True))
+        result.extend(http_url_targets(
+            result,
+            infer_virtual_hosts=True,
+            infer_scan_category_tool_name=(ToolCategory.http_buster, 'feroxbuster')
+        ))
         return result
 
 

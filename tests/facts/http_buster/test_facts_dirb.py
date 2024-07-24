@@ -1,6 +1,7 @@
 import unittest
 
-from shadycompass.facts import HttpUrl, VirtualHostname
+from shadycompass.config import ToolCategory
+from shadycompass.facts import HttpUrl, VirtualHostname, ScanPresent
 from shadycompass.facts.http_buster.dirb import DirbReader
 from tests.tests import facts_str, assertFactIn
 
@@ -91,4 +92,6 @@ class DirbReaderTest(unittest.TestCase):
         assertFactIn(
             HttpUrl(port=443, vhost='shadycompass.test', url='https://shadycompass.test:443/installer/Images/nul'),
             facts)
-        self.assertEqual(31, len(facts), facts_str(facts))
+        assertFactIn(ScanPresent(category=ToolCategory.http_buster, name='dirb', secure=True, port=443,
+                                 hostname='shadycompass.test', url='https://shadycompass.test:443'), facts)
+        self.assertEqual(32, len(facts), facts_str(facts))

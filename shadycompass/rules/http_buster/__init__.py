@@ -2,8 +2,9 @@ from abc import ABC
 
 from experta import Rule, OR, AS, MATCH, NOT
 
-from shadycompass.facts import HttpService, HttpUrl, HttpBustingNeeded, TargetIPv4Address, TargetIPv6Address, \
-    HostnameIPv4Resolution, HostnameIPv6Resolution, VirtualHostname
+from shadycompass.config import ToolCategory
+from shadycompass.facts import HttpService, HttpBustingNeeded, TargetIPv4Address, TargetIPv6Address, \
+    HostnameIPv4Resolution, HostnameIPv6Resolution, VirtualHostname, ScanPresent
 from shadycompass.rules.irules import IRules
 
 """
@@ -30,14 +31,14 @@ class HttpBusting(IRules, ABC):
             HostnameIPv4Resolution(addr=MATCH.addr, hostname=MATCH.hostname | MATCH.domain),
             HostnameIPv6Resolution(addr=MATCH.addr, hostname=MATCH.hostname | MATCH.domain),
         ),
-        NOT(HttpUrl(port=MATCH.port, vhost=MATCH.hostname)),
+        NOT(ScanPresent(category=ToolCategory.http_buster, port=MATCH.port, hostname=MATCH.hostname)),
     )
     def need_http_busting(self, f1: HttpService, addr, port, hostname):
         self.declare(HttpBustingNeeded(secure=f1.is_secure(), addr=addr, port=port, vhost=hostname))
 
     @Rule(
         AS.f1 << HttpBustingNeeded(secure=MATCH.secure, addr=MATCH.addr, port=MATCH.port, vhost=MATCH.hostname),
-        HttpUrl(secure=MATCH.secure, port=MATCH.port, vhost=MATCH.hostname),
+        ScanPresent(category=ToolCategory.http_buster, port=MATCH.port, hostname=MATCH.hostname),
     )
     def do_not_need_http_busting(self, f1: HttpBustingNeeded):
         self.retract(f1)

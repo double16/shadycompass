@@ -52,9 +52,13 @@ class WfuzzReader(FactReader):
         if virtualhost_scanner:
             result.append(ScanPresent(category=ToolCategory.virtualhost_scanner, name='wfuzz',
                                       hostname=target_parsed.hostname, port=target_parsed.port))
+        else:
+            result.append(ScanPresent(category=ToolCategory.http_buster, name='wfuzz',
+                                      hostname=target_parsed.hostname, port=target_parsed.port))
         return result
 
     def _read_json(self, file_path: str) -> list[Fact]:
+        virtualhost_scanner = False
         result = []
         try:
             with open(file_path, 'rt') as f:
@@ -71,11 +75,23 @@ class WfuzzReader(FactReader):
                 result.append(http_url(url))
                 if url_parsed is None:
                     url_parsed = urlparse(url)
+                if not virtualhost_scanner:
+                    payload = record.get('payload', None)
+                    if payload:
+                        if f"://{payload}." in url:
+                            virtualhost_scanner = True
         result.extend(http_url_targets(result, infer_virtual_hosts=True))
         for virtualhostname in filter(lambda e: isinstance(e, VirtualHostname), result):
-            result.append(ScanPresent(category=ToolCategory.virtualhost_scanner, name='wfuzz',
-                                      hostname=virtualhostname.get_hostname().split('.', 1)[-1],
-                                      port=url_parsed.port))
+            if virtualhost_scanner:
+                result.append(ScanPresent(category=ToolCategory.virtualhost_scanner,
+                                          name='wfuzz',
+                                          hostname=virtualhostname.get_hostname().split('.', 1)[-1],
+                                          port=url_parsed.port))
+            else:
+                result.append(ScanPresent(category=ToolCategory.http_buster,
+                                          name='wfuzz',
+                                          hostname=virtualhostname.get_hostname(),
+                                          port=url_parsed.port))
             break
         return result
 

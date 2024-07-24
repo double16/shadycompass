@@ -1,6 +1,7 @@
 import unittest
 
-from shadycompass.facts import HttpUrl, VirtualHostname
+from shadycompass.config import ToolCategory
+from shadycompass.facts import HttpUrl, VirtualHostname, ScanPresent
 from shadycompass.facts.http_buster.gobuster import GobusterReader
 from tests.tests import assertFactIn
 
@@ -24,4 +25,6 @@ class GobusterReaderTest(unittest.TestCase):
         assertFactIn(HttpUrl(port=8080, vhost='shadycompass.test', url='http://shadycompass.test:8080/vendor/'), facts)
         assertFactIn(HttpUrl(port=8080, vhost='shadycompass.test', url='http://shadycompass.test:8080/server-status/'),
                       facts)
-        self.assertEqual(9, len(facts))
+        assertFactIn(ScanPresent(category=ToolCategory.http_buster, name='gobuster', secure=False, port=8080,
+                                 hostname='shadycompass.test', url='http://shadycompass.test:8080'), facts)
+        self.assertEqual(10, len(facts))

@@ -7,6 +7,8 @@ import shadycompass.facts.http_buster.dirb  # noqa: F401
 import shadycompass.facts.http_buster.feroxbuster  # noqa: F401
 import shadycompass.facts.http_buster.gobuster  # noqa: F401
 import shadycompass.facts.http_buster.wfuzz  # noqa: F401
+import shadycompass.facts.http_spider.gospider  # noqa: F401
+import shadycompass.facts.http_spider.katana  # noqa: F401
 import shadycompass.facts.kerberos.kerbrute  # noqa: F401
 import shadycompass.facts.ldap_scanner.ldapsearch  # noqa: F401
 import shadycompass.facts.port_scanner.nmap  # noqa: F401
