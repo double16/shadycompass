@@ -1,10 +1,12 @@
 import abc
 import ipaddress
+import json
 import os.path
 import re
 from typing import Union
 from urllib.parse import urlparse
 
+import jsonschema
 from experta import Fact, Field
 
 from shadycompass.rules.library import METHOD_POP, METHOD_IMAP, METHOD_SMTP, METHOD_DNS
@@ -48,6 +50,17 @@ def check_file_signature(file_path: str, *signatures) -> bool:
     for sig in signatures:
         if isinstance(sig, re.Pattern):
             if sig.search(content) is None:
+                return False
+        elif isinstance(sig, dict):
+            # jsonl
+            lines = content.split('\n')
+            if len(lines) == 0:
+                return False
+            try:
+                # ignore the last line, it's likely cut off
+                for line in lines[0:-1]:
+                    jsonschema.validate(instance=json.loads(line), schema=sig)
+            except (ValueError, jsonschema.exceptions.ValidationError):
                 return False
         elif isinstance(content, bytes):
             if sig not in content:
@@ -207,6 +220,18 @@ class VirtualHostname(Fact):
 
     def get_domain(self) -> str:
         return self.get('domain')
+
+    def get_port(self) -> Union[int, None]:
+        if 'port' not in self:
+            return None
+        return int(self.get('port'))
+
+    def get_url(self) -> str:
+        if self.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+        return f"{protocol}://{self.get_hostname()}:{self.get_port()}"
 
 
 class TargetIPv4Address(Fact):
@@ -768,7 +793,10 @@ class HttpUrl(Fact):
         return self.get('vhost')
 
     def get_port(self) -> int:
-        return urlparse(self.get_url()).port
+        result = urlparse(self.get_url()).port
+        if result:
+            return result
+        return 443 if self.is_secure() else 80
 
     def is_secure(self) -> bool:
         return urlparse(self.get_url()).scheme.endswith('s')
