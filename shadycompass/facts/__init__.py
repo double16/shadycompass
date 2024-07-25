@@ -54,11 +54,17 @@ def check_file_signature(file_path: str, *signatures) -> bool:
         elif isinstance(sig, dict):
             # jsonl
             lines = content.split('\n')
+            while len(lines) > 0 and len(lines[-1]) == 0:
+                lines.pop(-1)
             if len(lines) == 0:
                 return False
             try:
                 # ignore the last line, it's likely cut off
-                for line in lines[0:-1]:
+                if len(content) > 4000:
+                    lines_to_check = lines[0:-1]
+                else:
+                    lines_to_check = lines
+                for line in lines_to_check:
                     jsonschema.validate(instance=json.loads(line), schema=sig)
             except (ValueError, jsonschema.exceptions.ValidationError):
                 return False
@@ -1110,10 +1116,10 @@ def parse_cpe(value: str) -> Union[Fact, None]:
         assert cpe_parts.pop(0) == 'cpe'
         cpe_type = cpe_parts.pop(0)  # [/a,/o,/h] or float version
         try:
-            cpe_version = float(cpe_type)
+            float(cpe_type)  # check if version is a valid float
             cpe_type = cpe_parts.pop(0)
         except ValueError:
-            cpe_version = 1.0
+            pass
 
         kwargs['vendor'] = cpe_parts.pop(0)
         kwargs['product'] = cpe_parts.pop(0)

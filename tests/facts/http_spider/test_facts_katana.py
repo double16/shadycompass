@@ -40,3 +40,7 @@ class KatanaReaderTest(unittest.TestCase):
         assertFactIn(VirtualHostname(hostname='www.vpn.shadycompass.test', port=443, secure=True), facts)
         assertFactIn(VirtualHostname(hostname='click.e.shadycompass.test', port=443, secure=True), facts)
         assertFactIn(VirtualHostname(hostname='techinfo.shadycompass.test', port=443, secure=True), facts)
+
+    def test_facts_not_katana_output(self):
+        facts = self.reader.read_facts('tests/fixtures/shadycompass.ini')
+        self.assertEqual(0, len(facts))

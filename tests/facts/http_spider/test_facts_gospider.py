@@ -29,3 +29,7 @@ class GospiderReaderTest(unittest.TestCase):
         assertFactIn(VirtualHostname(hostname='ir.shadycompass.test'), facts)
         assertFactIn(VirtualHostname(hostname='footer-ir.shadycompass.test'), facts)
         assertFactIn(VirtualHostname(hostname='footer-store.shadycompass.test'), facts)
+
+    def test_facts_not_gospider_output(self):
+        facts = self.reader.read_facts('tests/fixtures/shadycompass.ini')
+        self.assertEqual(0, len(facts))
