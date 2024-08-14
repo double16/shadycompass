@@ -28,7 +28,8 @@ class FeroxBusterRules(IRules, ABC):
                              wordlist: PreferredWordlist = None):
         more_options = []
         if ratelimit:
-            more_options.append(['--scan-limit', '1', '--rate-limit', str(ratelimit.get_request_per_second())])
+            # TODO: remove options incompatible with rate limit
+            more_options.append(['--scan-limit', str(ratelimit.get_request_per_second()), '--rate-limit', '1'])
         if wordlist and not wordlist.is_default():
             more_options.append(['--wordlist', wordlist.get_path()])
         command_line = self.resolve_command_line(
