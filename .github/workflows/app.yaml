@@ -119,6 +119,12 @@ jobs:
             OUT_FILE_NAME: shadycompass
             RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_linux_amd64
             ASSET_MIME: application/octet-stream
+          - os: ubuntu-24.04-arm
+            TARGET: linux
+            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
+            OUT_FILE_NAME: shadycompass
+            RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_linux_arm64
+            ASSET_MIME: application/octet-stream
           - os: macos-latest
             TARGET: macos
             CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
@@ -190,6 +196,7 @@ jobs:
           generate_release_notes: false
           files: |
             dist/shadycompass_${{github.ref_name}}_linux_amd64
+            dist/shadycompass_${{github.ref_name}}_linux_arm64
             dist/shadycompass_${{github.ref_name}}_macos
             dist/shadycompass_${{github.ref_name}}.exe
 
@@ -220,5 +227,6 @@ jobs:
           generate_release_notes: true
           files: |
             dist/shadycompass_${{github.ref_name}}_linux_amd64
+            dist/shadycompass_${{github.ref_name}}_linux_arm64
             dist/shadycompass_${{github.ref_name}}_macos
             dist/shadycompass_${{github.ref_name}}.exe
