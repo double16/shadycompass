@@ -74,7 +74,7 @@ $ cd shadycompass
 $ virtualenv .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
-$ python3 shadycompass.py /path/to/output
+$ python3 shadycompass /path/to/output
 ```
 
 ### Docker
