@@ -8,5 +8,5 @@ VOLUME /config
 VOLUME /data
 WORKDIR /data
 USER 1000
-ENTRYPOINT ["python3","/opt/shadycompass/shadycompass.py"]
+ENTRYPOINT ["python3","/opt/shadycompass"]
 CMD ["/data"]

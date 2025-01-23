@@ -115,25 +115,25 @@ jobs:
         include:
           - os: ubuntu-latest
             TARGET: linux
-            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
+            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass/__main__.py
             OUT_FILE_NAME: shadycompass
             RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_linux_amd64
             ASSET_MIME: application/octet-stream
           - os: ubuntu-24.04-arm
             TARGET: linux
-            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
+            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass/__main__.py
             OUT_FILE_NAME: shadycompass
             RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_linux_arm64
             ASSET_MIME: application/octet-stream
           - os: macos-latest
             TARGET: macos
-            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
+            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass/__main__.py
             OUT_FILE_NAME: shadycompass
             RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}_macos
             ASSET_MIME: application/octet-stream
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass.py
+            CMD_BUILD: pyinstaller -p shadycompass --onefile --console --name shadycompass shadycompass/__main__.py
             OUT_FILE_NAME: shadycompass.exe
             RELEASE_FILE_NAME: shadycompass_${{github.ref_name}}.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable

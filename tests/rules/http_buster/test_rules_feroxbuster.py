@@ -50,14 +50,14 @@ class FeroxBusterTest(RulesBase):
             name=FeroxBusterRules.feroxbuster_tool_name,
             command_line=['-u', 'http://shadycompass.test:8080',
                           '-o', "feroxbuster-8080-shadycompass.test.txt", '--insecure',
-                          '--scan-limit', '1', '--rate-limit', '5'],
+                          '--scan-limit', '5', '--rate-limit', '1'],
         ), self.engine)
         assertFactIn(ToolRecommended(
             category=ToolCategory.http_buster,
             name=FeroxBusterRules.feroxbuster_tool_name,
             command_line=['-u', 'https://shadycompass.test:443',
                           '-o', "feroxbuster-443-shadycompass.test.txt", '--insecure',
-                          '--scan-limit', '1', '--rate-limit', '5'],
+                          '--scan-limit', '5', '--rate-limit', '1'],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
             category=ToolCategory.http_buster,

@@ -20,7 +20,8 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-8080-shadycompass.test.json,json',
-                'http://FUZZ.shadycompass.test:8080/',
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'http://shadycompass.test:8080/',
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -30,7 +31,8 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-443-shadycompass.test.json,json',
-                'https://FUZZ.shadycompass.test:443/',
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'https://shadycompass.test:443/',
             ],
         ), self.engine)
 
@@ -45,7 +47,8 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404,500',
                 '-f', 'wfuzz-vhost-8080-shadycompass.test.json,json',
-                'http://FUZZ.shadycompass.test:8080/',
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'http://shadycompass.test:8080/',
             ],
         ), self.engine)
 
@@ -61,8 +64,9 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-8080-shadycompass.test.json,json',
+                '-H', 'Host: FUZZ.shadycompass.test',
                 '-t', '1', '-s', '12',
-                'http://FUZZ.shadycompass.test:8080/'
+                'http://shadycompass.test:8080/',
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -72,8 +76,9 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-443-shadycompass.test.json,json',
+                '-H', 'Host: FUZZ.shadycompass.test',
                 '-t', '1', '-s', '12',
-                'https://FUZZ.shadycompass.test:443/'
+                'https://shadycompass.test:443/',
             ],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
@@ -83,7 +88,8 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-8080-shadycompass.test.json,json',
-                'http://FUZZ.shadycompass.test:8080/'
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'http://shadycompass.test:8080/',
             ],
         ), self.engine)
         assertFactNotIn(ToolRecommended(
@@ -93,7 +99,8 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-110000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-443-shadycompass.test.json,json',
-                'https://FUZZ.shadycompass.test:443/'
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'https://shadycompass.test:443/',
             ],
         ), self.engine)
 
@@ -108,7 +115,8 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-5000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-8080-shadycompass.test.json,json',
-                'http://FUZZ.shadycompass.test:8080/',
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'http://shadycompass.test:8080/',
             ],
         ), self.engine)
         assertFactIn(ToolRecommended(
@@ -118,6 +126,7 @@ class WfuzzVirtualHostTest(RulesBase):
                 '-w', 'subdomains-top1million-5000.txt',
                 '--hc', '404',
                 '-f', 'wfuzz-vhost-443-shadycompass.test.json,json',
-                'https://FUZZ.shadycompass.test:443/',
+                '-H', 'Host: FUZZ.shadycompass.test',
+                'https://shadycompass.test:443/',
             ],
         ), self.engine)

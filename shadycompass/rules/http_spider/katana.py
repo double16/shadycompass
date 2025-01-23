@@ -34,8 +34,10 @@ class KatanaRules(IRules, ABC):
             self.katana_tool_name,
             [
                 '-u', f1.get_url(),
-                '-js-crawl',
-                '-known-files', 'all', '-form-extraction',
+                '-js-crawl', '-jsluice',
+                '-known-files', 'all', '-form-extraction', '-ignore-query-params',
+                '-omit-raw', '-omit-body',
+                '-strategy', 'breadth-first',
                 '-o', f"katana-{f1.get_port()}-{f1.get_hostname()}.json", '-jsonl'
             ], *more_options)
         self.recommend_tool(

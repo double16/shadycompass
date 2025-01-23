@@ -86,7 +86,7 @@ class WfuzzRules(IRules, ABC):
     def _declare_wfuzz_as_virtualhost_scan(self, f1: ScanNeeded, ratelimit: RateLimitEnable = None,
                                            wordlist: PreferredWordlist = None):
         protocol = 'https' if f1.is_secure() else 'http'
-        url = f"{protocol}://FUZZ.{f1.get_hostname()}:{f1.get_port()}/"
+        url = f"{protocol}://{f1.get_hostname()}:{f1.get_port()}/"
 
         more_options = []
         if ratelimit:
@@ -97,6 +97,7 @@ class WfuzzRules(IRules, ABC):
                 '-w', wordlist.get_path(),
                 '--hc', '404',
                 '-f', f'wfuzz-vhost-{f1.get_port()}-{f1.get_hostname()}.json,json',
+                '-H', f"Host: FUZZ.{f1.get_hostname()}"
             ], *more_options
         )
         command_line.append(url)

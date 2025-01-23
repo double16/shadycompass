@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import argparse
 import shlex
 import sys
@@ -30,7 +29,7 @@ def shadycompass_cli(args: list[str]) -> int:
         OPTION_RATELIMIT, OPTION_PRODUCTION,
         SECTION_WORDLISTS + '.' + OPTION_WORDLIST_FILE, SECTION_WORDLISTS + '.' + OPTION_WORDLIST_SUBDOMAIN,
         SECTION_WORDLISTS + '.' + OPTION_WORDLIST_USERNAME, SECTION_WORDLISTS + '.' + OPTION_WORDLIST_PASSWORD,
-    }
+        }
     config_dict = {name: None for name in config_names}
     tools = set(map(lambda e: e.get_name(), filter(lambda e: isinstance(e, ToolAvailable), ops.engine.facts.values())))
     tools_dict = {tool: None for tool in tools}
@@ -71,9 +70,9 @@ def shadycompass_cli(args: list[str]) -> int:
                 prompt_text = f"\n{ops.base_dir} shadycompass > "
                 if sys.stdout.isatty():
                     user_input = prompt(prompt_text,
-                                       history=history,
-                                       auto_suggest=AutoSuggestFromHistory(),
-                                       completer=completer,
+                                        history=history,
+                                        auto_suggest=AutoSuggestFromHistory(),
+                                        completer=completer,
                                         )
                 else:
                     user_input = input(prompt_text)
@@ -190,5 +189,8 @@ facts
     return 0
 
 
-if __name__ == '__main__':
+def main():
     sys.exit(shadycompass_cli(sys.argv[1:]))
+
+if __name__ == '__main__':
+    main()
