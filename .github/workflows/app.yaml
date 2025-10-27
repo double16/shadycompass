@@ -52,7 +52,7 @@ jobs:
           PYTHONPATH=$(pwd) pytest tests --junitxml=${RESULT_DIR}/test-results.xml --cov=shadycompass --cov-branch --cov-report=xml:${RESULT_DIR}/coverage.xml --cov-report=html:${RESULT_DIR}/htmlcov --cov-report=term-missing
 
       - name: Upload pytest test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pytest-results-${{ matrix.python-version }}
           path: |
@@ -153,7 +153,7 @@ jobs:
           ${{matrix.CMD_BUILD}}
           mv ./dist/${{ matrix.OUT_FILE_NAME }} ./dist/${{ matrix.RELEASE_FILE_NAME }}
       - name: Upload Asset
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: exe-${{ matrix.RELEASE_FILE_NAME }}
           path: ./dist/${{ matrix.RELEASE_FILE_NAME }}
